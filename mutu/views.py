@@ -34,7 +34,7 @@ def index(request):
 
 # Get kunjungan pasien
 def kunjungan_pasien(request):
-  query = "SELECT TOP 10 * FROM kunjunganpasien "
+  query = "SELECT TOP 10 * FROM kunjunganpasien JOIN PASIEN ON kunjunganpasien.KPKD_PASIEN = PASIEN.KD_PASIEN "
 
   if 'cari' in request.GET and request.GET['cari'] is not None:
     query = query + "WHERE KPKD_PASIEN LIKE '%{}%' OR KPKD_PASIENN LIKE '%{}%' OR KPNO_TRANSAKSI LIKE '%{}%' ".format(request.GET['cari'], request.GET['cari'], request.GET['cari'])
