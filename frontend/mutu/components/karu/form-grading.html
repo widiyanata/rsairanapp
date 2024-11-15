@@ -1,0 +1,352 @@
+<form>
+  <h3 class="mb-4">LAPORAN INSIDEN (INTERNAL)</h3>
+
+  <!-- I. DATA PASIEN -->
+  <h5>I. DATA PASIEN</h5>
+  <div class="mb-3">
+    <label class="form-label">Nama</label>
+    <input type="text" class="form-control" placeholder="Enter your name" />
+  </div>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">No MR</label>
+      <input type="text" class="form-control" placeholder="Enter No MR" />
+    </div>
+    <div class="col">
+      <label class="form-label">Ruangan</label>
+      <input type="text" class="form-control" placeholder="Enter Room number" />
+    </div>
+  </div>
+
+  <label class="form-label">Umur *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange1" />
+      <label class="form-check-label" for="umurrange1">0-1 bulan</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange2" />
+      <label class="form-check-label" for="umurrange2">&gt; 1 bulan – 1 tahun</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange3" />
+      <label class="form-check-label" for="umurrange3">&gt; 1 tahun – 5 tahun</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange4" />
+      <label class="form-check-label" for="umurrange4">&gt; 5 tahun – 15 tahun</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange5" />
+      <label class="form-check-label" for="umurrange5">&gt; 15 tahun – 30 tahun</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange6" />
+      <label class="form-check-label" for="umurrange6">&gt; 30 tahun – 65 tahun</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="umur" id="umurrange7" />
+      <label class="form-check-label" for="umurrange7">&gt; 65 tahun</label>
+    </div>
+  </div>
+
+  <label class="form-label">Jenis Kelamin</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gender" id="male" />
+      <label class="form-check-label" for="male">Laki-laki</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gender" id="female" />
+      <label class="form-check-label" for="female">Perempuan</label>
+    </div>
+  </div>
+
+  <label class="form-label">Penanggung biaya pasien</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="biayapribadi" />
+      <label class="form-check-label" for="biayapribadi">Pribadi</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="asuransiswasta" />
+      <label class="form-check-label" for="asuransiswasta">Asuransi Swasta</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="askesgov" />
+      <label class="form-check-label" for="askesgov">ASKES Pemerintah</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="perusahaan" />
+      <label class="form-check-label" for="perusahaan">Perusahaan</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="jamkesmas" />
+      <label class="form-check-label" for="jamkesmas">JAMKESMAS</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="bpjsnonpbi" />
+      <label class="form-check-label" for="bpjsnonpbi">BPJS Non PBI</label>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Tanggal Masuk RS</label>
+      <input type="date" class="form-control" placeholder="Enter date" />
+    </div>
+    <div class="col">
+      <label class="form-label">Jam</label>
+      <input type="time" class="form-control" placeholder="Enter time" />
+    </div>
+  </div>
+
+  <!-- II. RINCIAN KEJADIAN -->
+  <h5>II. RINCIAN KEJADIAN</h5>
+  <div class="row mb-3">
+    <div class="col">
+      <label class="form-label">Tanggal Insiden</label>
+      <input type="date" class="form-control" placeholder="Enter date" />
+    </div>
+    <div class="col">
+      <label class="form-label">Jam</label>
+      <input type="time" class="form-control" placeholder="Enter time" />
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Insiden</label>
+    <input type="text" class="form-control" placeholder="Describe the incident" />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Kronologis Insiden</label>
+    <textarea
+      class="form-control"
+      rows="3"
+      placeholder="Chronology of the incident"
+    ></textarea>
+  </div>
+
+  <label class="form-label">Jenis Insiden *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="jenisinsiden" id="knc" />
+      <label class="form-check-label" for="knc"
+        >Kejadian Nyaris Cedera / KNC (Near miss)</label
+      >
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="jenisinsiden" id="ktd" />
+      <label class="form-check-label" for="ktd"
+        >Kejadian Tidak diharapkan / KTD (Adverse Event)</label
+      >
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="jenisinsiden" id="sentinel" />
+      <label class="form-check-label" for="sentinel"
+        >Kejadian Sentinel (Sentinel Event)</label
+      >
+    </div>
+  </div>
+
+  <label class="form-label">Orang Pertama Yang Melaporkan Insiden *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="karyawan" />
+      <label class="form-check-label" for="karyawan"
+        >Karyawan: Dokter / Perawat / Petugas lainnya</label
+      >
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="pasien" />
+      <label class="form-check-label" for="pasien">Pasien</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="keluarga" />
+      <label class="form-check-label" for="keluarga">Keluarga / Pendamping Pasien</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="pengunjung" />
+      <label class="form-check-label" for="pengunjung">Pengunjung</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="lainlain1" />
+      <label class="form-check-label" for="lainlain1">Lain-lain</label>
+      <input type="text" class="form-control mt-2" placeholder="Sebutkan" />
+    </div>
+  </div>
+
+  <label class="form-label">Insiden terjadi pada *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insindentuj" id="pasien" />
+      <label class="form-check-label" for="pasien">Pasien</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insindentuj" id="lainlain2" />
+      <label class="form-check-label" for="lainlain2">Lain-lain</label>
+      <input
+        type="text"
+        class="form-control mt-2"
+        placeholder="Sebutkan, misal: Karyawan / Pengunjung / Pendamping / Keluarga pasien"
+      />
+    </div>
+  </div>
+
+  <label class="form-label">Insiden menyangkut pasien</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insidenmenyangkut" id="rawatinap" />
+      <label class="form-check-label" for="rawatinap">Pasien rawat inap</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insidenmenyangkut" id="rawatjalan" />
+      <label class="form-check-label" for="rawatjalan">Pasien rawat jalan</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insidenmenyangkut" id="ugd" />
+      <label class="form-check-label" for="ugd">Pasien UGD</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="insidenmenyangkut" id="lainlain3" />
+      <label class="form-check-label" for="lainlain3">Lain-lain</label>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Tempat Insiden</label>
+    <input type="text" class="form-control" placeholder="Lokasi kejadian (sebutkan)" />
+  </div>
+
+  <label class="form-label">Insiden terjadi pada pasien</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="pdalam" />
+      <label class="form-check-label" for="pdalam"
+        >Penyakit Dalam dan Subspesialisasinya</label
+      >
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="anak" />
+      <label class="form-check-label" for="anak">Anak dan Subspesialisasinya</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="bedah" />
+      <label class="form-check-label" for="bedah">Bedah dan Subspesialisasinya</label>
+    </div>
+    <!-- Add more checkboxes as needed for each category -->
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Unit Kerja tempat terjadinya insiden</label>
+    <input type="text" class="form-control" placeholder="Unit kerja (sebutkan)" />
+  </div>
+
+  <label class="form-label">Akibat Insiden Terhadap Pasien *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="akibatinsiden" id="kematian" />
+      <label class="form-check-label" for="kematian">Kematian</label>
+    </div>
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="akibatinsiden"
+        id="cederairreversibel"
+      />
+      <label class="form-check-label" for="cederairreversibel"
+        >Cedera Irreversibel / Cedera Berat</label
+      >
+    </div>
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="akibatinsiden"
+        id="cederareversibel"
+      />
+      <label class="form-check-label" for="cederareversibel"
+        >Cedera Reversibel / Cedera Sedang</label
+      >
+    </div>
+    <!-- More options -->
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label"
+      >Tindakan yang dilakukan segera setelah kejadian, dan hasilnya</label
+    >
+    <textarea
+      class="form-control"
+      rows="3"
+      placeholder="Describe the immediate actions and results"
+    ></textarea>
+  </div>
+
+  <label class="form-label">Tindakan dilakukan oleh *</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="tim" />
+      <label class="form-check-label" for="tim">Tim</label>
+      <input type="text" class="form-control mt-2" placeholder="Terdiri dari..." />
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="dokter" />
+      <label class="form-check-label" for="dokter">Dokter</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="perawat" />
+      <label class="form-check-label" for="perawat">Perawat</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="petugaslainnya" />
+      <label class="form-check-label" for="petugaslainnya">Petugas lainnya</label>
+      <input type="text" class="form-control mt-2" placeholder="Sebutan" />
+    </div>
+  </div>
+
+  <label class="form-label"
+    >Apakah kejadian yang sama pernah terjadi di Unit Kerja lain? *</label
+  >
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="kejadiansama" id="ya" />
+      <label class="form-check-label" for="ya">Ya</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="kejadiansama" id="tidak" />
+      <label class="form-check-label" for="tidak">Tidak</label>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label"
+      >Jika ya, kapan dan langkah/tindakan apa yang telah diambil?</label
+    >
+    <textarea class="form-control" rows="3" placeholder="Please describe"></textarea>
+  </div>
+
+  <label class="form-label">Grading Risiko Kejadian * (Diisi oleh atasan pelapor)</label>
+  <div class="mb-3">
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gradingrisiko" id="biru" />
+      <label class="form-check-label" for="biru">BIRU</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gradingrisiko" id="hijau" />
+      <label class="form-check-label" for="hijau">HIJAU</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gradingrisiko" id="kuning" />
+      <label class="form-check-label" for="kuning">KUNING</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="gradingrisiko" id="merah" />
+      <label class="form-check-label" for="merah">MERAH</label>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
