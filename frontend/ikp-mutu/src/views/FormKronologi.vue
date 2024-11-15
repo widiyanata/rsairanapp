@@ -4,10 +4,10 @@
       <div class="row">
         <div class="col-md-5 ">
           <div class="d-flex justify-content-between mb-3 align-items-center">
-            <h3>Riwayat</h3>
+            <h3>Riwayat Kronologi</h3>
             <button class="btn btn-success btn-sm ms-auto" @click="reload">+ Tambah baru</button>
           </div>
-          <table class="table table-striped table-sm table-hover align-middle">
+          <table class="table table-sm table-hover align-middle">
             <thead>
               <tr>
                 <th>No.</th>
@@ -18,20 +18,24 @@
             </thead>
             <tbody>
               <!-- Riwayat -->
-              <tr v-for="(entry, index) in riwayatKronologi" :key="index">
-                <td>{{ index + 1 }}</td>
-                <td>{{ entry.Tanggal.replace('T', ' jam ') }}</td>
+              <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry }">
+                <td class="text-center">{{ index + 1 }}</td>
+                <td> 
+                  <span class="badge bg-white text-dark">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
+                  <span class="badge bg-white text-dark">{{ JSON.parse(entry.dibuat_oleh).user_id }}</span>
+                  <span class="badge bg- text-dark ms-1">{{ JSON.parse(entry.dibuat_oleh).user_name }}</span>
+                </td>
                 <td> <small>{{ entry.nama_pasien }} ({{ entry.no_rm }})</small> </td>
                 <td>
-                  <button class="badge bg-primary" @click="getKronologi(entry.no_transaksi)">{{ entry.no_transaksi }}</button>
+                  <a href="#" class="badge bg-primary text-decoration-none" @click="getKronologi(entry); selectRow(entry)">{{ entry.no_transaksi }}</a>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="col-md-7">
-          <div class="">
-            <h3>Kronologis Kejadian</h3>
+          <h3>Kronologis Kejadian</h3>
+          <div class="p-3 bg-white shadow-sm rounded border">
             <table class="align-start">
               <colgroup>
                 <col width="200px">
@@ -40,20 +44,24 @@
               <tr>
                 <th>Nama Pembuat</th>
                 <td>
-                  <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.user_name">
-                  <div v-if="nama_pembuat.user_name.length > 2" class="dropdown">
-                    <div class="dropdown-menu show p-0">
-                      <div class="list-group">
-                        <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)" class="list-group-item list-group-item-action">{{ user.FMPPERAWAT_ID }} - {{ user.FMPPERAWATN }}</a>
+                  <div class="input-group">
+                    <button v-if="nama_pembuat.user_id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.user_id }}</button>
+                    <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.user_name" @keydown="nama_pembuat.user_name.length > 2 ? cariPembuat() : ''">
+                  </div>
+                  <div v-if="users_pembuat" >
+                    <div class="dropdown">
+                      <div class="dropdown-menu show p-0 border-0 shadow-none">
+                        <div class="list-group">
+                          <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)" class="list-group-item list-group-item-action list-group-item-info">{{ user.FMPPERAWAT_ID }} - {{ user.FMPPERAWATN }}</a>
+                        </div>
                       </div>
                     </div>
-
                   </div>
                 </td>
               </tr>
               <tr>
                 <th>Unit Kerja / Jabatan</th>
-                <td>: unit kerja</td>
+                <td>: {{ nama_pembuat.jabatan }}</td>
               </tr>
               <tr>
                 <th class="align-top">Pasien</th>
@@ -81,48 +89,48 @@
                 </td>
               </tr>
             </table>
-          </div>
-          <table id="uraianKejadian" class="table table-sm table-bordered mt-4 ">
-            <colgroup>
-              <col width="50px">
-              <col width="150px">
-              <col>
-            </colgroup>
-            <thead class="table-info">
-              <tr>
-                <th class="text-center">No</th>
-                <th>Tgl Jam</th>
-                <th>Uraian</th>
-                <th>#</th>
-              </tr>
-            </thead>
-            <tbody ref="kejadianTableBody">
-              <tr v-for="(entry, index) in kejadianEntries" :key="index">
-                <td class="text-center">{{ index + 1 }}</td>
-                <td>
-                  <input v-model="kejadianEntries[index].Tanggal" type="datetime-local" class="form-control form-control-sm">
-                </td>
-                <td>
-                  <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1" class="form-control form-control-sm"></textarea>
-                </td>
-                <td>
-                  <button class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - Hapus</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="btn-group ">
-            <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
-            <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
-            <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
-            <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan</button>
-
-            <!-- <ExportToWord element="export-to-word" filename="Kronologi-kejadian">
-              <button class="btn btn-primary btn-sm">Export ke Word</button>
-            </ExportToWord>
-            <ExportToExcel element="export-to-word" filename="Kronologi-kejadian">
-              <button class="btn btn-primary btn-sm">Export ke Excel</button>
-            </ExportToExcel> -->
+            <table id="uraianKejadian" class="table table-sm table-bordered mt-4 ">
+              <colgroup>
+                <col width="50px">
+                <col width="150px">
+                <col>
+              </colgroup>
+              <thead class="table-info">
+                <tr>
+                  <th class="text-center">No</th>
+                  <th>Tgl Jam</th>
+                  <th>Uraian</th>
+                  <th>#</th>
+                </tr>
+              </thead>
+              <tbody ref="kejadianTableBody">
+                <tr v-for="(entry, index) in kejadianEntries" :key="index">
+                  <td class="text-center">{{ index + 1 }}</td>
+                  <td>
+                    <input v-model="kejadianEntries[index].Tanggal" type="datetime-local" class="form-control form-control-sm">
+                  </td>
+                  <td>
+                    <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1" class="form-control form-control-sm"></textarea>
+                  </td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - Hapus</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="btn-group ">
+              <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
+              <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
+              <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
+              <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan</button>
+  
+              <!-- <ExportToWord element="export-to-word" filename="Kronologi-kejadian">
+                <button class="btn btn-primary btn-sm">Export ke Word</button>
+              </ExportToWord>
+              <ExportToExcel element="export-to-word" filename="Kronologi-kejadian">
+                <button class="btn btn-primary btn-sm">Export ke Excel</button>
+              </ExportToExcel> -->
+            </div>
           </div>
         </div>
       </div>
@@ -220,14 +228,16 @@ const pilihPasien = (pasienPilih) => {
 }
 
 // Get kronologi
-const getKronologi = async (no_transaksi = '') => {
+const getKronologi = async (entry = '') => {
   loading.value = true
 
+  const no_transaksi = entry.no_transaksi
+  let params = ''
   if (no_transaksi) {
-    no_transaksi = `&no_transaksi=${no_transaksi}`
+    params = `&no_transaksi=${no_transaksi}&dibuat_oleh=${entry.dibuat_oleh}`
   }
   try {
-    const data = await fetch(`${apiBaseUrl}/kronologi?${no_transaksi}`)
+    const data = await fetch(`${apiBaseUrl}/kronologi?${params}`)
     const kronologis = await data.json()
     console.log('get kronologis',kronologis)
 
@@ -243,6 +253,8 @@ const getKronologi = async (no_transaksi = '') => {
       pasien.value.KPKD_PASIEN = kronologis.data[0].no_rm
       pasien.value.KPKD_PASIENN = kronologis.data[0].nama_pasien
       pasien.value.KPNO_TRANSAKSI = kronologis.data[0].no_transaksi
+
+      nama_pembuat.value = JSON.parse(kronologis.data[0].dibuat_oleh)
     }
 
     loading.value = false
@@ -255,24 +267,41 @@ const getKronologi = async (no_transaksi = '') => {
 
 // simpan kronologi
 const users_pembuat = ref([])
-const nama_pembuat = ref({user_id: '', user_name: ''})
+const nama_pembuat = ref({user_id: '', user_name: '', jabatan: ''})
 const cariPembuat = async () => {
-  loading.value = true
   try {
-    const data = await fetch(`${apiBaseUrl}/users?cari=${nama_pembuat.value}`)
+    const data = await fetch(`${apiBaseUrl}/cariUser?cari=${nama_pembuat.value.user_name}`)
     const users = await data.json()
     console.log(users)
     users_pembuat.value = users.data
-    loading.value = false
   } catch (error) {
     console.error('Error fetching patients:', error)
   }
 }
-watch(nama_pembuat, (newVal, oldVal) => {
-  if (newVal.length > 2) {
-    cariPembuat()
-  }
-}, { immediate: true }, { deep: true })
+const pilihUser = (user) => {
+  console.log('pilih user',user)
+  nama_pembuat.value.user_id = user.FMPPERAWAT_ID
+  nama_pembuat.value.user_name = user.FMPPERAWATN
+  nama_pembuat.value.jabatan = user.USER_EMR
+
+  console.log('nama pembuat',nama_pembuat.value)
+
+  users_pembuat.value = []
+}
+// watch(
+//   () => nama_pembuat.value.user_name,
+//   (newVal, oldVal) => {
+//     console.log(newVal, oldVal);
+//     if (newVal && newVal !== oldVal) {
+//       cariPembuat();
+//     }
+//   },
+//   {
+//     immediate: true,
+//     deep: false // Set to false since deep is unnecessary for primitive values like strings
+//   }
+// );
+
 
 const simpanKronologi = async () => {
   loading.value = true
@@ -299,6 +328,11 @@ const simpanKronologi = async () => {
   }
 }
 
+const selectedRow = ref(null)
+const selectRow = (row) => {
+  selectedRow.value = row
+}
+
 </script>
 
 <style scoped>
@@ -317,4 +351,10 @@ const simpanKronologi = async () => {
       top: 0;
     }
   }
+</style>
+<style scoped>
+.form-label { font-weight: bold; }
+.rowActive td {
+  background-color: aquamarine;
+}
 </style>

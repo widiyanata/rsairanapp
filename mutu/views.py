@@ -1,3 +1,4 @@
+import datetime
 import json
 from django.db import connection
 from django.http import JsonResponse
@@ -57,11 +58,13 @@ def kunjungan_pasien(request):
 @csrf_exempt
 def kronologi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 100 * FROM mutu_kronologi_kejadian "
+    query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian "
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      query = "SELECT TOP 100 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' ".format(no_transaksi)
+      dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('user_id')
+      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.user_id') = '{}' ".format(no_transaksi, dibuat_oleh)
 
+    print(query)
     with connection.cursor() as cursor:
       cursor.execute(query)
       # dict fetch data
@@ -81,18 +84,79 @@ def kronologi(request):
   elif request.method == 'POST':
     data = json.loads(request.body)
 
-    # get data pasien
-    pasien = data.get('pasien')
+    # Get data components
+    pasien = data.get('pasien', {})
+    kejadian = data.get('kejadian', {})
+    dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
 
-    # get data kejadian
-    kejadian = data.get('kejadian')
+    # Log the received data
+    print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
 
-    # log
-    print(f'pasien: {pasien}, kejadian: {kejadian}')
+    # Current timestamp
+    tgl_sekarang = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Get transaction number
+    no_transaksi = pasien.get('KPNO_TRANSAKSI')
+
+    if not all([no_transaksi, dibuat_oleh]):
+        return JsonResponse({'status': False, 'message': 'Missing required fields'}, status=400)
+    
     with connection.cursor() as cursor:
-      # insert data kejadian
-      query = "INSERT INTO mutu_kronologi_kejadian (no_transaksi, no_rm, nama, Tanggal, Uraian, dibuat_oleh) VALUES ('{}', '{}')".format(pasien['KPNO_TRANSAKSI'], json.dumps(kejadian))
-      cursor.execute(query)
+        # Check existing transaction
+        query = """
+            SELECT TOP 1 * FROM mutu_kronologi_kejadian 
+            WHERE no_transaksi = %s AND dibuat_oleh = %s
+        """
+        cursor.execute(query, [no_transaksi, dibuat_oleh])
+        rows = cursor.fetchone()
+
+        if rows:
+            # Update data
+            query = """
+                UPDATE mutu_kronologi_kejadian 
+                SET Uraian = %s, dibuat_oleh = %s 
+                WHERE no_transaksi = %s AND dibuat_oleh = %s
+            """
+            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, no_transaksi, dibuat_oleh])
+        else:
+            # Insert new data
+            query = """
+                INSERT INTO mutu_kronologi_kejadian 
+                (no_transaksi, no_rm, nama_pasien, Tanggal, Uraian, dibuat_oleh) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            cursor.execute(query, [
+                no_transaksi,
+                pasien.get('KPKD_PASIEN'),
+                pasien.get('KPKD_PASIENN'),
+                tgl_sekarang,
+                json.dumps(kejadian),
+                dibuat_oleh
+            ])
 
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
+
+# Cari user
+def cari_user(request):
+  query = "SELECT TOP 10 * FROM PERAWAT "
+
+  if 'cari' in request.GET and request.GET['cari'] is not None:
+    query = query + "WHERE FMPPERAWATN LIKE '%{}%' ".format(request.GET['cari'])
+
+  print(query)
+  with connection.cursor() as cursor:
+    cursor.execute(query)
+    # dict fetch data
+    rows = dictfetchall(cursor)
+
+    res = {
+      "status": {
+          "success": True,
+          "code": 200,
+          "message": "Request successful",
+      },
+      "data": rows
+    }
+
+    return JsonResponse(res, safe=False)
+    
