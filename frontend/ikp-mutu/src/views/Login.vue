@@ -27,8 +27,11 @@ const error = ref(null);
 
 // Contoh data JSON untuk login
 const users = [
-  { id: 1, username: 'admin', password: '12345' },
-  { id: 2, username: 'user', password: '54321' }
+  { id: 1, username: 'admin', password: '12345', role: 'admin' },
+  { id: 2, username: 'user', password: '54321', role: 'user' },
+  // Tambahkan data login lainnya
+  { id: 3, username: 'karu', password: '54321', role: 'karu' },
+  { id: 4, username: 'mutu', password: '54321', role: 'mutu' },
 ];
 
 function login() {

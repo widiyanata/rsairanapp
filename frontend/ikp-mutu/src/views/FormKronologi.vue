@@ -7,7 +7,7 @@
             <h3>Riwayat Kronologi</h3>
             <button class="btn btn-success btn-sm ms-auto" @click="reload">+ Tambah baru</button>
           </div>
-          <table class="table table-sm table-hover align-middle">
+          <table class="table table-sm table-hover align-start">
             <thead>
               <tr>
                 <th>No.</th>
@@ -21,13 +21,15 @@
               <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry }">
                 <td class="text-center">{{ index + 1 }}</td>
                 <td> 
-                  <span class="badge bg-white text-dark">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
-                  <span class="badge bg-white text-dark">{{ JSON.parse(entry.dibuat_oleh).user_id }}</span>
-                  <span class="badge bg- text-dark ms-1">{{ JSON.parse(entry.dibuat_oleh).user_name }}</span>
+                  <span class="badge bg-white text-secondary border ms-1">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
+                  <!-- <span class="badge bg-white text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).user_id }}</span> -->
+                  <span class="badge text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).user_name }}</span>
                 </td>
-                <td> <small>{{ entry.nama_pasien }} ({{ entry.no_rm }})</small> </td>
+                <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> ({{ entry.no_rm }}) </td>
                 <td>
-                  <a href="#" class="badge bg-primary text-decoration-none" @click="getKronologi(entry); selectRow(entry)">{{ entry.no_transaksi }}</a>
+                  <a href="#" class="badge bg-white text-info text-decoration-none border" @click="getKronologi(entry); selectRow(entry)">
+                    <small>{{ entry.no_transaksi }}</small>
+                  </a>
                 </td>
               </tr>
             </tbody>

@@ -20,7 +20,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow mb-5">
+    <nav v-if="$route.path !== '/login'" class="navbar navbar-expand-lg navbar-light bg-white shadow mb-5">
       <div class="container">
         <a class="navbar-brand" href="#">Navbar</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,7 +44,7 @@ onMounted(() => {
           <ul class="navbar-nav ms-auto">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                {{ user.username }}
+                {{ user && user.username }}
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
