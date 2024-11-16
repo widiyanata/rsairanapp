@@ -9,8 +9,8 @@
         </div>
         <h3>Lembar Kronologi</h3>
         <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
-        <a href="#" class="icon-link">
-          Call to action
+        <a :href="`/kronologi`" class="icon-link">
+          Kronologi
           <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
         </a>
       </div>
@@ -20,8 +20,8 @@
         </div>
         <h3>Grading Karu</h3>
         <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
-        <a href="#" class="icon-link">
-          Call to action
+        <a :href="`/grading`" class="icon-link">
+          Grading
           <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
         </a>
       </div>
@@ -31,8 +31,8 @@
         </div>
         <h2>Laporan Investigasi</h2>
         <p>Form investigasi lanjut atas insiden yang terjadi di RS Airan Raya oleh unit Mutu</p>
-        <a href="#" class="icon-link">
-          Call to action
+        <a :href="`/investigasi`" class="icon-link">
+          Investigasi
           <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
         </a>
       </div>

@@ -15,6 +15,7 @@ function logout() {
 
 onMounted(() => {
   // router.push('/')
+  user
 })
 </script>
 
