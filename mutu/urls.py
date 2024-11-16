@@ -8,4 +8,5 @@ urlpatterns = [
   path('kronologi', views.kronologi, name='kronologi'),
   path('cariUser', views.cari_user, name='cari_user'),
   path('grading', views.grading, name='grading'),
+  path('investigasi', views.investigasi, name='investigasi'),
 ]

@@ -28,6 +28,11 @@ onMounted(() => {
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
+            <li v-for="route in router.options.routes" :key="route.path" class="nav-item">
+              <router-link v-if="route.name !== 'Login'" active-class="active" class="nav-link" aria-current="page" :to="route.path">{{ route.name }}</router-link>
+            </li>
+          </ul>
+          <!-- <ul class="navbar-nav">
             <li class="nav-item">
               <router-link active-class="active" class="nav-link" aria-current="page" to="/">Home</router-link>
             </li>
@@ -38,7 +43,7 @@ onMounted(() => {
               <router-link active-class="active" class="nav-link" aria-current="page" to="/grading">Grading</router-link>
             </li>
             
-          </ul>
+          </ul> -->
 
           <!-- logout button -->
           <ul class="navbar-nav ms-auto">

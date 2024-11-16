@@ -164,11 +164,16 @@ def cari_user(request):
 @csrf_exempt
 def grading(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_grading_insiden "
+    query = """
+    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN
+    FROM mutu_grading_insiden 
+    LEFT JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN  
+    LEFT JOIN mutu_investigasi ON mutu_investigasi.no_transaksi = mutu_grading_insiden.no_transaksi
+    """
 
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      query = "SELECT TOP 10 * FROM mutu_grading_insiden WHERE no_transaksi = '{}' ".format(no_transaksi)
+      query = "SELECT TOP 10 * FROM mutu_grading_insiden JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN WHERE no_transaksi = '{}' ".format(no_transaksi)
 
     print('query grading:', query)
 
@@ -197,16 +202,109 @@ def grading(request):
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
 
     with connection.cursor() as cursor:
+        # cek existing data
         query = """
+            SELECT TOP 1 * FROM mutu_grading_insiden 
+            WHERE no_transaksi = %s AND dibuat_oleh = %s
+        """
+        cursor.execute(query, [pasien.get('KPNO_TRANSAKSI'), dibuat_oleh])
+        rows = cursor.fetchone()
+
+        if rows:
+          # Update data
+          query = """
+              UPDATE mutu_grading_insiden 
+              SET rincian_kejadian = %s, dibuat_oleh = %s 
+              WHERE no_transaksi = %s AND dibuat_oleh = %s
+          """
+          cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, pasien.get('KPNO_TRANSAKSI'), dibuat_oleh])
+        else:
+            # Insert new data
+          query = """
             INSERT INTO mutu_grading_insiden 
             (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh) 
             VALUES (%s, %s, %s, %s)
-        """
-        cursor.execute(query, [
-            pasien.get('KPKD_PASIEN'),
-            pasien.get('KPNO_TRANSAKSI'),
-            json.dumps(kejadian),
-            dibuat_oleh
-        ])
+          """
+          cursor.execute(query, [
+              pasien.get('KPKD_PASIEN'),
+              pasien.get('KPNO_TRANSAKSI'),
+              json.dumps(kejadian),
+              dibuat_oleh
+          ])
+
+        
 
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
+  
+# Investigasi
+@csrf_exempt
+def investigasi(request):
+  if request.method == 'GET':
+    query = "SELECT TOP 10 * FROM mutu_investigasi "
+
+    if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
+      no_transaksi = request.GET['no_transaksi']
+      query = "SELECT TOP 10 * FROM mutu_investigasi WHERE no_transaksi = '{}' ".format(no_transaksi)
+
+    print('query investigasi:', query)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)
+
+  elif request.method == 'POST':
+    data = json.loads(request.body)
+    pasien = data.get('pasien', {})
+    investigasi = data.get('investigasi', {})
+    dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
+
+    print(f'pasien: {pasien}, investigasi: {investigasi}, dibuat_oleh: {dibuat_oleh}')
+
+    # cek data investigasi
+
+    with connection.cursor() as cursor:
+        # cek existing data
+        query = """
+            SELECT TOP 1 * FROM mutu_investigasi 
+            WHERE no_transaksi = %s AND dibuat_oleh = %s
+        """
+        cursor.execute(query, [pasien.get('no_transaksi'), dibuat_oleh])
+        rows = cursor.fetchone()
+
+        if rows:
+          # Update data
+          query = """
+              UPDATE mutu_investigasi 
+              SET investigasi = %s, dibuat_oleh = %s 
+              WHERE no_transaksi = %s AND dibuat_oleh = %s
+          """
+          cursor.execute(query, [json.dumps(investigasi), dibuat_oleh, pasien.get('no_transaksi'), dibuat_oleh])
+        else:
+          # Insert new data
+          query = """
+              INSERT INTO mutu_investigasi 
+              (no_rm, no_transaksi, investigasi, dibuat_oleh) 
+              VALUES (%s, %s, %s, %s)
+          """
+          cursor.execute(query, [
+              pasien.get('KD_PASIEN'),
+              pasien.get('no_transaksi'),
+              json.dumps(investigasi),
+              dibuat_oleh
+          ])
+
+    return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
+
+  return JsonResponse({'status': False, 'message': 'Method not allowed'})

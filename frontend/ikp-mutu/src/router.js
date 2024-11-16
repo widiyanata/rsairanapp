@@ -7,6 +7,7 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
   { path: '/kronologi', name: 'Kronologi', component: () => import('./views/FormKronologi.vue') },
   { path: '/grading', name: 'Grading', component: () => import('./views/FormGrading.vue') },
+  { path: '/investigasi', name: 'Investigasi', component: () => import('./views/FormInvestigasi.vue') },
 
 ];
 
