@@ -159,4 +159,54 @@ def cari_user(request):
     }
 
     return JsonResponse(res, safe=False)
-    
+
+# Grading
+@csrf_exempt
+def grading(request):
+  if request.method == 'GET':
+    query = "SELECT TOP 10 * FROM mutu_grading_insiden "
+
+    if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
+      no_transaksi = request.GET['no_transaksi']
+      query = "SELECT TOP 10 * FROM mutu_grading_insiden WHERE no_transaksi = '{}' ".format(no_transaksi)
+
+    print('query grading:', query)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)
+
+  elif request.method == 'POST':
+    data = json.loads(request.body)
+    pasien = data.get('pasien', {})
+    kejadian = data.get('kejadian', {})
+    dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
+
+    print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
+
+    with connection.cursor() as cursor:
+        query = """
+            INSERT INTO mutu_grading_insiden 
+            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh) 
+            VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(query, [
+            pasien.get('KPKD_PASIEN'),
+            pasien.get('KPNO_TRANSAKSI'),
+            json.dumps(kejadian),
+            dibuat_oleh
+        ])
+
+    return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
