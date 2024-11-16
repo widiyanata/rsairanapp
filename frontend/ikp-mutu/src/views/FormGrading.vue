@@ -64,6 +64,12 @@ const getDetailPasien = async (no_transaksi) => {
 }
 
 const rincianKejadian = ref({})
+
+const dibuat_oleh = ref({
+  user_id: sessionStorage.getItem('user')['id'] || '',
+  user_name: sessionStorage.getItem('user')['username'] || '',
+  jabatan: sessionStorage.getItem('user')['role'] || ''
+})
 const submitForm = async (e) => {
   e.preventDefault()
 
@@ -82,7 +88,8 @@ const submitForm = async (e) => {
     },
     body: JSON.stringify({
       pasien: detailPasien.value,
-      kejadian: rincianKejadian.value
+      kejadian: rincianKejadian.value,
+      dibuat_oleh: dibuat_oleh.value
     })
   })
 
@@ -172,12 +179,12 @@ onMounted(() => {
           </thead>
           <tbody>
             <!-- Riwayat -->
-            <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry }">
+            <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry, 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }">
               <td>{{ index + 1 }}</td>
               <td>{{ entry.Tanggal.replace('T', ' jam ') }}</td>
-              <td> <small>{{ entry.nama_pasien }} ({{ entry.no_rm }})</small> </td>
+              <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> <small class="badge bg-white text-secondary border">({{ entry.no_rm }})</small>  </td>
               <td>
-                <a class="badge bg-success text-decoration-none" href="#" @click="getDetailPasien(entry.no_transaksi); selectRow(entry)">
+                <a class="badge bg-white text-primary text-decoration-none border" href="#" @click="getDetailPasien(entry.no_transaksi); selectRow(entry)">
                   <small>{{ entry.no_transaksi }}</small>
                 </a>
               </td>
@@ -186,8 +193,8 @@ onMounted(() => {
         </table>
 
         <!-- Detail Kronologi -->
+        <h4 v-if="selectedRow" class="">Detail Kronologi</h4>
         <div v-if="selectedRow" class="p-3 bg-white shadow rounded">
-          <h4 class="">Detail Kronologi</h4>
           <div
             v-if="loading"
             class="d-flex justify-content-center align-items-center p-2"
@@ -672,7 +679,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.form-label { font-weight: bold; }
+.form-label { 
+  font-weight: bold;
+  margin-bottom: 0; 
+}
 .rowActive td {
   background-color: aquamarine;
 }
