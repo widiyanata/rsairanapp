@@ -441,7 +441,7 @@ const submitForm = async (e) => {
   console.log('investigasi', investigasi.value);
 
   try {
-    const res = await fetch('http://localhost:8009/investigasi', {
+    const res = await fetch('http://10.30.0.6:8009/investigasi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -480,7 +480,7 @@ const submitForm = async (e) => {
 const riwayatInvestigasi = ref([])
 const getRiwayatInvestigasi = async () => {
   try {
-    const res = await fetch('http://localhost:8009/investigasi');
+    const res = await fetch('http://10.30.0.6:8009/investigasi');
     const data = await res.json();
     console.log('riwayat investigasi', data);
     return riwayatInvestigasi.value = data.data;
@@ -492,7 +492,7 @@ const getRiwayatInvestigasi = async () => {
 const riwayatGrading = ref([])
 const getRiwayatGrading = async (no_transaksi = '') => {
   try {
-    const res = await fetch(`http://localhost:8009/grading?cari=${no_transaksi}`);
+    const res = await fetch(`http://10.30.0.6:8009/grading?cari=${no_transaksi}`);
     const data = await res.json();
     console.log('riwayat grading', data);
     return riwayatGrading.value = data.data;

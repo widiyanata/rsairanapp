@@ -29,7 +29,7 @@ const riwayatKronologi = ref([])
 const getKronologi = async () => {
   loading.value = true
   try {
-    const res = await fetch('http://localhost:8009/kronologi')
+    const res = await fetch('http://10.30.0.6:8009/kronologi')
     const kronologis = await res.json()
 
     riwayatKronologi.value = kronologis.data
@@ -45,7 +45,7 @@ const detailPasien = ref({})
 const getDetailPasien = async (no_transaksi) => {
   loading.value = true
   try {
-    const res = await fetch(`http://localhost:8009/kunjunganPasien?cari=${no_transaksi}`)
+    const res = await fetch(`http://10.30.0.6:8009/kunjunganPasien?cari=${no_transaksi}`)
     const data = await res.json()
 
     console.log(data)
@@ -81,7 +81,7 @@ const submitForm = async (e) => {
 
   console.log('rincian kejadian', rincianKejadian)
 
-  const res = await fetch('http://localhost:8009/grading', {
+  const res = await fetch('http://10.30.0.6:8009/grading', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ const riwayatGrading = ref([])
 const getRiwayatGrading = async (no_transaksi = '') => {
   loading.value = true
 
-  const res = await fetch('http://localhost:8009/grading?no_transaksi='+ no_transaksi)
+  const res = await fetch('http://10.30.0.6:8009/grading?no_transaksi='+ no_transaksi)
   const data = await res.json()
   
   riwayatGrading.value = data.data

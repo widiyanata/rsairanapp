@@ -145,7 +145,7 @@ import { onMounted, ref, watch } from 'vue'
 
 // import { ExportToWord, ExportToExcel  } from 'vue-doc-exporter'
 
-const apiBaseUrl = 'http://localhost:8009'
+const apiBaseUrl = 'http://10.30.0.6:8009'
 
 const pasiens = ref('')
 const pasien = ref({
