@@ -1,8 +1,8 @@
 <template>
   <div class="mt-4">
-    <div class="container">
+    <div class="container no-print">
       <div class="row">
-        <div class="col-md-5 ">
+        <div class="col-md-5 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
             <h3>Riwayat Kronologi</h3>
             <button class="btn btn-success btn-sm ms-auto" @click="reload">+ Tambah baru</button>
@@ -70,7 +70,7 @@
                 <td>
                   : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
   
-                  <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm">
+                  <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
                     <input type="search" class="form-control" v-model="cari" placeholder="Pilih pasien terlebih dahulu">
                     <button class="btn btn-sm btn-primary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPasien() : ''"> <span v-if="!loading">Cari</span> <span v-else><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span> </button>
                   </div>
@@ -132,11 +132,74 @@
               <ExportToExcel element="export-to-word" filename="Kronologi-kejadian">
                 <button class="btn btn-primary btn-sm">Export ke Excel</button>
               </ExportToExcel> -->
+
+              <button class="btn btn-primary btn-sm no-print" @click="print">Cetak</button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <div id="print-area" class="print">
+      <div class="kop-surat mb-4">
+        <div class="row">
+          <div class="col-12">
+            <img class="w-100" src="../assets/kop_surat.jpg" alt="">
+          </div>
+        </div>
+      </div>
+      <h3>Kronologis Kejadian</h3>
+        <div class="">
+          <table class="align-start">
+            <colgroup>
+              <col width="200px">
+              <col width="250px">
+            </colgroup>
+            <tr>
+              <th>Nama Pembuat</th>
+              <td>
+                : {{ nama_pembuat.user_name }}
+              </td>
+            </tr>
+            <tr>
+              <th>Unit Kerja / Jabatan</th>
+              <td>: {{ nama_pembuat.jabatan }}</td>
+            </tr>
+            <tr>
+              <th class="align-top">Pasien</th>
+              <td>
+                : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
+              </td>
+            </tr>
+          </table>
+          <table id="uraianKejadian" class="table table-sm table-bordered mt-4 ">
+            <colgroup>
+              <col width="50px">
+              <col width="150px">
+              <col>
+            </colgroup>
+            <thead class="">
+              <tr>
+                <th class="text-center">No</th>
+                <th>Tgl Jam</th>
+                <th>Uraian</th>
+              </tr>
+            </thead>
+            <tbody ref="kejadianTableBody">
+              <tr v-for="(entry, index) in kejadianEntries" :key="index">
+                <td class="text-center">{{ index + 1 }}</td>
+                <td>
+                  <input v-model="kejadianEntries[index].Tanggal" type="datetime-local" class="form-control form-control-sm">
+                </td>
+                <td>
+                  <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1" class="form-control form-control-sm"></textarea>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    </div>
+
   </div>
 </template>
 
@@ -335,23 +398,39 @@ const selectRow = (row) => {
   selectedRow.value = row
 }
 
+// print
+const print = () => {
+  window.print()
+}
+
 </script>
 
-<style scoped>
+<style>
+  .print {
+    display: none;
+  }
   @media print {
-    body * {
-      visibility: hidden!important;
-    }
-
-    #section-to-print, #section-to-print * {
-      visibility: visible;
-    }
-
-    #section-to-print {
-      position: absolute;
-      left: 0;
+    .print {
+      display: block;
+      position: fixed;
       top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
     }
+
+    .no-print, .navbar {
+      display: none!important;
+    }
+    input, textarea {
+      border: none!important;
+      /* background-color: transparent!important; */
+      box-shadow: none!important;
+      outline: none!important;
+      cursor: default!important;
+    }
+
   }
 </style>
 <style scoped>
