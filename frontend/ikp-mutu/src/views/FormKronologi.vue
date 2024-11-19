@@ -405,34 +405,7 @@ const print = () => {
 
 </script>
 
-<style>
-  .print {
-    display: none;
-  }
-  @media print {
-    .print {
-      display: block;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 9999;
-    }
 
-    .no-print, .navbar {
-      display: none!important;
-    }
-    input, textarea {
-      border: none!important;
-      /* background-color: transparent!important; */
-      box-shadow: none!important;
-      outline: none!important;
-      cursor: default!important;
-    }
-
-  }
-</style>
 <style scoped>
 .form-label { font-weight: bold; }
 .rowActive td {

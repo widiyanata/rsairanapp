@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <div class="row">
 
-      <div class="col-md-5">
+      <div class="col-md-5 no-print">
         <h3>Riwayat Grading</h3>
         <table class="table table-sm table-hover">
           <thead>
@@ -266,13 +266,20 @@
         
       </div>
       <div class="col-md-7" :class="!detailGrading || !selectedRow ? 'd-none' : ''">
+        <div class="kop-surat mb-4 print">
+          <div class="row">
+            <div class="col-12">
+              <img class="w-100" src="../assets/kop_surat.jpg" alt="">
+            </div>
+          </div>
+        </div>
         <h2 class="text-center mb-4 h4">FORM LAPORAN INVESTIGASI SEDERHANA</h2>
         <div class="p-3 bg-white shadow-sm rounded border">
 
           <form ref="formInvestigasi" @submit.prevent="submitForm">
             <div class="mb-1 row">
               <label for="pasien"  class="col-sm-4 col-form-label">Pasien:</label>
-              <div class="col-sm-6">
+              <div class="col-sm-6 no-print">
                 <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.NAMAPASIEN"  name="pasien" disabled>
               </div>
               <div class="col-sm-2">
@@ -356,7 +363,7 @@
                 </select>
               </div>
             </div>
-            <div class="text-center">
+            <div class="text-center no-print">
               <button type="submit" class="btn btn-primary">Submit</button>
             </div>
           </form>
