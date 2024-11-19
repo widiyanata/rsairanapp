@@ -159,6 +159,10 @@ onMounted(() => {
   
 })
 
+const print = () => {
+  window.print()
+}
+
 </script>
 <template>
   <div>
@@ -292,13 +296,16 @@ onMounted(() => {
                 <li class="nav-item" role="presentation">
                 </li>
               </ul>
-              <button type="submit" class="btn btn-success btn-sm">
-                <div v-if="loading">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  Loading...
-                </div>
-                <span v-else>Simpan Insiden</span>
-              </button>
+              <div class="btn-group btn-group-sm">
+                <button type="submit" class="btn btn-success btn-sm">
+                  <div v-if="loading">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                  </div>
+                  <span v-else>Simpan Insiden</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" @click="print">Cetak</button>
+              </div>
             </div>
             <!-- Tab panes -->
             <div class="tab-content mb-5">

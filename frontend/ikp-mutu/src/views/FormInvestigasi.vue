@@ -4,23 +4,32 @@
 
       <div class="col-md-5 no-print">
         <h3>Riwayat Grading</h3>
-        <table class="table table-sm table-hover">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Tanggal</th>
-              <th>No Trans.</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(entry, index) in riwayatGrading" :key="index" @click="getDetailGrading(entry); selectRow(entry)" :class="{ 'rowActive': selectedRow === entry }">
-              <td>{{ index + 1 }}</td>
-              <td> <span class="badge text-secondary bg-white border">{{ entry.created_at.replace('T', ' ') }}</span>
-              </td>
-              <td> <span class="badge text-dark">{{ entry.no_transaksi }}</span> </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-sm table-hover">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tanggal</th>
+                <th>Pasien</th>
+                <th>No Trans.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(entry, index) in riwayatGrading" :key="index" @click="getDetailGrading(entry); selectRow(entry)" :class="{ 'rowActive': selectedRow === entry }">
+                <td>{{ index + 1 }}</td>
+                <td> 
+                  <span class="badge text-secondary">{{ entry.created_at.split('T')[0] }}</span>
+                  <span class="badge text-secondary">{{ entry.created_at.split('T')[1] }}</span>
+                </td>
+                <td> 
+                  <small class="me-1">{{ entry.NAMAPASIEN }}</small> 
+                  <span class="badge text-dark bg-white border">{{ entry.no_rm }}</span> 
+                </td>
+                <td> <span class="badge text-dark">{{ entry.no_transaksi }}</span> </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''">
           <h5>Detail Grading</h5>
@@ -274,7 +283,7 @@
           </div>
         </div>
         <h2 class="text-center mb-4 h4">FORM LAPORAN INVESTIGASI SEDERHANA</h2>
-        <div class="p-3 bg-white shadow-sm rounded border">
+        <div class="p-3 bg-white">
 
           <form ref="formInvestigasi" @submit.prevent="submitForm">
             <div class="mb-1 row">
@@ -363,8 +372,10 @@
                 </select>
               </div>
             </div>
-            <div class="text-center no-print">
-              <button type="submit" class="btn btn-primary">Submit</button>
+            <div class="text-end no-print">
+              <button type="submit" class="btn btn-success">Submit</button>
+              <!-- <button type="reset" class="btn btn-danger">Reset</button> -->
+              <button type="button" class="btn btn-secondary ms-1" @click="print">Cetak</button>
             </div>
           </form>
 
@@ -532,6 +543,10 @@ onMounted(() => {
   console.log('form detail grading', formDetailGrading.value)
   console.log('form investigasi', formInvestigasi.value)
 })
+
+const print = () => {
+  window.print()
+}
 </script>
 <style scoped>
 .form-label { 
@@ -540,5 +555,11 @@ onMounted(() => {
 }
 .rowActive td {
   background-color: aquamarine;
+}
+@media print {
+  .col-form-label { 
+    font-weight: bold;
+    margin-bottom: 0; 
+  }
 }
 </style>
