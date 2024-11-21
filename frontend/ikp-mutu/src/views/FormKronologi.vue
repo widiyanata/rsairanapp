@@ -5,7 +5,7 @@
         <div class="col-md-12 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
             <h3>Riwayat Kronologi</h3>
-            <button v-if="user.role === 'perawat'" class="btn btn-success btn-sm ms-auto" @click="pasien = {}; kejadianEntries = []; kejadianEntries.push({ Tanggal: null, Uraian: null }); " data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
+            <button class="btn btn-success btn-sm ms-auto" @click="pasien = {}; kejadianEntries = []; kejadianEntries.push({ Tanggal: null, Uraian: null }); " data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
           </div>
           <div class="table-responsive">
             <table class="table table-sm table-hover align-start">
@@ -13,7 +13,7 @@
                 <tr>
                   <th>No.</th>
                   <th>Tanggal</th>
-                  <th>Nama</th>
+                  <th>Nama Pasien</th>
                   <!-- <th>#</th> -->
                 </tr>
               </thead>
@@ -123,7 +123,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="modalTitleId">
-              {{ pasien.KPKD_PASIENN }} <br> <span class="badge bg-secondary">{{ pasien.KPKD_PASIEN }}</span> -  <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
+              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
             <button
               type="button"
@@ -132,8 +132,8 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body bg-light">
-            <h3>Kronologis Kejadian</h3>
+          <div class="modal-body bg-secondary">
+            <h3 class="text-center">Kronologis Kejadian</h3>
             <div class="p-3 bg-white shadow-sm rounded border">
               <table class="align-start">
                 <colgroup>
