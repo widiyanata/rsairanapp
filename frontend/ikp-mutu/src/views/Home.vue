@@ -3,38 +3,44 @@
     <h3 class="h5">RS Airan Raya</h3>
     <h2 class="pb-2 border-bottom">Komite Mutu </h2>
     <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-      <div class="feature col">
+      <div class="feature col d-flex align-items-start gap-3">
         <div class="feature-icon bg-primary bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#collection"></use></svg>
         </div>
-        <h3>Lembar Kronologi</h3>
-        <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
-        <a :href="`/kronologi`" class="icon-link">
-          Kronologi
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-        </a>
+        <div>
+          <h3>Lembar Kronologi</h3>
+          <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
+          <a :href="`/kronologi`" class="icon-link">
+            Kronologi
+            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
+          </a>
+        </div>
       </div>
-      <div class="feature col">
+      <div class="feature col d-flex align-items-start gap-3">
         <div class="feature-icon bg-primary bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#people-circle"></use></svg>
         </div>
-        <h3>Grading Karu</h3>
-        <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
-        <a :href="`/grading`" class="icon-link">
-          Grading
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-        </a>
+        <div>
+          <h3>Grading Karu</h3>
+          <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
+          <a :href="`/grading`" class="icon-link">
+            Grading
+            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
+          </a>
+        </div>
       </div>
-      <div class="feature col">
+      <div class="feature col d-flex align-items-start gap-3">
         <div class="feature-icon bg-primary bg-gradient">
           <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>
         </div>
-        <h2>Laporan Investigasi</h2>
-        <p>Form investigasi lanjut atas insiden yang terjadi di RS Airan Raya oleh unit Mutu</p>
-        <a :href="`/investigasi`" class="icon-link">
-          Investigasi
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-        </a>
+        <div>
+          <h3>Laporan Investigasi</h3>
+          <p>Form investigasi lanjut atas insiden yang terjadi di RS Airan Raya oleh unit Mutu</p>
+          <a :href="`/investigasi`" class="icon-link">
+            Investigasi
+            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -57,8 +63,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 4rem;
-  height: 4rem;
+  width: 2rem;
+  height: 2rem;
   margin-bottom: 1rem;
   font-size: 2rem;
   color: #fff;

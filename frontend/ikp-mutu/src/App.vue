@@ -1,10 +1,17 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, provide } from 'vue';
 import router from './router';
 
 import { RouterView } from 'vue-router';
 
 // import Breadcrumb from './components/Breadcrumb.vue';
+
+// Cek device
+import { useDevice } from './useDevice';
+const { isMobile } = useDevice();
+
+provide('isMobile', isMobile);
+// ----------
 
 const user = JSON.parse(sessionStorage.getItem('user'));
 
@@ -23,7 +30,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <nav v-if="$route.path !== '/login'" class="navbar navbar-expand-lg navbar-light bg-white shadow mb-5">
+    <nav v-if="$route.path !== '/login'" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3">
       <div class="container">
         <a class="navbar-brand" href="#">RS Airan Raya</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">

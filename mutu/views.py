@@ -64,11 +64,11 @@ def kronologi(request):
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
       query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(no_transaksi, dibuat_oleh)
 
-    if 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
+    elif 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
       query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(dibuat_oleh)
 
-    print(query)
+    print('query kronologi:', query)
     with connection.cursor() as cursor:
       cursor.execute(query)
       # dict fetch data
