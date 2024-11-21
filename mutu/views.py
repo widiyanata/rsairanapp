@@ -59,10 +59,14 @@ def kunjungan_pasien(request):
 def kronologi(request):
   if request.method == 'GET':
     query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian "
-    if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
+    if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None and 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('user_id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.user_id') = '{}' ".format(no_transaksi, dibuat_oleh)
+      dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
+      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(no_transaksi, dibuat_oleh)
+
+    if 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
+      dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
+      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(dibuat_oleh)
 
     print(query)
     with connection.cursor() as cursor:
@@ -308,3 +312,112 @@ def investigasi(request):
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
 
   return JsonResponse({'status': False, 'message': 'Method not allowed'})
+
+# Login Perawat
+def login(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+
+    with connection.cursor() as cursor:
+      query = "SELECT TOP 1 * FROM PERAWAT WHERE FMPPERAWAT_ID = %s AND FMPPW = %s"
+      cursor.execute(query, [username, password])
+      rows = cursor.fetchone()
+
+    if rows:
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": {
+          "id": rows[0],
+          "username": rows[1],
+          "password": rows[2],
+          "role": rows[3],
+        }
+      }
+
+      return JsonResponse(res, safe=False)
+
+    return JsonResponse({
+      "status": {
+          "success": False,
+          "code": 400,
+          "message": "Request failed",
+      },
+      "data": {
+        "id": None,
+        "username": None,
+        "password": None,
+        "role": None,
+      }
+    })
+  
+  elif request.method == 'GET':
+    query = "SELECT TOP 10 * FROM PERAWAT"
+
+    # untuk kedepannya, misalkan ada table yang lain yg dituju
+    table = request.GET.get('role', '')
+    if table == 'perawat':
+      query = "SELECT TOP 10 * FROM PERAWAT"
+      # ---------------------------------------------
+
+    if 'cari' in request.GET and request.GET['cari'] is not None:
+      username = request.GET['username']
+      query = "SELECT TOP 10 FMPPERAWAT_ID, FMPPERAWATN FROM PERAWAT WHERE FMPPERAWATN like '%{}%' ".format(username)
+
+    print(query)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": {
+          "id": rows[0],
+          "username": rows[1],
+          "password": rows[2],
+          "role": rows[3],
+        }
+      }
+
+    return JsonResponse(res, safe=False)
+  
+  return JsonResponse({
+    "status": {
+        "success": False,
+        "code": 400,
+        "message": "Request not allowed",
+    },
+    "data": None
+  })
+
+def cariPerawat(request):
+  if request.method == 'GET':
+    username = request.GET.get('username', '')
+    query = "SELECT TOP 10 FMPPERAWAT_ID, FMPPERAWATN FROM PERAWAT WHERE FMPPERAWATN like '%{}%' ".format(username)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)

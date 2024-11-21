@@ -23,7 +23,7 @@
                 <td> 
                   <span class="badge bg-white text-secondary border ms-1">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
                   <!-- <span class="badge bg-white text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).user_id }}</span> -->
-                  <span class="badge text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).user_name }}</span>
+                  <span class="badge text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).username }}</span>
                 </td>
                 <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> ({{ entry.no_rm }}) </td>
                 <td>
@@ -47,8 +47,8 @@
                 <th>Nama Pembuat</th>
                 <td>
                   <div class="input-group">
-                    <button v-if="nama_pembuat.user_id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.user_id }}</button>
-                    <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.user_name" @keydown="nama_pembuat.user_name.length > 2 ? cariPembuat() : ''">
+                    <button v-if="nama_pembuat.id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.id }}</button>
+                    <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.username" @keydown="nama_pembuat.username.length > 2 ? cariPembuat() : ''">
                   </div>
                   <div v-if="users_pembuat" >
                     <div class="dropdown">
@@ -158,7 +158,7 @@
             <tr>
               <th>Nama Pembuat</th>
               <td>
-                : {{ nama_pembuat.user_name }}
+                : {{ nama_pembuat.username }}
               </td>
             </tr>
             <tr>
@@ -298,8 +298,13 @@ const getKronologi = async (entry = '') => {
 
   const no_transaksi = entry.no_transaksi
   let params = ''
+  let userSession = JSON.parse(sessionStorage.getItem('user'))
+  console.log('userSession getKronologi', userSession)
   if (no_transaksi) {
     params = `&no_transaksi=${no_transaksi}&dibuat_oleh=${entry.dibuat_oleh}`
+  }
+  if (userSession && userSession.role === 'perawat') {
+    params = `&dibuat_oleh=${JSON.stringify(userSession)}`
   }
   try {
     const data = await fetch(`${apiBaseUrl}/kronologi?${params}`)
@@ -332,10 +337,10 @@ const getKronologi = async (entry = '') => {
 
 // simpan kronologi
 const users_pembuat = ref([])
-const nama_pembuat = ref({user_id: '', user_name: '', jabatan: ''})
+const nama_pembuat = JSON.parse(sessionStorage.getItem('user'))
 const cariPembuat = async () => {
   try {
-    const data = await fetch(`${apiBaseUrl}/cariUser?cari=${nama_pembuat.value.user_name}`)
+    const data = await fetch(`${apiBaseUrl}/cariUser?cari=${nama_pembuat.value.username}`)
     const users = await data.json()
     console.log(users)
     users_pembuat.value = users.data
@@ -345,9 +350,9 @@ const cariPembuat = async () => {
 }
 const pilihUser = (user) => {
   console.log('pilih user',user)
-  nama_pembuat.value.user_id = user.FMPPERAWAT_ID
-  nama_pembuat.value.user_name = user.FMPPERAWATN
-  nama_pembuat.value.jabatan = user.USER_EMR
+  nama_pembuat.value.id = user.FMPPERAWAT_ID
+  nama_pembuat.value.username = user.FMPPERAWATN
+  nama_pembuat.value.role = user.USER_EMR
 
   console.log('nama pembuat',nama_pembuat.value)
 

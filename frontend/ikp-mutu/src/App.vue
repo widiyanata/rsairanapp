@@ -16,6 +16,8 @@ function logout() {
 onMounted(() => {
   // router.push('/')
   user
+
+  console.log(user);
 })
 </script>
 
@@ -27,7 +29,7 @@ onMounted(() => {
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <div v-if="$route.name !== 'Home'" class="collapse navbar-collapse" id="navbarNavDropdown">
           <ul class="navbar-nav">
             <li v-for="route in router.options.routes" :key="route.path" class="nav-item">
               <router-link v-if="route.name !== 'Login'" active-class="active" class="nav-link" aria-current="page" :to="route.path">{{ route.name }}</router-link>
@@ -58,6 +60,7 @@ onMounted(() => {
             </li>
           </ul>
         </div>
+        <button type="button" class="btn btn-sm btn-light rounded-pill" @click="logout">Logout</button>
       </div>
     </nav>
 
