@@ -5,7 +5,7 @@
         <div class="col-md-12 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
             <h3>Riwayat Kronologi</h3>
-            <button class="btn btn-success btn-sm ms-auto" @click="pasien = {}; kejadianEntries = []; kejadianEntries.push({ Tanggal: null, Uraian: null }); " data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
+            <button class="btn btn-success btn-sm ms-auto" @click="tambahKronologiBaru" data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
           </div>
           <div class="table-responsive">
             <table class="table table-sm table-hover align-start">
@@ -135,59 +135,67 @@
           <div class="modal-body bg-secondary">
             <h3 class="text-center">Kronologis Kejadian</h3>
             <div class="p-3 bg-white shadow-sm rounded border">
-              <table class="align-start">
-                <colgroup>
-                  <col width="200px">
-                  <col width="250px">
-                </colgroup>
-                <tr>
-                  <th>Nama Pembuat</th>
-                  <td>
-                    <div class="input-group">
-                      <button v-if="nama_pembuat.id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.id }}</button>
-                      <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.username" @keydown="nama_pembuat.username.length > 2 ? cariPembuat() : ''" :disabled="{ true: pasien ? true : false }">
-                    </div>
-                    <div v-if="users_pembuat" >
-                      <div class="dropdown">
-                        <div class="dropdown-menu show p-0 border-0 shadow-none">
-                          <div class="list-group">
-                            <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)" class="list-group-item list-group-item-action list-group-item-info">{{ user.FMPPERAWAT_ID }} - {{ user.FMPPERAWATN }}</a>
-                          </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <table class="align-start">
+                    <colgroup>
+                      <col width="200px">
+                      <col width="250px">
+                    </colgroup>
+                    <tr>
+                      <th>Nama Pembuat</th>
+                      <td>
+                        <div class="input-group">
+                          <button v-if="nama_pembuat.id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.id }}</button>
+                          <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.username" @keydown="nama_pembuat.username.length > 2 ? cariPembuat() : ''" :disabled="{ true: pasien ? true : false }">
                         </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th>Unit Kerja / Jabatan</th>
-                  <td>: {{ nama_pembuat.role }}</td>
-                </tr>
-                <tr>
-                  <th class="align-top">Pasien</th>
-                  <td>
-                    : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
-    
-                    <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
-                      <input type="search" class="form-control" v-model="cari" placeholder="Pilih pasien terlebih dahulu">
-                      <button class="btn btn-sm btn-primary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPasien() : ''"> <span v-if="!loading">Cari</span> <span v-else><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span> </button>
-                    </div>
-                    <div v-if="pasiens">
-                      <div class="dropdown">
-                        <div class="dropdown-menu show p-0" aria-labelledby="triggerId">
-                          <div class="list-group">
-                            <a href="#" v-for="(pasien, index) in pasiens" :key="index" @click="pilihPasien(pasien)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
-                              <div class="w-100">
-                                <div class="fw-bold d-flex justify-content-between"><small>{{ pasien.KPNO_TRANSAKSI}}</small> <small class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small></div>
-                                <small>{{ pasien.KPKD_PASIENN }}</small>
+                        <div v-if="users_pembuat" >
+                          <div class="dropdown">
+                            <div class="dropdown-menu show p-0 border-0 shadow-none">
+                              <div class="list-group">
+                                <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)" class="list-group-item list-group-item-action list-group-item-info">{{ user.FMPPERAWAT_ID }} - {{ user.FMPPERAWATN }}</a>
                               </div>
-                            </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Unit Kerja / Jabatan</th>
+                      <td>: {{ nama_pembuat.role }}</td>
+                    </tr>
+                    <tr>
+                      <th class="align-top">Pasien</th>
+                      <td>
+                        : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
+        
+                        <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
+                          <input type="search" class="form-control" v-model="cari" placeholder="Pilih pasien terlebih dahulu">
+                          <button class="btn btn-sm btn-primary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPasien() : ''"> <span v-if="!loading">Cari</span> <span v-else><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span> </button>
+                        </div>
+                        <div v-if="pasiens">
+                          <div class="dropdown">
+                            <div class="dropdown-menu show p-0" aria-labelledby="triggerId">
+                              <div class="list-group">
+                                <a href="#" v-for="(pasien, index) in pasiens" :key="index" @click="pilihPasien(pasien)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                  <div class="w-100">
+                                    <div class="fw-bold d-flex justify-content-between"><small>{{ pasien.KPNO_TRANSAKSI}}</small> <small class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small></div>
+                                    <small>{{ pasien.KPKD_PASIENN }}</small>
+                                  </div>
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1">Tanda Tangan</p>
+                  <TandaTanganCanvas :height="150" :width="300" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
+                </div>
+              </div>
               <div class="table-responsive">
                 <table id="uraianKejadian" class="table table-sm table-bordered mt-4 ">
                   <colgroup>
@@ -219,6 +227,7 @@
                   </tbody>
                 </table>
               </div>
+              
               <div class="btn-group ">
                 <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
                 <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
@@ -443,8 +452,20 @@ const pilihUser = (user) => {
 //   }
 // );
 
-
+import TandaTanganCanvas from '../TandaTanganCanvas.vue';
+const tandaTangan = ref('')
+const simpanTandaTangan = (ttd) => {
+  console.log('TTD:',ttd)
+  tandaTangan.value = ttd
+}
 const simpanKronologi = async () => {
+  if (tandaTangan.value == '') {
+    Swal.fire({
+      icon: 'error',
+      text: 'Tanda Tangan Wajib diisi',
+    })
+    return
+  }
   loading.value = true
   try {
     const data = await fetch(`${apiBaseUrl}/kronologi`, {
@@ -479,6 +500,17 @@ const print = () => {
   setTimeout(() => {
     window.print()
   }, 1000)
+}
+
+const tambahKronologiBaru = () => {
+  // reset pasien
+  pasien.value = {};
+  // reset baris kronologi
+  kejadianEntries.value = [];
+  kejadianEntries.value.push({ Tanggal: null, Uraian: null });
+
+  // reset nama pembuat
+  nama_pembuat.value = JSON.parse(sessionStorage.getItem('user'))
 }
 
 </script>
