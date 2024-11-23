@@ -185,12 +185,12 @@ const print = () => {
             </thead>
             <tbody>
               <!-- Riwayat -->
-              <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry, 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }">
+              <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry, 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }" @click="getDetailPasien(entry.no_transaksi); selectRow(entry)">
                 <td>{{ index + 1 }}</td>
                 <td>{{ entry.Tanggal.replace('T', ' jam ') }}</td>
                 <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> <small class="badge bg-white text-secondary border">({{ entry.no_rm }})</small>  </td>
                 <td>
-                  <a class="badge bg-white text-primary text-decoration-none border" href="#" @click="getDetailPasien(entry.no_transaksi); selectRow(entry)">
+                  <a class="badge bg-white text-primary text-decoration-none border" href="#">
                     <small>{{ entry.no_transaksi }}</small>
                   </a>
                 </td>
@@ -200,7 +200,7 @@ const print = () => {
   
           <!-- Detail Kronologi -->
           <h4 v-if="selectedRow" class="">Detail Kronologi</h4>
-          <div v-if="selectedRow" class="p-3 bg-white shadow rounded">
+          <div v-if="selectedRow" class="p-3 bg-white shadow rounded mb-5">
             <div
               v-if="loading"
               class="d-flex justify-content-center align-items-center p-2"
@@ -296,16 +296,7 @@ const print = () => {
                 <li class="nav-item" role="presentation">
                 </li>
               </ul>
-              <div class="btn-group btn-group-sm">
-                <button type="submit" class="btn btn-success btn-sm">
-                  <div v-if="loading">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Loading...
-                  </div>
-                  <span v-else>Simpan Insiden</span>
-                </button>
-                <button class="btn btn-secondary btn-sm" @click="print">Cetak</button>
-              </div>
+              
             </div>
             <!-- Tab panes -->
             <div class="tab-content mb-5">
@@ -681,6 +672,19 @@ const print = () => {
                     <label class="form-check-label" for="merah">MERAH</label>
                   </div>
                 </div> 
+              </div>
+            </div>
+
+            <div class="text-center mb-4 p-3 no-print">
+              <div class="btn-group">
+                <button type="submit" class="btn btn-success ">
+                  <div v-if="loading">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Loading...
+                  </div>
+                  <span v-else>Simpan Insiden</span>
+                </button>
+                <button class="btn btn-secondary " @click="print">Cetak</button>
               </div>
             </div>
             

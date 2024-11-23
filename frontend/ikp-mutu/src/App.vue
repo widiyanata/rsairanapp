@@ -67,13 +67,19 @@ onMounted(() => {
             </li>
           </ul>
         </div>
-        <button type="button" class="btn btn-sm btn-light rounded-pill" @click="logout">Logout</button>
+        <button v-if="$route.name === 'Home'" type="button" class="btn btn-sm btn-light rounded-pill" @click="logout">Logout</button>
       </div>
     </nav>
 
     <!-- <Breadcrumb v-if="$route.path !== '/login' && $route.path !== '/'"/> -->
     
     <RouterView />
+
+    <footer class="footer mt-auto py-3 bg-white text-center position-absolute bottom-0 d-none">
+      <div class="container">
+        <span class="text-muted">&copy; 2024 - IT RS Airan Raya</span>
+      </div>
+    </footer>
   </div>
 </template>
 

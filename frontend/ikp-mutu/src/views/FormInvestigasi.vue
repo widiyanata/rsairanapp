@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5">
+  <div class="container">
     <div class="row">
 
       <div class="col-md-5 no-print">
@@ -31,7 +31,7 @@
           </table>
         </div>
 
-        <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''">
+        <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''" class="mb-5">
           <h5>Detail Grading</h5>
           <div v-if="loading">
             <div class="d-flex justify-content-center">
@@ -40,7 +40,7 @@
               </div>
             </div>
           </div>
-          <div class="pe-3 pb-3" style="max-height: 500px; overflow-y: scroll;">
+          <div class=" p-3 bg-white rounded shadow" style="max-height: 400px; overflow-y: scroll;">
             <div class="row mb-2">
               <div class="col">
                 <label class="form-label">Tanggal Insiden</label>
@@ -372,7 +372,7 @@
                 </select>
               </div>
             </div>
-            <div class="text-end no-print">
+            <div class="text-center no-print my-4">
               <button type="submit" class="btn btn-success">Submit</button>
               <!-- <button type="reset" class="btn btn-danger">Reset</button> -->
               <button type="button" class="btn btn-secondary ms-1" @click="print">Cetak</button>
