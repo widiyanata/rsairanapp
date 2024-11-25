@@ -92,6 +92,7 @@ def kronologi(request):
     pasien = data.get('pasien', {})
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
+    tanda_tangan = data.get('tanda_tangan', {})
 
     # Log the received data
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
@@ -118,16 +119,17 @@ def kronologi(request):
             # Update data
             query = """
                 UPDATE mutu_kronologi_kejadian 
-                SET Uraian = %s, dibuat_oleh = %s 
+                SET Uraian = %s, dibuat_oleh = %s,
+                    tanda_tangan = %s
                 WHERE no_transaksi = %s AND dibuat_oleh = %s
             """
-            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, no_transaksi, dibuat_oleh])
+            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, no_transaksi, dibuat_oleh])
         else:
             # Insert new data
             query = """
                 INSERT INTO mutu_kronologi_kejadian 
-                (no_transaksi, no_rm, nama_pasien, Tanggal, Uraian, dibuat_oleh) 
-                VALUES (%s, %s, %s, %s, %s, %s)
+                (no_transaksi, no_rm, nama_pasien, Tanggal, Uraian, dibuat_oleh, tanda_tangan) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(query, [
                 no_transaksi,
@@ -135,7 +137,8 @@ def kronologi(request):
                 pasien.get('KPKD_PASIENN'),
                 tgl_sekarang,
                 json.dumps(kejadian),
-                dibuat_oleh
+                dibuat_oleh,
+                tanda_tangan
             ])
 
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})

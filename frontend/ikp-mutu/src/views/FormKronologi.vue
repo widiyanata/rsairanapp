@@ -122,7 +122,8 @@
       >
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalTitleId">
+            <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-arrow-left"></i> Kembali </button>
+            <h5 class="modal-title d-flex align-items-center" id="modalTitleId">
               <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
             <button
@@ -476,7 +477,8 @@ const simpanKronologi = async () => {
       body: JSON.stringify({
         pasien: pasien.value,
         kejadian: kejadianEntries.value,
-        dibuat_oleh: nama_pembuat.value
+        dibuat_oleh: nama_pembuat.value,
+        tanda_tangan: tandaTangan.value
       })
     })
     const kronologis = await data.json()
