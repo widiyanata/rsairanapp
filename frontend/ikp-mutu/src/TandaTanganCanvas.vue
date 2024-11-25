@@ -27,6 +27,10 @@ export default {
       type: Number,
       default: 200,
     },
+    base64: {
+      type: String,
+      default: null,
+    }
   },
   data() {
     return {
@@ -42,6 +46,19 @@ export default {
     this.ctx.lineCap = "round";
     this.ctx.lineJoin = "round";
     this.ctx.strokeStyle = "black";
+
+    if (this.base64 != null) {
+      this.clearCanvas();
+      console.log('tanda tangan: ',this.base64)
+
+      const image = new Image();
+      image.src = this.base64;
+      image.onload = () => {
+        this.ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      };
+    } else {
+      this.clearCanvas();
+    }
 
     // Event Desktop
     canvas.addEventListener("mousedown", this.startDrawing);
@@ -117,6 +134,22 @@ export default {
       const dataURL = this.$refs.canvas.toDataURL("image/png");
       this.$emit("save", dataURL);
       alert("Tanda tangan disimpan!");
+    },
+  },
+  watch: {
+    base64(newValue) {
+      this.clearCanvas();
+      console.log('tanda tangan watch 1: ',newValue)
+      if (newValue != null) {
+        console.log('tanda tangan watch 2: ',newValue)
+        const image = new Image();
+        image.src = newValue;
+        image.onload = () => {
+          this.ctx.drawImage(image, 0, 0, this.width, this.height);
+        };
+      } else {
+        this.clearCanvas();
+      }
     },
   },
 };

@@ -194,7 +194,7 @@
                 </div>
                 <div class="col-md-6">
                   <p class="mb-1">Tanda Tangan</p>
-                  <TandaTanganCanvas :height="150" :width="300" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
+                  <TandaTanganCanvas :height="150" :width="300" :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
                 </div>
               </div>
               <div class="table-responsive">
@@ -404,6 +404,9 @@ const getKronologi = async (entry = '') => {
       pasien.value.KPKD_PASIEN = kronologis.data[0].no_rm
       pasien.value.KPKD_PASIENN = kronologis.data[0].nama_pasien
       pasien.value.KPNO_TRANSAKSI = kronologis.data[0].no_transaksi
+
+      tandaTangan.value = kronologis.data[0].tanda_tangan
+      console.log('tanda tangan', tandaTangan.value)
 
       nama_pembuat.value = JSON.parse(kronologis.data[0].dibuat_oleh)
     }
