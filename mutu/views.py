@@ -58,15 +58,15 @@ def kunjungan_pasien(request):
 @csrf_exempt
 def kronologi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian "
+    query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None and 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       no_transaksi = request.GET['no_transaksi']
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(no_transaksi, dibuat_oleh)
+      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}' AND JSON_VALUE(dibuat_oleh, '$.id') = '{}' ORDER BY id_kronologi DESC".format(no_transaksi, dibuat_oleh)
 
     elif 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = '{}' ".format(dibuat_oleh)
+      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = '{}' ORDER BY id_kronologi DESC".format(dibuat_oleh)
 
     print('query kronologi:', query)
     with connection.cursor() as cursor:
