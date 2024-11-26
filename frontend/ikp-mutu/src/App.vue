@@ -32,12 +32,12 @@ onMounted(() => {
   <div>
     <nav v-if="$route.path !== '/login'" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3">
       <div class="container">
-        <a class="navbar-brand" href="#">RS Airan Raya</a>
+        <a class="navbar-brand" :href="'/'">RS Airan Raya</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div v-if="$route.name !== 'Home'" class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
+          <ul v-if="user.role == 'mutu'" class="navbar-nav">
             <li v-for="route in router.options.routes" :key="route.path" class="nav-item">
               <router-link v-if="route.name !== 'Login'" active-class="active" class="nav-link" aria-current="page" :to="route.path">{{ route.name }}</router-link>
             </li>
