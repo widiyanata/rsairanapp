@@ -5,6 +5,7 @@
       :width="width" 
       :height="height" 
       class="border border-dark"
+      style="width: 100%; max-width: 350px;"
     ></canvas>
     <div class="my-3">
       <div class="btn-group btn-group-sm">
