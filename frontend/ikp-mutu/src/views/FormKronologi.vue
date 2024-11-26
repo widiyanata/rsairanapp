@@ -53,28 +53,37 @@
       </div>
       <h3>Kronologis Kejadian</h3>
       <div class="">
-        <table class="align-start">
-          <colgroup>
-            <col width="200px">
-            <col width="250px">
-          </colgroup>
-          <tr>
-            <th>Nama Pembuat</th>
-            <td>
-              : {{ nama_pembuat.username }}
-            </td>
-          </tr>
-          <tr>
-            <th>Unit Kerja / Jabatan</th>
-            <td>: {{ nama_pembuat.role }}</td>
-          </tr>
-          <tr>
-            <th class="align-top">Pasien</th>
-            <td>
-              : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
-            </td>
-          </tr>
-        </table>
+        <div class="row">
+          <div class="" style="width: 50%;">
+            <table class="align-start">
+              <colgroup>
+                <col width="200px">
+                <col width="250px">
+              </colgroup>
+              <tr>
+                <th>Nama Pembuat</th>
+                <td>
+                  : {{ nama_pembuat.username }}
+                </td>
+              </tr>
+              <tr>
+                <th>Unit Kerja / Jabatan</th>
+                <td>: {{ nama_pembuat.role }}</td>
+              </tr>
+              <tr>
+                <th class="align-top">Pasien</th>
+                <td>
+                  : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="text-center" style="width: 50%;">
+            <p>Tanda Tangan</p>
+            <img :src="tandaTangan" alt="" style="width: 150px; height: 100px; margin-top: -20px;">
+          </div>
+        </div>
+        
         <table  class="table table-sm table-bordered mt-4 ">
           <colgroup>
             <col width="50px">
@@ -122,9 +131,9 @@
       >
         <div class="modal-content">
           <div class="modal-header">
-            <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-arrow-left"></i> Kembali </button>
-            <h5 class="modal-title d-flex align-items-center" id="modalTitleId">
-              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
+            <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-chevron-left"></i> <span v-if="!isMobile">Kembali</span> </button>
+            <h5 class="modal-title d-md-flex align-items-center" id="modalTitleId">
+              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <br v-if="isMobile"> <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
             <button
               type="button"
@@ -194,7 +203,7 @@
                 </div>
                 <div class="col-md-6">
                   <p class="mb-1">Tanda Tangan</p>
-                  <TandaTanganCanvas :height="150" :width="300" :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
+                  <TandaTanganCanvas :height="200" :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
                 </div>
               </div>
               <div class="table-responsive">
