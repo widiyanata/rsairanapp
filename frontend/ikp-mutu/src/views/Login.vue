@@ -50,6 +50,7 @@ const error = ref(null);
 const users = [
 { id: 1, username: 'admin', password: '12345', role: 'admin' },
 { id: 2, username: 'mutu', password: '12345', role: 'mutu' },
+{ id: 3, username: 'karu', password: '12345', role: 'karu' },
 ];
 
 onMounted(() => {
