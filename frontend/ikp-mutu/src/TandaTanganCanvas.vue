@@ -9,11 +9,11 @@
     ></canvas>
     <div class="my-3">
       <div class="btn-group btn-group-sm">
-        <button @click="clearCanvas" class="btn btn-danger">
+        <button type="button" @click="clearCanvas" class="btn btn-danger">
           <i class="fas fa-trash"></i>
           <span class="sr-only">Hapus</span>
         </button>
-        <button @click="toggleEraserMode" class="btn btn-warning">
+        <button type="button" @click="toggleEraserMode" class="btn btn-warning">
           <i class="fas fa-eraser" v-if="isEraserMode"></i>
           <i class="fas fa-pen" v-else></i>
         </button>
