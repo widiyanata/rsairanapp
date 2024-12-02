@@ -143,7 +143,7 @@
             ></button>
           </div>
           <div class="modal-body bg-secondary">
-            <h3 class="text-center">Kronologis Kejadian</h3>
+            <h3 class="">Kronologis Kejadian</h3>
             <div class="p-3 bg-white shadow-sm rounded border">
               <div class="row">
                 <div class="col-md-6">
@@ -201,13 +201,10 @@
                     </tr>
                   </table>
                 </div>
-                <div class="col-md-6">
-                  <p class="mb-1">Tanda Tangan</p>
-                  <TandaTanganCanvas :height="200" :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
-                </div>
               </div>
               <div class="table-responsive">
-                <table id="uraianKejadian" class="table table-sm table-bordered mt-4 ">
+                <h6 class="mt-4">Uraian Kejadian:</h6>
+                <table id="uraianKejadian" class="table table-sm table-bordered ">
                   <colgroup>
                     <col width="50px">
                     <col width="150px">
@@ -236,14 +233,22 @@
                     </tr>
                   </tbody>
                 </table>
+
               </div>
               
-              <div class="btn-group ">
+              <div class="btn-group my-3">
                 <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
                 <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
                 <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
-                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan</button>
-                <button class="btn btn-primary btn-sm no-print" @click="print" data-bs-dismiss="modal">Cetak</button>
+                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi"> 
+                  <i class="fas fa-save"></i> 
+                  <span class="sr-only">Simpan</span>
+                </button>
+                <button class="btn btn-secondary btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i class="fas fa-print"></i></button>
+              </div>
+              <div class="">
+                <p class="mb-1 fw-bold">Tanda Tangan:</p>
+                <TandaTanganCanvas :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
               </div>
             </div>
           </div>
@@ -260,7 +265,7 @@
               <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
               <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
               <button class="btn btn-primary btn-sm no-print" @click="print">Cetak</button>
-              <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan</button>
+              <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan Kronologi</button>
   
               <!-- <ExportToWord element="export-to-word" filename="Kronologi-kejadian">
                 <button class="btn btn-primary btn-sm">Export ke Word</button>
@@ -390,8 +395,11 @@ const getKronologi = async (entry = '') => {
     }
   } else if ( no_transaksi) {
     params = `&no_transaksi=${no_transaksi}&dibuat_oleh=${entry.dibuat_oleh}`
-  } else {
+  } else if(userSession && userSession.role === 'mutu') {
     params = ''
+  }
+  else {
+    params = `&dibuat_oleh=${JSON.stringify(userSession)}`
   }
   // jika yang lain maka params tidak ada dibuat_oleh
   // jika ada notransaksi maka params notransaksi dan dibuat_oleh
@@ -470,6 +478,9 @@ const tandaTangan = ref('')
 const simpanTandaTangan = (ttd) => {
   console.log('TTD:',ttd)
   tandaTangan.value = ttd
+
+  // simpan kronologi
+  simpanKronologi()
 }
 const simpanKronologi = async () => {
   if (tandaTangan.value == '') {
