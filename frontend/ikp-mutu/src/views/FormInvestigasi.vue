@@ -15,15 +15,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(entry, index) in riwayatGrading" :key="index" @click="getDetailGrading(entry); selectRow(entry)" :class="{ 'rowActive': selectedRow === entry }">
+              <tr v-for="(entry, index) in riwayatGrading" :key="index"
+                @click="getDetailGrading(entry); selectRow(entry)" :class="{ 'rowActive': selectedRow === entry }">
                 <td>{{ index + 1 }}</td>
-                <td> 
+                <td>
                   <span class="badge text-secondary">{{ entry.created_at.split('T')[0] }}</span>
                   <span class="badge text-secondary">{{ entry.created_at.split('T')[1] }}</span>
                 </td>
-                <td> 
-                  <small class="me-1">{{ entry.NAMAPASIEN }}</small> 
-                  <span class="badge text-dark bg-white border">{{ entry.no_rm }}</span> 
+                <td>
+                  <small class="me-1">{{ entry.NAMAPASIEN }}</small>
+                  <span class="badge text-dark bg-white border">{{ entry.no_rm }}</span>
                 </td>
                 <td> <span class="badge text-dark">{{ entry.no_transaksi }}</span> </td>
               </tr>
@@ -31,8 +32,9 @@
           </table>
         </div>
 
-        <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''" class="mb-5">
-          
+        <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''"
+          class="mb-5">
+
           <div v-if="loading">
             <div class="d-flex justify-content-center">
               <div class="spinner-border text-primary" role="status">
@@ -53,18 +55,18 @@
                 <input type="time" class="form-control form-control-sm" name="jamInsiden" />
               </div>
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Insiden</label>
               <input type="text" class="form-control form-control-sm" name="insiden" />
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Kronologis Insiden</label>
               <textarea class="form-control form-control-sm" rows="3" placeholder="kronologi insiden"
                 name="kronologiInsiden"></textarea>
             </div>
-  
+
             <label class="form-label">Jenis Insiden *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -81,7 +83,7 @@
                 <label class="form-check-label" for="sentinel">Kejadian Sentinel (Sentinel Event)</label>
               </div>
             </div>
-  
+
             <label class="form-label">Orang Pertama Yang Melaporkan Insiden *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -110,7 +112,7 @@
                 <input type="text" class="form-control mt-2" name="pelaporPertamaText" placeholder="Sebutkan" />
               </div>
             </div>
-  
+
             <label class="form-label">Insiden terjadi pada *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -126,7 +128,7 @@
                   name="insindentujText" />
               </div>
             </div>
-  
+
             <label class="form-label">Insiden menyangkut pasien</label>
             <div class="mb-2">
               <div class="form-check">
@@ -144,18 +146,17 @@
                 <label class="form-check-label" for="ugd">Pasien UGD</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="insidenmenyangkut" id="lainlain3"
-                  value="lainlain" />
+                <input class="form-check-input" type="radio" name="insidenmenyangkut" id="lainlain3" value="lainlain" />
                 <label class="form-check-label" for="lainlain3">Lain-lain</label>
               </div>
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Tempat Insiden</label>
               <input type="text" class="form-control form-control-sm" name="tempatInsiden"
                 placeholder="Lokasi kejadian (sebutkan)" />
             </div>
-  
+
             <label class="form-label">Insiden terjadi pada pasien</label>
             <div class="mb-2">
               <input type="text" class="form-control form-control-sm" name="insidenTerjadiPada"
@@ -176,13 +177,13 @@
               </div> -->
               <!-- Add more checkboxes as needed for each category -->
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Unit Kerja tempat terjadinya insiden</label>
               <input type="text" class="form-control form-control-sm" name="unitKerja"
                 placeholder="Unit kerja (sebutkan)" />
             </div>
-  
+
             <label class="form-label">Akibat Insiden Terhadap Pasien *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -201,14 +202,14 @@
               </div>
               <!-- More options -->
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Tindakan yang dilakukan segera setelah kejadian, dan hasilnya</label>
               <textarea class="form-control form-control-sm" rows="3"
                 placeholder="Sebutkan, misal: Tindakan yang dilakukan segera setelah kejadian, dan hasilnya"
                 name="tindakanHasil"></textarea>
             </div>
-  
+
             <label class="form-label">Tindakan dilakukan oleh *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -217,8 +218,7 @@
                 <input type="text" class="form-control mt-2" name="dilakukanOlehTim" placeholder="Terdiri dari..." />
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" id="dokter" name="dilakukanOleh" required
-                  value="dokter" />
+                <input class="form-check-input" type="radio" id="dokter" name="dilakukanOleh" required value="dokter" />
                 <label class="form-check-label" for="dokter">Dokter</label>
               </div>
               <div class="form-check">
@@ -233,7 +233,7 @@
                 <input type="text" class="form-control mt-2" name="dilakukanOlehLainnya" placeholder="Sebutan" />
               </div>
             </div>
-  
+
             <label class="form-label">Apakah kejadian yang sama pernah terjadi di Unit Kerja lain? *</label>
             <div class="mb-2">
               <div class="form-check">
@@ -245,13 +245,13 @@
                 <label class="form-check-label" for="tidak">Tidak</label>
               </div>
             </div>
-  
+
             <div class="mb-2">
               <label class="form-label">Jika ya, kapan dan langkah/tindakan apa yang telah diambil?</label>
               <textarea class="form-control form-control-sm" rows="3" placeholder="Please describe"
                 name="kejadianSamaText"></textarea>
             </div>
-  
+
             <label class="form-label">Grading Risiko Kejadian * (Diisi oleh atasan pelapor)</label>
             <div class="mb-2">
               <div class="form-check">
@@ -263,8 +263,7 @@
                 <label class="form-check-label" for="hijau">HIJAU</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="gradingrisiko" required id="kuning"
-                  value="kuning" />
+                <input class="form-check-input" type="radio" name="gradingrisiko" required id="kuning" value="kuning" />
                 <label class="form-check-label" for="kuning">KUNING</label>
               </div>
               <div class="form-check">
@@ -274,7 +273,7 @@
             </div>
           </div>
         </form>
-        
+
       </div>
       <div class="col-md-7" :class="!detailGrading || !selectedRow ? 'd-none' : ''">
         <div class="kop-surat mb-4 print">
@@ -289,18 +288,22 @@
 
           <form ref="formInvestigasi" @submit.prevent="submitForm">
             <div class="mb-1 row">
-              <label for="pasien"  class="col-sm-4 col-form-label">Pasien:</label>
+              <label for="pasien" class="col-sm-4 col-form-label">Pasien:</label>
               <div class="col-sm-6 no-print">
-                <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.NAMAPASIEN"  name="pasien" disabled>
+                <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.NAMAPASIEN"
+                  name="pasien" disabled>
               </div>
               <div class="col-sm-2">
-                <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.KD_PASIEN" name="no_rm" disabled>
+                <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.KD_PASIEN"
+                  name="no_rm" disabled>
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="latarbelakang" class="col-sm-4 col-form-label">Penyebab yang melatarbelakangi / akar masalah Insiden:</label>
+              <label for="latarbelakang" class="col-sm-4 col-form-label">Penyebab yang melatarbelakangi / akar masalah
+                Insiden:</label>
               <div class="col-sm-8">
-                <textarea name="latarbelakang" id="latarbelakang" cols="30" rows="4" class="form-control form-control-sm"></textarea>
+                <textarea name="latarbelakang" id="latarbelakang" cols="30" rows="4"
+                  class="form-control form-control-sm"></textarea>
               </div>
             </div>
             <div class="mb-1 row">
@@ -423,7 +426,7 @@ function setFormDetailGrading(data) {
 }
 
 function setFormInvestigasi(data) {
-  
+
   console.log('set form detail investigasi', data);
   console.log(formDetailGrading.value)
   const isEmpty = Object.keys(data).length === 0;
@@ -551,15 +554,17 @@ const print = () => {
 }
 </script>
 <style scoped>
-.form-label { 
+.form-label {
   font-weight: bold;
-  margin-bottom: 0; 
+  margin-bottom: 0;
 }
+
 .rowActive td {
   background-color: aquamarine;
 }
+
 @media print {
-  .col-form-label { 
+  .col-form-label {
     font-weight: bold;
     margin-bottom: 0; 
   }
