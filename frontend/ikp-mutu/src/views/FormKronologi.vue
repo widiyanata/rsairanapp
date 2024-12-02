@@ -5,7 +5,8 @@
         <div class="col-md-12 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
             <h3>Riwayat Kronologi</h3>
-            <button class="btn btn-success btn-sm ms-auto" @click="tambahKronologiBaru" data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
+            <button class="btn btn-success btn-sm ms-auto" @click="tambahKronologiBaru" data-bs-toggle="modal"
+              data-bs-target="#modalDetailKronologi">+ Tambah baru</button>
           </div>
           <div class="table-responsive">
             <table class="table table-sm table-hover align-start">
@@ -19,14 +20,18 @@
               </thead>
               <tbody>
                 <!-- Riwayat -->
-                <tr v-for="(entry, index) in riwayatKronologi" :key="index" :class="{ 'rowActive': selectedRow === entry }" @click="getKronologi(entry); selectRow(entry)" data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">
+                <tr v-for="(entry, index) in riwayatKronologi" :key="index"
+                  :class="{ 'rowActive': selectedRow === entry }" @click="getKronologi(entry); selectRow(entry)"
+                  data-bs-toggle="modal" data-bs-target="#modalDetailKronologi">
                   <td class="text-center">{{ index + 1 }}</td>
-                  <td> 
-                    <span class="badge bg-white text-secondary border ms-1">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
+                  <td>
+                    <span
+                      class="badge bg-white text-secondary border ms-1">{{ entry.Tanggal.replace('T', ' jam ') }}</span>
                     <!-- <span class="badge bg-white text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).user_id }}</span> -->
                     <span class="badge text-secondary ms-1">{{ JSON.parse(entry.dibuat_oleh).username }}</span>
                   </td>
-                  <td> <small class="fw-bold badge text-dark">{{ entry.nama_pasien }} </small> <small class="badge text-secondary">({{ entry.no_rm }})</small>  </td>
+                  <td> <small class="fw-bold badge text-dark">{{ entry.nama_pasien }} </small> <small
+                      class="badge text-secondary">({{ entry.no_rm }})</small> </td>
                   <!-- <td>
                     <a href="#" class="badge bg-white text-info text-decoration-none border" @click="getKronologi(entry); selectRow(entry)">
                       <small>{{ entry.no_transaksi }}</small>
@@ -38,7 +43,7 @@
           </div>
         </div>
         <div class="col-md-7">
-          
+
         </div>
       </div>
     </div>
@@ -83,8 +88,8 @@
             <img :src="tandaTangan" alt="" style="width: 150px; height: 100px; margin-top: -20px;">
           </div>
         </div>
-        
-        <table  class="table table-sm table-bordered mt-4 ">
+
+        <table class="table table-sm table-bordered mt-4 ">
           <colgroup>
             <col width="50px">
             <col width="150px">
@@ -101,10 +106,12 @@
             <tr v-for="(entry, index) in kejadianEntries" :key="index">
               <td class="text-center">{{ index + 1 }}</td>
               <td>
-                <input v-model="kejadianEntries[index].Tanggal" type="datetime-local" class="form-control form-control-sm">
+                <input v-model="kejadianEntries[index].Tanggal" type="datetime-local"
+                  class="form-control form-control-sm">
               </td>
               <td>
-                <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1" class="form-control form-control-sm"></textarea>
+                <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1"
+                  class="form-control form-control-sm"></textarea>
               </td>
             </tr>
           </tbody>
@@ -114,33 +121,18 @@
 
     <!-- Modal Body -->
     <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
-    <div
-      class="modal fade"
-      id="modalDetailKronologi"
-      tabindex="-1"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      
-      role="dialog"
-      aria-labelledby="modalTitleId"
-      aria-hidden="true"
-    >
-      <div
-        class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-fullscreen"
-        role="document"
-      >
+    <div class="modal fade" id="modalDetailKronologi" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+      role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-fullscreen" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-chevron-left"></i> <span v-if="!isMobile">Kembali</span> </button>
+            <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-chevron-left"></i> <span
+                v-if="!isMobile">Kembali</span> </button>
             <h5 class="modal-title d-md-flex align-items-center" id="modalTitleId">
-              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <br v-if="isMobile"> <span class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
+              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <br v-if="isMobile"> <span
+                class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body bg-secondary">
             <h3 class="">Kronologis Kejadian</h3>
@@ -156,14 +148,19 @@
                       <th>Nama Pembuat</th>
                       <td>
                         <div class="input-group">
-                          <button v-if="nama_pembuat.id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.id }}</button>
-                          <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.username" @keydown="nama_pembuat.username.length > 2 ? cariPembuat() : ''" :disabled="{ true: pasien ? true : false }">
+                          <button v-if="nama_pembuat.id" class="btn btn-sm btn-secondary" :class="{ disabled: loading }"
+                            @click=" cari.length > 2 ? cariPembuat() : ''">{{ nama_pembuat.id }}</button>
+                          <input type="search" class="form-control form-control-sm" v-model="nama_pembuat.username"
+                            @keydown="nama_pembuat.username.length > 2 ? cariPembuat() : ''"
+                            :disabled="{ true: pasien ? true : false }">
                         </div>
-                        <div v-if="users_pembuat" >
+                        <div v-if="users_pembuat">
                           <div class="dropdown">
                             <div class="dropdown-menu show p-0 border-0 shadow-none">
                               <div class="list-group">
-                                <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)" class="list-group-item list-group-item-action list-group-item-info">{{ user.FMPPERAWAT_ID }} - {{ user.FMPPERAWATN }}</a>
+                                <a href="#" v-for="(user, index) in users_pembuat" :key="index" @click="pilihUser(user)"
+                                  class="list-group-item list-group-item-action list-group-item-info">{{ user.FMPPERAWAT_ID }}
+                                  - {{ user.FMPPERAWATN }}</a>
                               </div>
                             </div>
                           </div>
@@ -178,18 +175,25 @@
                       <th class="align-top">Pasien</th>
                       <td>
                         : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
-        
+
                         <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
-                          <input type="search" class="form-control" v-model="cari" placeholder="Pilih pasien terlebih dahulu">
-                          <button class="btn btn-sm btn-primary" :class="{ disabled: loading }" @click=" cari.length > 2 ? cariPasien() : ''"> <span v-if="!loading">Cari</span> <span v-else><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span></span> </button>
+                          <input type="search" class="form-control" v-model="cari"
+                            placeholder="Pilih pasien terlebih dahulu">
+                          <button class="btn btn-sm btn-primary" :class="{ disabled: loading }"
+                            @click=" cari.length > 2 ? cariPasien() : ''"> <span v-if="!loading">Cari</span> <span
+                              v-else><span class="spinner-border spinner-border-sm" role="status"
+                                aria-hidden="true"></span></span> </button>
                         </div>
                         <div v-if="pasiens">
                           <div class="dropdown">
                             <div class="dropdown-menu show p-0" aria-labelledby="triggerId">
                               <div class="list-group">
-                                <a href="#" v-for="(pasien, index) in pasiens" :key="index" @click="pilihPasien(pasien)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <a href="#" v-for="(pasien, index) in pasiens" :key="index" @click="pilihPasien(pasien)"
+                                  class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
                                   <div class="w-100">
-                                    <div class="fw-bold d-flex justify-content-between"><small>{{ pasien.KPNO_TRANSAKSI}}</small> <small class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small></div>
+                                    <div class="fw-bold d-flex justify-content-between">
+                                      <small>{{ pasien.KPNO_TRANSAKSI }}</small> <small
+                                        class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small></div>
                                     <small>{{ pasien.KPKD_PASIENN }}</small>
                                   </div>
                                 </a>
@@ -222,10 +226,12 @@
                     <tr v-for="(entry, index) in kejadianEntries" :key="index">
                       <td class="text-center">{{ index + 1 }}</td>
                       <td>
-                        <input v-model="kejadianEntries[index].Tanggal" type="datetime-local" class="form-control form-control-sm">
+                        <input v-model="kejadianEntries[index].Tanggal" type="datetime-local"
+                          class="form-control form-control-sm">
                       </td>
                       <td>
-                        <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1" class="form-control form-control-sm" style="min-width: 200px;"></textarea>
+                        <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1"
+                          class="form-control form-control-sm" style="min-width: 200px;"></textarea>
                       </td>
                       <td>
                         <button class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - </button>
@@ -235,38 +241,40 @@
                 </table>
 
               </div>
-              
+
               <div class="btn-group my-3">
                 <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
                 <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
-                <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
-                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi"> 
-                  <i class="fas fa-save"></i> 
+                <button v-if="batalHapus" class="btn btn-warning btn-sm"
+                  @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
+                  hapus</button>
+                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">
+                  <i class="fas fa-save"></i>
                   <span class="sr-only">Simpan</span>
                 </button>
-                <button class="btn btn-secondary btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i class="fas fa-print"></i></button>
+                <button class="btn btn-secondary btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i
+                    class="fas fa-print"></i></button>
               </div>
               <div class="">
                 <p class="mb-1 fw-bold">Tanda Tangan:</p>
-                <TandaTanganCanvas :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan"/>
+                <TandaTanganCanvas :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan" />
               </div>
             </div>
           </div>
           <div class="modal-footer align-items-center justify-content-between">
-            <button
-              type="button"
-              class="btn btn-sm btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
               Tutup
             </button>
             <div class="btn-group d-none">
               <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
               <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
-              <button v-if="batalHapus" class="btn btn-warning btn-sm" @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus ">Batal hapus</button>
+              <button v-if="batalHapus" class="btn btn-warning btn-sm"
+                @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
+                hapus</button>
               <button class="btn btn-primary btn-sm no-print" @click="print">Cetak</button>
-              <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan Kronologi</button>
-  
+              <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">Simpan
+                Kronologi</button>
+
               <!-- <ExportToWord element="export-to-word" filename="Kronologi-kejadian">
                 <button class="btn btn-primary btn-sm">Export ke Word</button>
               </ExportToWord>
@@ -297,7 +305,7 @@ const pasien = ref({
 const cari = ref('')
 
 const kejadianEntries = ref([
-{}
+  {}
 ]);
 
 const riwayatKronologi = ref([]);
@@ -371,7 +379,7 @@ const pilihPasien = (pasienPilih) => {
 
   // emptying the cari
   cari.value = ''
-  
+
 }
 
 // Get kronologi
@@ -390,12 +398,12 @@ const getKronologi = async (entry = '') => {
   // jika role perawat maka params dibuat_oleh perawat
   if (userSession && userSession.role === 'perawat') {
     params = `&dibuat_oleh=${JSON.stringify(userSession)}`
-    if ( no_transaksi) {
+    if (no_transaksi) {
       params = `&no_transaksi=${no_transaksi}&dibuat_oleh=${entry.dibuat_oleh}`
     }
-  } else if ( no_transaksi) {
+  } else if (no_transaksi) {
     params = `&no_transaksi=${no_transaksi}&dibuat_oleh=${entry.dibuat_oleh}`
-  } else if(userSession && userSession.role === 'mutu') {
+  } else if (userSession && userSession.role === 'mutu') {
     params = ''
   }
   else {
@@ -407,13 +415,13 @@ const getKronologi = async (entry = '') => {
   try {
     const data = await fetch(`${apiBaseUrl}/kronologi?${params}`)
     const kronologis = await data.json()
-    console.log('get kronologis',kronologis)
+    console.log('get kronologis', kronologis)
 
     // Riwayat kronologi
     if (!no_transaksi) {
       riwayatKronologi.value = kronologis.data
     }
-    
+
     // Detail kronologi
     // set pasien
     if (no_transaksi) {
@@ -450,12 +458,12 @@ const cariPembuat = async () => {
   }
 }
 const pilihUser = (user) => {
-  console.log('pilih user',user)
+  console.log('pilih user', user)
   nama_pembuat.value.id = user.FMPPERAWAT_ID
   nama_pembuat.value.username = user.FMPPERAWATN
   nama_pembuat.value.role = user.USER_EMR
 
-  console.log('nama pembuat',nama_pembuat.value)
+  console.log('nama pembuat', nama_pembuat.value)
 
   users_pembuat.value = []
 }
@@ -476,7 +484,7 @@ const pilihUser = (user) => {
 import TandaTanganCanvas from '../TandaTanganCanvas.vue';
 const tandaTangan = ref('')
 const simpanTandaTangan = (ttd) => {
-  console.log('TTD:',ttd)
+  console.log('TTD:', ttd)
   tandaTangan.value = ttd
 
   // simpan kronologi
@@ -505,7 +513,7 @@ const simpanKronologi = async () => {
       })
     })
     const kronologis = await data.json()
-    console.log('hmmmm',kronologis)
+    console.log('hmmmm', kronologis)
 
     await getKronologi()
 
@@ -542,7 +550,10 @@ const tambahKronologiBaru = () => {
 
 
 <style scoped>
-.form-label { font-weight: bold; }
+.form-label {
+  font-weight: bold;
+}
+
 .rowActive td {
   background-color: aquamarine;
 }
