@@ -4,13 +4,20 @@
       ref="canvas" 
       :width="width" 
       :height="height" 
-      class="border border-dark"
+      class="border rounded shadow"
       style="width: 100%; max-width: 350px;"
     ></canvas>
     <div class="my-3">
       <div class="btn-group btn-group-sm">
-        <button @click="clearCanvas" class="btn btn-danger">Hapus TTD</button>
-        <button @click="saveSignature" class="btn btn-success">Simpan TTD</button>
+        <button @click="clearCanvas" class="btn btn-danger">
+          <i class="fas fa-trash"></i>
+          <span class="sr-only">Hapus</span>
+        </button>
+        <button @click="toggleEraserMode" class="btn btn-warning">
+          <i class="fas fa-eraser" v-if="isEraserMode"></i>
+          <i class="fas fa-pen" v-else></i>
+        </button>
+        <button @click="saveSignature" class="btn btn-success"> <i class="fas fa-save"></i> <span class="sr-only">Simpan</span>  </button>
       </div>
     </div>
   </div>
@@ -22,11 +29,11 @@ export default {
   props: {
     width: {
       type: Number,
-      default: 400,
+      default: 330,
     },
     height: {
       type: Number,
-      default: 200,
+      default: 230,
     },
     base64: {
       type: String,
@@ -38,11 +45,17 @@ export default {
       ctx: null,
       isDrawing: false,
       lastPoint: { x: 0, y: 0 },
+      isEraserMode: false, // Mode untuk brush penghapus
     };
   },
   mounted() {
     const canvas = this.$refs.canvas;
     this.ctx = canvas.getContext("2d");
+
+    // Update cursor saat mode diubah
+    this.$watch("isEraserMode", (newVal) => {
+      canvas.classList.toggle("eraser-mode", newVal);
+    });
     this.ctx.lineWidth = 2;
     this.ctx.lineCap = "round";
     this.ctx.lineJoin = "round";
@@ -97,7 +110,6 @@ export default {
       if (!this.isDrawing) return;
       const currentPoint = this.getPoint(event);
 
-      // Gambar garis
       this.ctx.beginPath();
       this.ctx.moveTo(this.lastPoint.x, this.lastPoint.y);
       this.ctx.lineTo(currentPoint.x, currentPoint.y);
@@ -136,6 +148,12 @@ export default {
       this.$emit("save", dataURL);
       alert("Tanda tangan disimpan!");
     },
+
+    toggleEraserMode() {
+      this.isEraserMode = !this.isEraserMode;
+      this.ctx.strokeStyle = this.isEraserMode ? "white" : "black"; // Putih untuk penghapus
+      this.ctx.lineWidth = this.isEraserMode ? 10 : 2; // Sesuaikan ukuran kuas penghapus
+    },
   },
   watch: {
     base64(newValue) {
@@ -165,4 +183,17 @@ canvas {
   background-color: #fff;
   touch-action: none;
 }
+
+.signature-container canvas {
+  cursor: crosshair;
+}
+.signature-container canvas {
+  cursor: crosshair;
+}
+
+.signature-container canvas.eraser-mode {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M16 3L21 8L8 21L3 16L16 3Z' stroke='black' stroke-width='2'/%3E%3Cpath d='M9.5 16.5L13.5 12.5' stroke='black' stroke-width='2'/%3E%3C/svg%3E") 0 12, auto;
+}
+
+
 </style>
