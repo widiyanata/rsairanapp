@@ -206,6 +206,11 @@ def grading(request):
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
 
+    # Tanda tangan
+    tanda_tangan_pelapor = data.get('tanda_tangan_pelapor', '')
+    tanda_tangan_penerima = data.get('tanda_tangan_penerima', '')
+    print(f'tanda_tangan_pelapor: {tanda_tangan_pelapor}, tanda_tangan_penerima: {tanda_tangan_penerima}')
+
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
 
     with connection.cursor() as cursor:
@@ -220,23 +225,36 @@ def grading(request):
         if rows:
           # Update data
           query = """
-              UPDATE mutu_grading_insiden 
-              SET rincian_kejadian = %s, dibuat_oleh = %s 
-              WHERE no_transaksi = %s AND dibuat_oleh = %s
+              UPDATE mutu_grading_insiden
+              SET rincian_kejadian = %s,
+              dibuat_oleh = %s,
+              tanda_tangan_pelapor = %s,
+              tanda_tangan_penerima = %s
+              WHERE no_transaksi = %s
+              AND dibuat_oleh = %s
           """
-          cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, pasien.get('KPNO_TRANSAKSI'), dibuat_oleh])
+          cursor.execute(query, [
+            json.dumps(kejadian),
+            dibuat_oleh,
+            tanda_tangan_pelapor,
+            tanda_tangan_penerima,
+            pasien.get('KPNO_TRANSAKSI'),
+            dibuat_oleh
+          ])
         else:
             # Insert new data
           query = """
             INSERT INTO mutu_grading_insiden 
-            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh) 
-            VALUES (%s, %s, %s, %s)
+            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh, tanda_tangan_pelapor, tanda_tangan_penerima) 
+            VALUES (%s, %s, %s, %s, %s, %s)
           """
           cursor.execute(query, [
               pasien.get('KPKD_PASIEN'),
               pasien.get('KPNO_TRANSAKSI'),
               json.dumps(kejadian),
-              dibuat_oleh
+              dibuat_oleh,
+              tanda_tangan_pelapor,
+              tanda_tangan_penerima
           ])
 
         
