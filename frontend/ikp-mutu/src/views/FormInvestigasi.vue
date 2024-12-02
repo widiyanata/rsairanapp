@@ -32,7 +32,7 @@
         </div>
 
         <form ref="formDetailGrading" id="formDetailGrading" :class="!detailGrading || !selectedRow ? 'd-none' : ''" class="mb-5">
-          <h5>Detail Grading</h5>
+          
           <div v-if="loading">
             <div class="d-flex justify-content-center">
               <div class="spinner-border text-primary" role="status">
@@ -40,7 +40,9 @@
               </div>
             </div>
           </div>
-          <div class=" p-3 bg-white rounded shadow" style="max-height: 400px; overflow-y: scroll;">
+          <div class=" p-3 bg-info rounded shadow" style="max-height: 400px; overflow-y: scroll;">
+            <h5>Detail Grading</h5>
+            <hr>
             <div class="row mb-2">
               <div class="col">
                 <label class="form-label">Tanggal Insiden</label>
