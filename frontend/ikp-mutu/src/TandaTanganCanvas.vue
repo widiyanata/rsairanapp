@@ -17,6 +17,7 @@
           <i class="fas fa-eraser" v-if="isEraserMode"></i>
           <i class="fas fa-pen" v-else></i>
         </button>
+        <!-- <button type="button" @click="removeLastStroke" class="btn btn-warning">Hapus Garis</button> -->
         <button @click="saveSignature" class="btn btn-success"> <i class="fas fa-save"></i> <span class="sr-only">Simpan</span>  </button>
       </div>
     </div>
@@ -46,6 +47,7 @@ export default {
       isDrawing: false,
       lastPoint: { x: 0, y: 0 },
       isEraserMode: false, // Mode untuk brush penghapus
+      strokes: [],
     };
   },
   mounted() {
@@ -110,6 +112,12 @@ export default {
       if (!this.isDrawing) return;
       const currentPoint = this.getPoint(event);
 
+      // simpan garis
+      this.strokes.push({
+        start: { ...this.lastPoint },
+        end: { ...currentPoint },
+      });
+
       this.ctx.beginPath();
       this.ctx.moveTo(this.lastPoint.x, this.lastPoint.y);
       this.ctx.lineTo(currentPoint.x, currentPoint.y);
@@ -154,6 +162,25 @@ export default {
       this.ctx.strokeStyle = this.isEraserMode ? "white" : "black"; // Putih untuk penghapus
       this.ctx.lineWidth = this.isEraserMode ? 10 : 2; // Sesuaikan ukuran kuas penghapus
     },
+
+    removeLastStroke() {
+      if (this.strokes.length === 0) return; // Tidak ada garis untuk dihapus
+
+      // Hapus garis terakhir
+      this.strokes.pop();
+
+      // Bersihkan canvas
+      this.clearCanvas();
+
+      // Gambar ulang semua garis
+      this.strokes.forEach((stroke) => {
+        this.ctx.beginPath();
+        this.ctx.moveTo(stroke.start.x, stroke.start.y);
+        this.ctx.lineTo(stroke.end.x, stroke.end.y);
+        this.ctx.stroke();
+      });
+    },
+
   },
   watch: {
     base64(newValue) {
