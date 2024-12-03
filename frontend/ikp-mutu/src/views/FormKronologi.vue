@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <div class="container no-print">
+    <div class="container-fluid no-print">
       <div class="row">
         <div class="col-md-12 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
@@ -125,12 +125,12 @@
       role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
       <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-fullscreen" role="document">
         <div class="modal-content">
-          <div class="modal-header">
+          <div class="modal-header p-2">
             <button class="btn btn-light me-2" data-bs-dismiss="modal"> <i class="fas fa-chevron-left"></i> <span
                 v-if="!isMobile">Kembali</span> </button>
             <h5 class="modal-title d-md-flex align-items-center" id="modalTitleId">
-              <span class="badge text-dark ps-0">{{ pasien.KPKD_PASIENN }}</span> <br v-if="isMobile"> <span
-                class="badge bg-dark">{{ pasien.KPNO_TRANSAKSI }}</span>
+              <p class="badge text-dark ps-0 mb-0" style="font-size: 14px;">{{ pasien.KPKD_PASIENN }}</p> <span
+                class="badge bg-dark"  style="font-size: 12px;">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -261,7 +261,7 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer align-items-center justify-content-between">
+          <div class="modal-footer align-items-center justify-content-between d-none">
             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
               Tutup
             </button>

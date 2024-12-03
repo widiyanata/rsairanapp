@@ -191,7 +191,7 @@ const simpanTandaTanganPenerima = (ttd) => {
 <template>
   <div>
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="row no-print">
         <div class="col-12">
           <h1 class="text-uppercase">Grading Insiden</h1>
