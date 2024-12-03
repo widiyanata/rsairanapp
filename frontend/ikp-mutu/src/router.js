@@ -5,9 +5,9 @@ import Login from './views/Login.vue';
 const routes = [
   { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true } },
   { path: '/login', name: 'Login', component: Login },
-  { path: '/kronologi', name: 'Kronologi', component: () => import('./views/FormKronologi.vue') },
-  { path: '/grading', name: 'Grading', component: () => import('./views/FormGrading.vue') },
-  { path: '/investigasi', name: 'Investigasi', component: () => import('./views/FormInvestigasi.vue') },
+  { path: '/kronologi', name: 'Kronologi', component: () => import('./views/FormKronologi.vue'), meta: { requiresAuth: true } },
+  { path: '/grading', name: 'Grading', component: () => import('./views/FormGrading.vue'), meta: { requiresAuth: true } },
+  { path: '/investigasi', name: 'Investigasi', component: () => import('./views/FormInvestigasi.vue'), meta: { requiresAuth: true } },
 
 ];
 
