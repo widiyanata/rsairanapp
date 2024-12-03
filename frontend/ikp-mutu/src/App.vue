@@ -23,6 +23,9 @@ function logout() {
 onMounted(() => {
   // router.push('/')
   user
+  if (!user) {
+    router.push('/login');
+  }
 
   console.log(user);
 })
