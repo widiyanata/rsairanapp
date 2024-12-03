@@ -288,7 +288,7 @@
 
           <form ref="formInvestigasi" @submit.prevent="submitForm">
             <div class="mb-1 row">
-              <label for="pasien" class="col-sm-4 col-form-label">Pasien:</label>
+              <label for="pasien" class="col-sm-4">Pasien:</label>
               <div class="col-sm-6 no-print">
                 <input type="text" class="form-control form-control-sm" :value="selectedRow && selectedRow.NAMAPASIEN"
                   name="pasien" disabled>
@@ -299,7 +299,7 @@
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="latarbelakang" class="col-sm-4 col-form-label">Penyebab yang melatarbelakangi / akar masalah
+              <label for="latarbelakang" class="col-sm-4">Penyebab yang melatarbelakangi / akar masalah
                 Insiden:</label>
               <div class="col-sm-8">
                 <textarea name="latarbelakang" id="latarbelakang" cols="30" rows="4"
@@ -307,38 +307,82 @@
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="tglMulai" class="col-sm-4 col-form-label">Tgl. Mulai Investigasi:</label>
+              <label for="tglMulai" class="col-sm-4">Tgl. Mulai Investigasi:</label>
               <div class="col-sm-8">
                 <input type="date" class="form-control form-control-sm" id="tglMulai" name="tglMulai">
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="tglSelesai" class="col-sm-4 col-form-label">Tgl. Selesai Investigasi:</label>
+              <label for="tglSelesai" class="col-sm-4">Tgl. Selesai Investigasi:</label>
               <div class="col-sm-8">
                 <input type="date" class="form-control form-control-sm" id="tglSelesai" name="tglSelesai">
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="kepalaRuangan" class="col-sm-4 col-form-label">Kepala Ruangan:</label>
+              <label for="kepalaRuangan" class="col-sm-4">Kepala Ruangan:</label>
               <div class="col-sm-8">
                 <input type="text" class="form-control form-control-sm" id="kepalaRuangan" name="kepalaRuangan">
               </div>
             </div>
             <div class="mb-1 row">
-              <label for="kasieKasubag" class="col-sm-4 col-form-label">Kasie / Kasubag:</label>
+              <label for="kasieKasubag" class="col-sm-4">Kasie / Kasubag:</label>
               <div class="col-sm-8">
                 <input type="text" class="form-control form-control-sm" id="kasieKasubag" name="kasieKasubag">
               </div>
             </div>
+            <!-- Form Rekomendasi -->
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-light align-top">
+                  <tr>
+                    <td class="text-center">No</td>
+                    <td>Rekomendasi</td>
+                    <td>Tindakan yang telah dilakukan</td>
+                    <td>Penanggung jawab</td>
+                    <td>Tanggal</td>
+                    <td>#</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(entry, index) in rekomendasi" :key="index">
+                    <td class="text-center">{{ index + 1 }}</td>
+                    <td>
+                      <textarea v-model="entry.Rekomendasi" rows="2" class="form-control form-control-sm"></textarea>
+                    </td>
+                    <td>
+                      <textarea v-model="entry.Tindakan" rows="2" class="form-control form-control-sm"></textarea>
+                    </td>
+                    <td>
+                      <textarea v-model="entry.PenanggungJawab" rows="2"
+                        class="form-control form-control-sm"></textarea>
+                    </td>
+                    <td>
+                      <input v-model="entry.Tanggal" type="date" class="form-control form-control-sm"/>
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-danger btn-sm" @click="hapusRowRekomendasi(index)"> <i
+                          class="fas fa-trash"></i> <span class="sr-only">Hapus</span> </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success btn-sm" @click="tambahRowRekomendasi"> + Tambah
+                baris</button>
+              <!-- <button type="button" class="btn btn-warning btn-sm" @click="resetRowRekomendasi">Reset</button> -->
+              <!-- <button type="button" class="btn btn-primary btn-sm" @click="simpanRekomendasi">Simpan</button> -->
+            </div>
+            <!-- /Form Rekomendasi -->
             <h4 class="mt-4">ANALISA SUB KOMITE KESELAMATAN PASIEN:</h4>
             <div class="mb-1 row">
-              <label for="tglAnalisa" class="col-sm-4 col-form-label">Tanggal:</label>
+              <label for="tglAnalisa" class="col-sm-4">Tanggal:</label>
               <div class="col-sm-8">
                 <input type="date" class="form-control form-control-sm" id="tglAnalisa" name="tglAnalisa">
               </div>
             </div>
             <div class="mb-1 row">
-              <label class="col-sm-4 col-form-label">Investigasi Lengkap:</label>
+              <label class="col-sm-4">Investigasi Lengkap:</label>
               <div class="col-sm-8">
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" id="investigasiYa" name="investigasiLengkap" value="YA">
@@ -352,7 +396,7 @@
               </div>
             </div>
             <div class="mb-1 row">
-              <label class="col-sm-4 col-form-label">Diperlukan Investigasi lebih lanjut:</label>
+              <label class="col-sm-4">Diperlukan Investigasi lebih lanjut:</label>
               <div class="col-sm-8">
                 <div class="form-check form-check-inline">
                   <input class="form-check-input" type="radio" id="investigasiLanjutYa" name="investigasiLanjut"
@@ -367,7 +411,7 @@
               </div>
             </div>
             <div class="mb-1 row">
-              <label class="col-sm-4 col-form-label">Investigasi setelah Grading ulang:</label>
+              <label class="col-sm-4">Investigasi setelah Grading ulang:</label>
               <div class="col-sm-8">
                 <select class="form-select" name="grading" id="grading">
                   <option value="BIRU">BIRU</option>
@@ -475,7 +519,9 @@ const submitForm = async (e) => {
           no_transaksi: selectedRow.value.no_transaksi
         },
         'investigasi': investigasi.value,
-        'dibuat_oleh': sessionStorage.getItem('user')
+        'dibuat_oleh': sessionStorage.getItem('user'),
+        // rekomendasi
+        'rekomendasi': rekomendasi.value || ''
       })
     });
 
@@ -529,6 +575,9 @@ const getDetailGrading = async (data) => {
   console.log('detail grading: ', data)
   detailGrading.value = data
 
+  // get rekomendasi
+  rekomendasi.value = JSON.parse(data.rekomendasi)
+
   setFormDetailGrading(JSON.parse(detailGrading.value.rincian_kejadian) || {})
   setFormInvestigasi(JSON.parse(detailGrading.value.investigasi) || {})
 }
@@ -552,6 +601,40 @@ onMounted(() => {
 const print = () => {
   window.print()
 }
+
+// Table rekomendasi
+const rekomendasi = ref([])
+const getRekomendasi = async () => {
+  try {
+    const res = await fetch('http://10.30.0.6:8009/rekomendasi');
+    const data = await res.json();
+    console.log('rekomendasi', data);
+    return rekomendasi.value = data.data;
+  } catch (error) {
+    console.error('Error fetching investigasi:', error);
+  }
+}
+const tambahRowRekomendasi = () => {
+  console.log('tambah row rekomendasi')
+  const newRow = {
+    Rekomendasi: '',
+    Tindakan: '',
+    PenanggungJawab: '',
+    Tanggal: ''
+  }
+  if (!rekomendasi.value) {
+    rekomendasi.value = []
+  }
+  rekomendasi.value = [...rekomendasi.value, newRow]
+}
+const hapusRowRekomendasi = (index) => {
+  console.log('hapus row rekomendasi')
+  rekomendasi.value.splice(index, 1)
+}
+const resetRowRekomendasi = () => {
+  console.log('reset row rekomendasi')
+  rekomendasi.value = []
+}
 </script>
 <style scoped>
 .form-label {
@@ -566,7 +649,7 @@ const print = () => {
 @media print {
   .col-form-label {
     font-weight: bold;
-    margin-bottom: 0; 
+    margin-bottom: 0;
   }
 }
 </style>

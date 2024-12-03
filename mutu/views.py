@@ -172,7 +172,7 @@ def cari_user(request):
 def grading(request):
   if request.method == 'GET':
     query = """
-    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN
+    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN, mutu_investigasi.rekomendasi
     FROM mutu_grading_insiden 
     LEFT JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN  
     LEFT JOIN mutu_investigasi ON mutu_investigasi.no_transaksi = mutu_grading_insiden.no_transaksi
@@ -295,6 +295,8 @@ def investigasi(request):
     investigasi = data.get('investigasi', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
 
+    rekomendasi = json.dumps(data.get('rekomendasi', {}))
+
     print(f'pasien: {pasien}, investigasi: {investigasi}, dibuat_oleh: {dibuat_oleh}')
 
     # cek data investigasi
@@ -312,22 +314,23 @@ def investigasi(request):
           # Update data
           query = """
               UPDATE mutu_investigasi 
-              SET investigasi = %s, dibuat_oleh = %s 
+              SET investigasi = %s, dibuat_oleh = %s, rekomendasi = %s
               WHERE no_transaksi = %s AND dibuat_oleh = %s
           """
-          cursor.execute(query, [json.dumps(investigasi), dibuat_oleh, pasien.get('no_transaksi'), dibuat_oleh])
+          cursor.execute(query, [json.dumps(investigasi), dibuat_oleh, rekomendasi, pasien.get('no_transaksi'), dibuat_oleh])
         else:
           # Insert new data
           query = """
               INSERT INTO mutu_investigasi 
-              (no_rm, no_transaksi, investigasi, dibuat_oleh) 
-              VALUES (%s, %s, %s, %s)
+              (no_rm, no_transaksi, investigasi, dibuat_oleh, rekomendasi) 
+              VALUES (%s, %s, %s, %s, %s)
           """
           cursor.execute(query, [
               pasien.get('KD_PASIEN'),
               pasien.get('no_transaksi'),
               json.dumps(investigasi),
-              dibuat_oleh
+              dibuat_oleh,
+              rekomendasi
           ])
 
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
