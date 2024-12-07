@@ -1,6 +1,12 @@
 <template>
   <div class="container-fluid">
     <div class="row">
+      <div class="col">
+        <h1 class="text-uppercase">Investigasi</h1>
+        <hr>
+      </div>
+    </div>
+    <div class="row">
 
       <div class="col-md-5 no-print">
         <h3>Riwayat Grading</h3>
@@ -284,7 +290,7 @@
           </div>
         </div>
         <h2 class="text-center mb-4 h4">FORM LAPORAN INVESTIGASI SEDERHANA</h2>
-        <div class="p-3 bg-white">
+        <div class="container bg-white">
 
           <form ref="formInvestigasi" @submit.prevent="submitForm">
             <div class="mb-1 row">
@@ -331,47 +337,51 @@
               </div>
             </div>
             <!-- Form Rekomendasi -->
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead class="table-light align-top">
-                  <tr>
-                    <td class="text-center">No</td>
-                    <td>Rekomendasi</td>
-                    <td>Tindakan yang telah dilakukan</td>
-                    <td>Penanggung jawab</td>
-                    <td>Tanggal</td>
-                    <td>#</td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(entry, index) in rekomendasi" :key="index">
-                    <td class="text-center">{{ index + 1 }}</td>
-                    <td>
-                      <textarea v-model="entry.Rekomendasi" rows="2" class="form-control form-control-sm"></textarea>
-                    </td>
-                    <td>
-                      <textarea v-model="entry.Tindakan" rows="2" class="form-control form-control-sm"></textarea>
-                    </td>
-                    <td>
-                      <textarea v-model="entry.PenanggungJawab" rows="2"
-                        class="form-control form-control-sm"></textarea>
-                    </td>
-                    <td>
-                      <input v-model="entry.Tanggal" type="date" class="form-control form-control-sm"/>
-                    </td>
-                    <td>
-                      <button type="button" class="btn btn-danger btn-sm" @click="hapusRowRekomendasi(index)"> <i
-                          class="fas fa-trash"></i> <span class="sr-only">Hapus</span> </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="btn-group">
-              <button type="button" class="btn btn-success btn-sm" @click="tambahRowRekomendasi"> + Tambah
-                baris</button>
-              <!-- <button type="button" class="btn btn-warning btn-sm" @click="resetRowRekomendasi">Reset</button> -->
-              <!-- <button type="button" class="btn btn-primary btn-sm" @click="simpanRekomendasi">Simpan</button> -->
+            <div class="row">
+              <div class="col">
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead class="table-light align-top">
+                      <tr>
+                        <th class="text-center">No</th>
+                        <th>Rekomendasi</th>
+                        <th>Tindakan yang telah dilakukan</th>
+                        <th>Penanggung jawab</th>
+                        <th>Tanggal</th>
+                        <th class="no-print">#</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(entry, index) in rekomendasi" :key="index">
+                        <td class="text-center">{{ index + 1 }}</td>
+                        <td>
+                          <textarea v-model="entry.Rekomendasi" rows="2" class="form-control form-control-sm"></textarea>
+                        </td>
+                        <td>
+                          <textarea v-model="entry.Tindakan" cols="" rows="2" class="form-control form-control-sm"></textarea>
+                        </td>
+                        <td>
+                          <textarea v-model="entry.PenanggungJawab" rows="2"
+                            class="form-control form-control-sm"></textarea>
+                        </td>
+                        <td>
+                          <input v-model="entry.Tanggal" type="date" class="form-control form-control-sm"/>
+                        </td>
+                        <td class="no-print text-center">
+                          <button type="button" class="btn btn-danger btn-sm" @click="hapusRowRekomendasi(index)"> <i
+                              class="fas fa-trash"></i> <span class="sr-only">Hapus</span> </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="btn-group no-print">
+                  <button type="button" class="btn btn-success btn-sm" @click="tambahRowRekomendasi"> + Tambah
+                    baris</button>
+                  <!-- <button type="button" class="btn btn-warning btn-sm" @click="resetRowRekomendasi">Reset</button> -->
+                  <!-- <button type="button" class="btn btn-primary btn-sm" @click="simpanRekomendasi">Simpan</button> -->
+                </div>
+              </div>
             </div>
             <!-- /Form Rekomendasi -->
             <h4 class="mt-4">ANALISA SUB KOMITE KESELAMATAN PASIEN:</h4>
@@ -422,7 +432,9 @@
               </div>
             </div>
             <div class="text-center no-print my-4">
-              <button type="submit" class="btn btn-success">Submit</button>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i>
+                Simpan</button>
               <!-- <button type="reset" class="btn btn-danger">Reset</button> -->
               <button type="button" class="btn btn-secondary ms-1" @click="print">Cetak</button>
             </div>
@@ -576,7 +588,12 @@ const getDetailGrading = async (data) => {
   detailGrading.value = data
 
   // get rekomendasi
-  rekomendasi.value = JSON.parse(data.rekomendasi)
+  rekomendasi.value = JSON.parse(data.rekomendasi) || [{
+    Rekomendasi: '',
+    Tindakan: '',
+    PenanggungJawab: '',
+    Tanggal: ''
+  }]
 
   setFormDetailGrading(JSON.parse(detailGrading.value.rincian_kejadian) || {})
   setFormInvestigasi(JSON.parse(detailGrading.value.investigasi) || {})
@@ -603,7 +620,14 @@ const print = () => {
 }
 
 // Table rekomendasi
-const rekomendasi = ref([])
+const rekomendasi = ref([
+  {
+    Rekomendasi: '',
+    Tindakan: '',
+    PenanggungJawab: '',
+    Tanggal: ''
+  }
+])
 const getRekomendasi = async () => {
   try {
     const res = await fetch('http://10.30.0.6:8009/rekomendasi');
@@ -623,7 +647,14 @@ const tambahRowRekomendasi = () => {
     Tanggal: ''
   }
   if (!rekomendasi.value) {
-    rekomendasi.value = []
+    rekomendasi.value = [
+      {
+        Rekomendasi: '',
+        Tindakan: '',
+        PenanggungJawab: '',
+        Tanggal: ''
+      }
+    ]
   }
   rekomendasi.value = [...rekomendasi.value, newRow]
 }
