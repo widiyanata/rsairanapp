@@ -449,3 +449,35 @@ def cariPerawat(request):
       }
 
     return JsonResponse(res, safe=False)
+  
+def cek_nik(request):
+  if request.method == 'GET':
+    nik = request.GET.get('nik', '')
+    query = "SELECT FMKKARYAWAN_ID as nik, FMKKARYAWANN as nama, FMKKATEGORI as unit FROM KARYAWAN WHERE FMKKARYAWAN_ID = '{}'".format(nik)
+
+    print("query cek nik:", query)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)
+
+  return JsonResponse({
+    "status": {
+        "success": False,
+        "code": 400,
+        "message": "Request not allowed",
+    },
+    "data": None
+  })
