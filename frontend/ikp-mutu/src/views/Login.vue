@@ -1,14 +1,14 @@
 <template>
   <div class="form-signin">
     <div class="container">
-      <div class="row align-items-center g-2 mb-2">
+      <div class="row align-items-center g-3 mb-2">
         <div class="col-3">
-          <img class="w-100 rounded border" src="../assets/logo-airan.png" alt="">
+          <img class="w-100 rounded border border-success" src="../assets/logo-airan.png" alt="">
         </div>
         <div class="col-9">
           <div class="text-start">
-            <h3 class="text-success">RS Airan Raya</h3>
-            <h1 class="mb-0">Komite Mutu</h1>
+            <h3 class="text-success h4">RS Airan Raya</h3>
+            <h1 class="mb-0 h3 text-uppercase">Komite Mutu</h1>
           </div>
         </div>
       </div>
@@ -32,25 +32,27 @@
               <div class="row">
                 <div class="col-12">
                   <div class="form-floating mb-1">
-                    <input type="text" v-model="karyawan.id" class="form-control" id="nik" placeholder="NIK" required />
+                    <input type="text" v-model="karyawan.id" class="form-control" id="nik" placeholder="NIK" required @input="cekNik(karyawan.id)" />
                     <label for="nik">NIK</label>
                   </div>
+                  <!-- <small v-if="isNik" class="text-danger"> ceknik </small> -->
                 </div>
-                <div class="col-12">
+                <div v-if="isNik" class="col-12">
                   <div class="form-floating mb-1">
                     <input type="text" v-model="karyawan.username" class="form-control" id="nama" placeholder="Nama" required />
                     <label for="nama">Nama</label>
                   </div>
                 </div>
               </div>
-              <div class="form-floating mb-1">
+              <div v-if="isNik" class="form-floating mb-1">
                 <input type="text" v-model="karyawan.email" class="form-control" id="email" placeholder="Email" required />
                 <label for="email">Email</label>
               </div>
-              <div class="form-floating mb-1">
+              <div v-if="isNik" class="form-floating mb-1">
                 <input type="text" v-model="karyawan.role" class="form-control" id="unitKerja" placeholder="Unit Kerja/Jabatan" required />
                 <label for="unitKerja">Unit Kerja/Jabatan</label>
               </div>
+              <hr>
               <button type="submit" class="btn btn-lg btn-success w-100">Login</button>
             </form>
             
@@ -60,10 +62,13 @@
                 <input type="search" id="username" v-model="username" @input="role === 'perawat' && username.length > 2 ? cariUser() : ''" class="form-control" placeholder="Username" required />
                 <label for="username">Username</label>
                 <div v-if="role === 'perawat' && user_perawat" class="dropdown">
-                  <div class="dropdown-menu" :class="{ show: username.length > 2  }">
-                    <a class="dropdown-item" href="#" v-for="user in user_perawat" :key="user.FMPPERAWAT_ID" @click="pilihUser(user)">
+                  <div class="dropdown-menu list-group p-0 border-0 w-100" :class="{ show: username.length > 2  }">
+                    <a class="list-group-item list-group-item-info" href="#" v-for="user in user_perawat" :key="user.FMPPERAWAT_ID" @click="pilihUser(user)">
                       {{ user.FMPPERAWATN }}
                     </a>
+                  </div>
+                  <div v-if="user_perawat.length === 0">
+                    <span class="text-danger badge">{{ username.length > 2 ? 'User perawat tidak ditemukan!' : '' }}</span>
                   </div>
                 </div>
               </div>
@@ -71,6 +76,7 @@
                 <input type="password" id="password" v-model="password" class="form-control" placeholder="Password" required />
                 <label for="password">Password</label>
               </div>
+              <hr>
               <button type="submit" class="btn btn-lg btn-success w-100">Login</button>
             </form>
           </div>
@@ -179,6 +185,33 @@ function login() {
     router.push('/');
   } else {
     error.value = 'Username atau password salah';
+  }
+}
+
+const isNik = ref(false)
+const cekNik = async (nik) => {
+  console.log('cek nik');
+  console.log(nik);
+  console.log('karyawan:',karyawan.value);
+
+  // fetch data dari API
+  try {
+    const res = await fetch(`http://10.30.0.6:8009/cekNik?nik=${nik}`);
+    const data = await res.json();
+    console.log(data);
+    if (data.data.length > 0) {
+      karyawan.value.id = data.data[0].nik
+      karyawan.value.username = data.data[0].nama
+      karyawan.value.role = data.data[0].unit
+
+      isNik.value = true
+    } else {
+      karyawan.value.username = ''
+      karyawan.value.role = ''
+      isNik.value = false
+    }
+  } catch (error) {
+    console.error('Error fetching patients:', error);
   }
 }
 </script>
