@@ -2,6 +2,12 @@
   <div class="">
     <div class="container-fluid no-print">
       <div class="row">
+        <div class="col">
+          <h1 class="text-uppercase">Kronologi Kejadian</h1>
+          <hr>
+        </div>
+      </div>
+      <div class="row">
         <div class="col-md-12 no-print">
           <div class="d-flex justify-content-between mb-3 align-items-center">
             <h3>Riwayat Kronologi</h3>
