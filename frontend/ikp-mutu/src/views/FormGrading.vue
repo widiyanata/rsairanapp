@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, reactive, onMounted, watch, onBeforeUnmount } from 'vue';
+import { ref, reactive, onMounted, watch, onBeforeUnmount, computed } from 'vue';
 const loading = ref(false)
 
 const user = JSON.parse(sessionStorage.getItem('user'));
@@ -92,7 +92,8 @@ const submitForm = async (e) => {
       dibuat_oleh: dibuat_oleh.value,
       // Tanda tangan
       tanda_tangan_pelapor: tandaTanganPelapor.value || null,
-      tanda_tangan_penerima: tandaTanganPenerima.value || null
+      tanda_tangan_penerima: tandaTanganPenerima.value || null,
+      penerima_laporan: penerimaLaporan.value
     })
   })
 
@@ -122,6 +123,8 @@ const getRiwayatGrading = async (no_transaksi = '') => {
       // set tanda tangan
       tandaTanganPelapor.value = riwayatGrading.value[0].tanda_tangan_pelapor
       tandaTanganPenerima.value = riwayatGrading.value[0].tanda_tangan_penerima
+
+      penerimaLaporan.value = riwayatGrading.value[0].penerima_laporan
 
       // rincian kejadian ke form
     } else {
@@ -178,6 +181,7 @@ import TandaTanganCanvas from '../TandaTanganCanvas.vue'
 
 const tandaTanganPelapor = ref(null)
 const tandaTanganPenerima = ref(null)
+const penerimaLaporan = ref(null)
 const simpanTandaTanganPelapor = (ttd) => {
   console.log('TTD Grading Pelapor:', ttd)
   tandaTanganPelapor.value = ttd
@@ -186,6 +190,20 @@ const simpanTandaTanganPenerima = (ttd) => {
   console.log('TTD Grading Penerima:', ttd)
   tandaTanganPenerima.value = ttd
 }
+
+const umurPasien = computed(() => {
+  console.log('umur pasien', detailPasien.value.TGL_LAHIR);
+  const today = new Date();
+  const birthDate = new Date(detailPasien.value.TGL_LAHIR);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+});
 
 </script>
 <template>
@@ -367,7 +385,7 @@ const simpanTandaTanganPenerima = (ttd) => {
                   <label class="form-label">Umur *</label>
                   <div class="mb-2">
                     <input type="text" class="form-control form-control-sm"
-                      :value="detailPasien.KD_PERUSAHAAN ? detailPasien.KD_PERUSAHAAN + ' ' + detailPasien.PEMEGANG_ASURANSI : ''"
+                      :value="umurPasien ? umurPasien : ''"
                       disabled>
                   </div>
 
@@ -717,7 +735,7 @@ const simpanTandaTanganPenerima = (ttd) => {
                     <div class="col-md-6">
                       <div class="mb-1">
                         <label class="form-label" for="">Penerima Laporan</label>
-                        <input type="text" class="form-control" v-model="penerimaLaporan">
+                        <input type="text" class="form-control" v-model="penerimaLaporan" required>
                       </div>
                       <b>Tanda tangan: </b>
                       <TandaTanganCanvas :base64="tandaTanganPenerima" @save="simpanTandaTanganPenerima"></TandaTanganCanvas>
