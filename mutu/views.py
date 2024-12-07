@@ -209,6 +209,7 @@ def grading(request):
     # Tanda tangan
     tanda_tangan_pelapor = data.get('tanda_tangan_pelapor', '')
     tanda_tangan_penerima = data.get('tanda_tangan_penerima', '')
+    penerima_laporan = data.get('penerima_laporan', '')
     print(f'tanda_tangan_pelapor: {tanda_tangan_pelapor}, tanda_tangan_penerima: {tanda_tangan_penerima}')
 
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
@@ -229,7 +230,8 @@ def grading(request):
               SET rincian_kejadian = %s,
               dibuat_oleh = %s,
               tanda_tangan_pelapor = %s,
-              tanda_tangan_penerima = %s
+              tanda_tangan_penerima = %s,
+              penerima_laporan = %s
               WHERE no_transaksi = %s
               AND dibuat_oleh = %s
           """
@@ -238,6 +240,7 @@ def grading(request):
             dibuat_oleh,
             tanda_tangan_pelapor,
             tanda_tangan_penerima,
+            penerima_laporan,
             pasien.get('KPNO_TRANSAKSI'),
             dibuat_oleh
           ])
@@ -245,8 +248,8 @@ def grading(request):
             # Insert new data
           query = """
             INSERT INTO mutu_grading_insiden 
-            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh, tanda_tangan_pelapor, tanda_tangan_penerima) 
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh, tanda_tangan_pelapor, tanda_tangan_penerima, penerima_laporan) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
           """
           cursor.execute(query, [
               pasien.get('KPKD_PASIEN'),
@@ -254,7 +257,8 @@ def grading(request):
               json.dumps(kejadian),
               dibuat_oleh,
               tanda_tangan_pelapor,
-              tanda_tangan_penerima
+              tanda_tangan_penerima,
+              penerima_laporan
           ])
 
         
