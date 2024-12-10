@@ -10,4 +10,5 @@ urlpatterns = [
   path('grading', views.grading, name='grading'),
   path('investigasi', views.investigasi, name='investigasi'),
   path('cekNik', views.cek_nik, name='cek_nik'),
+  path('cekKaryawan', views.cek_karyawan, name='cek_karyawan'),
 ]

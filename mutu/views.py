@@ -481,3 +481,36 @@ def cek_nik(request):
     },
     "data": None
   })
+
+# cek nama karyawan
+def cek_karyawan(request):
+  if request.method == 'GET':
+    q = request.GET.get('q', '')
+    query = "SELECT FMKKARYAWAN_ID as nik, FMKKARYAWANN as nama, FMKKATEGORI as unit FROM KARYAWAN WHERE FMKKARYAWANN like '%{}%'".format(q)
+
+    print("query cek karyawan:", query)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request cek karyawan successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)
+
+  return JsonResponse({
+    "status": {
+        "success": False,
+        "code": 400,
+        "message": "Request not allowed",
+    },
+    "data": None
+  })
