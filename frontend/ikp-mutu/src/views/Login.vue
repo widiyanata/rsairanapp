@@ -32,23 +32,32 @@
               <div class="row">
                 <div class="col-12">
                   <div class="form-floating mb-1">
-                    <input type="text" v-model="karyawan.id" class="form-control" id="nik" placeholder="NIK" required @input="cekNik(karyawan.id)" />
-                    <label for="nik">NIK</label>
+                    <input type="search" v-model="karyawan.username" @input=" karyawan.username.length > 2 && cekKaryawan(karyawan.username)" class="form-control" id="nama" placeholder="Nama" required />
+                    <label for="nama">Nama</label>
                   </div>
+
+                  <div v-if="karyawan.username.length > 2 && listKaryawan.length > 0" class="dropdown">
+                    <div class="dropdown-menu list-group p-0 border-0 w-100" :class="{ show: karyawan.username.length > 2  }">
+                      <a class="list-group-item list-group-item-info" href="#" v-for="user in listKaryawan" :key="user.id" @click="pilihKaryawan(user)">
+                        {{ user.nama }} <span class="badge bg-white text-secondary ms-1">{{ user.nik }}</span>
+                      </a>
+                    </div>
+                  </div>
+                  
                   <!-- <small v-if="isNik" class="text-danger"> ceknik </small> -->
                 </div>
-                <div v-if="isNik" class="col-12">
+                <div v-if="isKaryawan" class="col-12">
                   <div class="form-floating mb-1">
-                    <input type="text" v-model="karyawan.username" class="form-control" id="nama" placeholder="Nama" required />
-                    <label for="nama">Nama</label>
+                    <input type="text" v-model="karyawan.id" class="form-control" id="nik" placeholder="NIK" required readonly />
+                    <label for="nik">NIK</label>
                   </div>
                 </div>
               </div>
-              <div v-if="isNik" class="form-floating mb-1">
+              <div v-if="isKaryawan" class="form-floating mb-1">
                 <input type="text" v-model="karyawan.email" class="form-control" id="email" placeholder="Email" required />
                 <label for="email">Email</label>
               </div>
-              <div v-if="isNik" class="form-floating mb-1">
+              <div v-if="isKaryawan" class="form-floating mb-1">
                 <input type="text" v-model="karyawan.role" class="form-control" id="unitKerja" placeholder="Unit Kerja/Jabatan" required />
                 <label for="unitKerja">Unit Kerja/Jabatan</label>
               </div>
@@ -213,6 +222,33 @@ const cekNik = async (nik) => {
   } catch (error) {
     console.error('Error fetching patients:', error);
   }
+}
+const isKaryawan = ref(false)
+const listKaryawan = ref([])
+const cekKaryawan = async (nama) => {
+  console.log('cek nama karyawan');
+
+  // fetch data dari API
+  try {
+    const res = await fetch(`http://10.30.0.6:8009/cekKaryawan?q=${nama}`);
+    const data = await res.json();
+    console.log(data);
+    if (data.data.length > 0) {
+      listKaryawan.value = data.data
+    }
+  } catch (error) {
+    console.error('Error fetching patients:', error);
+  }
+}
+const pilihKaryawan = (data) => {
+  console.log('pilih karyawan: ', data);
+  karyawan.value.id = data.nik
+  karyawan.value.username = data.nama
+  karyawan.value.role = data.unit
+
+  isKaryawan.value = true
+
+  listKaryawan.value = []
 }
 </script>
 
