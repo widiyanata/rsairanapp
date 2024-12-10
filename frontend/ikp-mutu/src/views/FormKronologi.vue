@@ -122,6 +122,16 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Notif -->
+        <ol class="position-absolute bottom-0 start-0">
+          <li>
+            <small>Diisi Lengkap (Siabidibame = Siapa, apa, bilamana, dimana, mengapa)</small>
+          </li>
+          <li>
+            <small>RAHASIA dan JANGAN DI FOTO COPY</small>
+          </li>
+        </ol>
       </div>
     </div>
 
@@ -136,7 +146,7 @@
                 v-if="!isMobile">Kembali</span> </button>
             <h5 class="modal-title d-md-flex align-items-center" id="modalTitleId">
               <p class="badge text-dark ps-0 mb-0" style="font-size: 14px;">{{ pasien.KPKD_PASIENN }}</p> <span
-                class="badge bg-dark"  style="font-size: 12px;">{{ pasien.KPNO_TRANSAKSI }}</span>
+                class="badge bg-dark" style="font-size: 12px;">{{ pasien.KPNO_TRANSAKSI }}</span>
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -199,7 +209,8 @@
                                   <div class="w-100">
                                     <div class="fw-bold d-flex justify-content-between">
                                       <small>{{ pasien.KPNO_TRANSAKSI }}</small> <small
-                                        class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small></div>
+                                        class="badge bg-dark rounded-pill">{{ pasien.KPKD_PASIEN }}</small>
+                                    </div>
                                     <small>{{ pasien.KPKD_PASIENN }}</small>
                                   </div>
                                 </a>
@@ -248,6 +259,16 @@
 
               </div>
 
+              <!-- Notif -->
+              <ol>
+                <li>
+                  <small>Diisi Lengkap (Siabidibame = Siapa, apa, bilamana, dimana, mengapa)</small>
+                </li>
+                <li>
+                  <small>RAHASIA dan JANGAN DI FOTO COPY</small>
+                </li>
+              </ol>
+
               <div class="btn-group my-3">
                 <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
                 <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
@@ -256,10 +277,10 @@
                   hapus</button>
                 <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">
                   <i class="fas fa-save"></i>
-                  <span class="sr-only">Simpan</span>
+                  <span class=""> Simpan</span>
                 </button>
                 <button class="btn btn-secondary btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i
-                    class="fas fa-print"></i></button>
+                    class="fas fa-print"></i> <span>Cetak</span></button>
               </div>
               <div class="">
                 <p class="mb-1 fw-bold">Tanda Tangan:</p>
