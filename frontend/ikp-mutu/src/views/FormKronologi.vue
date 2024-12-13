@@ -38,11 +38,6 @@
                   </td>
                   <td> <small class="fw-bold badge text-dark">{{ entry.nama_pasien }} </small> <small
                       class="badge text-secondary">({{ entry.no_rm }})</small> </td>
-                  <!-- <td>
-                    <a href="#" class="badge bg-white text-info text-decoration-none border" @click="getKronologi(entry); selectRow(entry)">
-                      <small>{{ entry.no_transaksi }}</small>
-                    </a>
-                  </td> -->
                 </tr>
               </tbody>
             </table>
@@ -185,12 +180,23 @@
                     </tr>
                     <tr>
                       <th>Unit Kerja / Jabatan</th>
-                      <td>: {{ nama_pembuat.role }}</td>
+                      <td> {{ nama_pembuat.role }}</td>
+                    </tr>
+                    <tr>
+                      <th>Karu/Atasan</th>
+                      <td>
+                        <div class="input-group input-group-sm">
+                          <select id="kirimkefield" v-model="kirimke" class="form-select form-select-sm" :disabled="isKirim">
+                            <option value="">-- Pilih --</option>
+                            <option v-for="user in listKaru" :value="user.id" :key="user.id">{{ user.nama }}</option>
+                          </select>
+                        </div>
+                      </td>
                     </tr>
                     <tr>
                       <th class="align-top">Pasien</th>
                       <td>
-                        : {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
+                        {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
 
                         <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
                           <input type="search" class="form-control" v-model="cari"
@@ -244,19 +250,45 @@
                       <td class="text-center">{{ index + 1 }}</td>
                       <td>
                         <input v-model="kejadianEntries[index].Tanggal" type="datetime-local"
-                          class="form-control form-control-sm">
+                          class="form-control form-control-sm" :disabled="isKirim">
                       </td>
                       <td>
                         <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1"
-                          class="form-control form-control-sm" style="min-width: 200px;"></textarea>
+                          class="form-control form-control-sm" style="min-width: 200px;" :disabled="isKirim"></textarea>
                       </td>
                       <td>
-                        <button class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - </button>
+                        <button v-if="!isKirim" class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - </button>
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
+              </div>
+
+              <button v-if="!isKirim" class="btn btn-light btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
+              <hr>
+
+              <div class="">
+                <p class="mb-1 fw-bold">Tanda Tangan:</p>
+                <TandaTanganCanvas :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan" />
+              </div>
+
+              <div class="btn-group my-3">
+                
+                <button v-if="kejadianEntries.length > 0" class="btn btn-light btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i
+                  class="fas fa-print"></i> <span>Cetak</span></button>
+                <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
+                <!-- <button v-if="batalHapus" class="btn btn-warning btn-sm"
+                  @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
+                  hapus</button> -->
+                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi" :disabled="isKirim">
+                  <i class="fas fa-save"></i>
+                  <span class=""> Simpan</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" :class="isKirim ? 'disabled' : ''" @click="kirimKronologi"><i class="fas fa-paper-plane"></i>
+                  <span v-if="!isKirim" class=""> Kirim kronologi </span>
+                  <span v-else> Sudah dikirim</span>
+                </button>
               </div>
 
               <!-- Notif -->
@@ -269,23 +301,6 @@
                 </li>
               </ol>
 
-              <div class="btn-group my-3">
-                <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
-                <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
-                <button v-if="batalHapus" class="btn btn-warning btn-sm"
-                  @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
-                  hapus</button>
-                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi">
-                  <i class="fas fa-save"></i>
-                  <span class=""> Simpan</span>
-                </button>
-                <button class="btn btn-secondary btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i
-                    class="fas fa-print"></i> <span>Cetak</span></button>
-              </div>
-              <div class="">
-                <p class="mb-1 fw-bold">Tanda Tangan:</p>
-                <TandaTanganCanvas :base64="tandaTangan" ref="tandaTanganCanvas" @save="simpanTandaTangan" />
-              </div>
             </div>
           </div>
           <div class="modal-footer align-items-center justify-content-between d-none">
@@ -293,7 +308,6 @@
               Tutup
             </button>
             <div class="btn-group d-none">
-              <button class="btn btn-info btn-sm" @click="tambahRowKejadian"> + Tambah Baris</button>
               <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
               <button v-if="batalHapus" class="btn btn-warning btn-sm"
                 @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
@@ -452,13 +466,25 @@ const getKronologi = async (entry = '') => {
     // Detail kronologi
     // set pasien
     if (no_transaksi) {
+      console.log('get kronologis by notrans', kronologis.data)
       kejadianEntries.value = JSON.parse(kronologis.data[0].Uraian)
       pasien.value.KPKD_PASIEN = kronologis.data[0].no_rm
       pasien.value.KPKD_PASIENN = kronologis.data[0].nama_pasien
       pasien.value.KPNO_TRANSAKSI = kronologis.data[0].no_transaksi
 
       tandaTangan.value = kronologis.data[0].tanda_tangan
-      console.log('tanda tangan', tandaTangan.value)
+      // console.log('tanda tangan', tandaTangan.value)
+
+      // set kirim ke
+      kirimke.value = kronologis.data[0].kirimke
+      if (kirimke.value != 0) {
+        // disable input jika sudah dikirim
+        isKirim.value = true
+      }
+
+      // set id kronologi untuk fuungsi kirim kronologi
+      id_kronologi.value = kronologis.data[0].id
+      // ----------
 
       nama_pembuat.value = JSON.parse(kronologis.data[0].dibuat_oleh)
     }
@@ -579,6 +605,77 @@ const tambahKronologiBaru = () => {
   // reset nama pembuat
   nama_pembuat.value = JSON.parse(sessionStorage.getItem('user'))
 }
+
+// fitur kirim kronologi
+const id_kronologi = ref('')
+const kirimke = ref(null)
+const isKirim = ref(false)
+const kirimKronologi = async () => {
+  console.log('kirim kronologi', kirimke.value)
+  loading.value = true
+
+  // kirim ke?
+  if (!kirimke.value || kirimke.value == '') {
+    loading.value = false
+    Swal.fire({
+      icon: 'error',
+      text: 'Karu atau atasan Wajib diisi',
+    }).then(() => {
+      document.getElementById('kirimkefield').focus()
+    })
+    return
+  } else if (id_kronologi.value == '') {
+    loading.value = false
+    Swal.fire({
+      icon: 'error',
+      text: 'ID Kronologi tidak ditemukan!',
+    })
+    return
+  }
+
+  console.log('selected row:', selectedRow.value)
+
+  // simpan kirim ke
+  try {
+    const data = await fetch(`${apiBaseUrl}/kirimKronologi`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id_kronologi: selectedRow.value.id_kronologi,
+        kirimke: kirimke.value,
+      })
+    })
+    const res = await data.json()
+    console.log('respon kirim ke: ',res)
+    loading.value = false
+    
+    // get kronologi by no trans dari selectedrow
+    await getKronologi(selectedRow.value)
+  } catch (error) {
+    console.error('Error fetching kronologi:', error)
+  }
+
+  // simpan kronologi
+  // simpanKronologi()
+}
+
+const listKaru = ref([])
+const getUserKaru = async () => {
+  try {
+    const data = await fetch(`${apiBaseUrl}/cariKaru?&role=karu`)
+    const users = await data.json()
+    console.log(users)
+    listKaru.value = users.data
+  } catch (error) {
+    console.error('Error fetching karu:', error)
+  }
+  
+}
+onMounted(() => {
+  getUserKaru()
+})
 
 </script>
 
