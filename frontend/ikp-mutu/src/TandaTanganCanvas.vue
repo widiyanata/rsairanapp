@@ -149,12 +149,14 @@ export default {
     },
     saveSignature() {
       if (this.isCanvasEmpty()) {
-        alert("Kanvas kosong, tidak dapat menyimpan tanda tangan.");
+        // alert("Kanvas kosong, tidak dapat menyimpan tanda tangan.");
+        Swal.fire('Gagal', 'Kanvas kosong, tidak dapat menyimpan tanda tangan.', 'error')
         return;
       }
       const dataURL = this.$refs.canvas.toDataURL("image/png");
       this.$emit("save", dataURL);
-      alert("Tanda tangan disimpan!");
+      // alert("Tanda tangan disimpan!");
+      Swal.fire('Berhasil', 'Tanda tangan disimpan!', 'success')
     },
 
     toggleEraserMode() {
@@ -185,9 +187,9 @@ export default {
   watch: {
     base64(newValue) {
       this.clearCanvas();
-      console.log('tanda tangan watch 1: ',newValue)
+      // console.log('tanda tangan watch 1: ',newValue)
       if (newValue != null) {
-        console.log('tanda tangan watch 2: ',newValue)
+        // console.log('tanda tangan watch 2: ',newValue)
         const image = new Image();
         image.src = newValue;
         image.onload = () => {
