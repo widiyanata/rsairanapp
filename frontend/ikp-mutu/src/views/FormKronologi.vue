@@ -545,6 +545,13 @@ const simpanKronologi = async () => {
     await getKronologi()
 
     loading.value = false
+    Swal.fire({
+      icon: 'success',
+      text: 'Kronologi berhasil disimpan',
+      // disable button
+      showConfirmButton: false,
+      timer: 1500
+    })
   } catch (error) {
     console.error('Error fetching kronologi:', error)
   }
