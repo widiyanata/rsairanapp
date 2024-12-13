@@ -93,6 +93,7 @@ def kronologi(request):
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
     tanda_tangan = data.get('tanda_tangan', {})
+    kirimke = data.get('kirimke', {})
 
     # Log the received data
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
@@ -120,16 +121,16 @@ def kronologi(request):
             query = """
                 UPDATE mutu_kronologi_kejadian 
                 SET Uraian = %s, dibuat_oleh = %s,
-                    tanda_tangan = %s
+                    tanda_tangan = %s, kirimke = %s, updated_at = %s, tgl_kirim = %s
                 WHERE no_transaksi = %s AND dibuat_oleh = %s
             """
-            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, no_transaksi, dibuat_oleh])
+            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, kirimke, tgl_sekarang, tgl_sekarang, no_transaksi, dibuat_oleh])
         else:
             # Insert new data
             query = """
                 INSERT INTO mutu_kronologi_kejadian 
-                (no_transaksi, no_rm, nama_pasien, Tanggal, Uraian, dibuat_oleh, tanda_tangan) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                (no_transaksi, no_rm, nama_pasien, Tanggal, Uraian, dibuat_oleh, tanda_tangan, kirimke) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(query, [
                 no_transaksi,
@@ -138,7 +139,8 @@ def kronologi(request):
                 tgl_sekarang,
                 json.dumps(kejadian),
                 dibuat_oleh,
-                tanda_tangan
+                tanda_tangan,
+                kirimke
             ])
 
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
@@ -514,3 +516,57 @@ def cek_karyawan(request):
     },
     "data": None
   })
+
+def cariKaru(request):
+  query = "SELECT TOP 10 * FROM mutu_users"
+
+  if 'cari' in request.GET and request.GET['cari'] is not None:
+    query = query + "WHERE username LIKE '%{}%' ".format(request.GET['cari'])
+
+  if 'role' in request.GET and request.GET['role'] is not None:
+    query = query + " WHERE role = '{}' ".format(request.GET['role'])
+
+  print(query)
+  with connection.cursor() as cursor:
+    cursor.execute(query)
+    # dict fetch data
+    rows = dictfetchall(cursor)
+
+    res = {
+      "status": {
+          "success": True,
+          "code": 200,
+          "message": "Request successful",
+      },
+      "data": rows
+    }
+
+    return JsonResponse(res, safe=False)
+  
+@csrf_exempt
+def kirimKronologi(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    
+    id_kronologi = data.get('id_kronologi', None)
+    kirim_ke = data.get('kirimke', None)
+
+    print(id_kronologi, kirim_ke)
+
+    query = "UPDATE mutu_kronologi_kejadian SET kirimke = '{}' WHERE id_kronologi = '{}'".format(kirim_ke, id_kronologi)
+
+    with connection.cursor() as cursor:
+      cursor.execute(query)
+      # dict fetch data
+      affected_rows = cursor.rowcount
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Kirim kronologi sukses",
+        },
+        "data": affected_rows
+      }
+
+    return JsonResponse(res, safe=False)

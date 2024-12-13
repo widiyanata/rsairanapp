@@ -11,4 +11,6 @@ urlpatterns = [
   path('investigasi', views.investigasi, name='investigasi'),
   path('cekNik', views.cek_nik, name='cek_nik'),
   path('cekKaryawan', views.cek_karyawan, name='cek_karyawan'),
+  path('cariKaru', views.cariKaru, name='cariKaru'),
+  path('kirimKronologi', views.kirimKronologi, name='kirimKronologi'),
 ]
