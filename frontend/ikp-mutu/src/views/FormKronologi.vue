@@ -253,7 +253,7 @@
                           class="form-control form-control-sm" :disabled="isKirim">
                       </td>
                       <td>
-                        <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1"
+                        <textarea v-model="kejadianEntries[index].Uraian" 
                           class="form-control form-control-sm" style="min-width: 200px;" :disabled="isKirim"></textarea>
                       </td>
                       <td>
@@ -332,7 +332,7 @@
 </template>
 
 <script setup>
-import { inject, onMounted, ref, watch } from 'vue'
+import { inject, nextTick, onMounted, ref, watch } from 'vue'
 
 // import { ExportToWord, ExportToExcel  } from 'vue-doc-exporter'
 
@@ -476,8 +476,9 @@ const getKronologi = async (entry = '') => {
       // console.log('tanda tangan', tandaTangan.value)
 
       // set kirim ke
+      isKirim.value = false
       kirimke.value = kronologis.data[0].kirimke
-      if (kirimke.value != 0) {
+      if (kirimke.value != 0 && kirimke.value != null) {
         // disable input jika sudah dikirim
         isKirim.value = true
       }
@@ -487,6 +488,8 @@ const getKronologi = async (entry = '') => {
       // ----------
 
       nama_pembuat.value = JSON.parse(kronologis.data[0].dibuat_oleh)
+
+      // resizeAllTextareas()
     }
 
     loading.value = false
@@ -687,5 +690,12 @@ onMounted(() => {
 
 .rowActive td {
   background-color: aquamarine;
+}
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  resize: none; 
 }
 </style>
