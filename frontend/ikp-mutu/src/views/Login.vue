@@ -66,7 +66,7 @@
             </form>
             
             <!-- Login perawat, mutu dan karu -->
-            <form v-else @submit.prevent="role === 'perawat' ? loginPerawat() : login()">
+            <form v-else @submit.prevent="role === 'perawat' ? loginPerawat() : loginMutu()">
               <div class="form-floating mb-1">
                 <input type="search" id="username" v-model="username" @input="role === 'perawat' && username.length > 2 ? cariUser() : ''" class="form-control" placeholder="Username" required />
                 <label for="username">Username</label>
@@ -249,6 +249,34 @@ const pilihKaryawan = (data) => {
   isKaryawan.value = true
 
   listKaryawan.value = []
+}
+const loginMutu = async () => {
+  console.log('login mutu');
+  console.log(karyawan.value);
+
+  try {
+    const res = await fetch('http://10.30.0.6:8009/loginMutu', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify( {
+        username: username.value,
+        password: password.value
+      })
+    })
+
+    const data = await res.json()
+    console.log(data);
+    if (data.status.success) {
+      sessionStorage.setItem('user', JSON.stringify(data.data[0]));
+      router.push('/');
+    } else {
+      error.value = 'Username atau password salah';
+    }
+  } catch (error) {
+    console.error('Error fetching patients:', error);
+  }
 }
 </script>
 

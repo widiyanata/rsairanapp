@@ -34,6 +34,14 @@ const getKronologi = async () => {
 
     riwayatKronologi.value = kronologis.data
     console.log('riwayat kronologi', riwayatKronologi)
+
+    // user session
+    const userSession = JSON.parse(sessionStorage.getItem('user'))
+    // jika role karu, maka cari riwayat kronologi berdasarkan kolom kirimke
+    if (userSession && userSession.role === 'karu') {
+      riwayatKronologi.value = kronologis.data.filter(riwayat => riwayat.kirimke === userSession.id)
+    }
+    // =================
   } catch (error) {
     console.error('Error fetching kronologi:', error)
   } finally {

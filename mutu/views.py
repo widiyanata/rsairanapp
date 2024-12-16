@@ -121,10 +121,12 @@ def kronologi(request):
             query = """
                 UPDATE mutu_kronologi_kejadian 
                 SET Uraian = %s, dibuat_oleh = %s,
-                    tanda_tangan = %s, kirimke = %s, updated_at = %s, tgl_kirim = %s
+                    tanda_tangan = %s, updated_at = %s
                 WHERE no_transaksi = %s AND dibuat_oleh = %s
             """
-            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, kirimke, tgl_sekarang, tgl_sekarang, no_transaksi, dibuat_oleh])
+
+            print ("query update kronologi:", query)
+            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, tgl_sekarang, no_transaksi, dibuat_oleh])
         else:
             # Insert new data
             query = """
@@ -570,3 +572,75 @@ def kirimKronologi(request):
       }
 
     return JsonResponse(res, safe=False)
+  
+def userMutu(request):
+  query = "SELECT * FROM mutu_users"
+
+  with connection.cursor() as cursor:
+    cursor.execute(query)
+    # dict fetch data
+    rows = dictfetchall(cursor)
+
+    res = {
+      "status": {
+          "success": True,
+          "code": 200,
+          "message": "Request successful",
+      },
+      "data": rows
+    }
+
+    return JsonResponse(res, safe=False)
+
+@csrf_exempt
+def loginMutu(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    print('data login mutu:', data)
+    username = data.get('username')
+    password = data.get('password')
+
+    with connection.cursor() as cursor:
+      query = "SELECT TOP 1 id, username, role, nama FROM mutu_users WHERE username = %s AND password = %s"
+      cursor.execute(query, [username, password])
+      rows = dictfetchall(cursor)
+
+    if rows:
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Login successful",
+        },
+        "data": rows
+      }
+
+      return JsonResponse(res, safe=False)
+    else:
+      return JsonResponse({
+        "status": {
+            "success": False,
+            "code": 400,
+            "message": "Login failed",
+        },
+        "data": {
+          "id": None,
+          "username": None,
+          "password": None,
+          "role": None,
+        }
+      })
+
+    return JsonResponse({
+      "status": {
+          "success": False,
+          "code": 400,
+          "message": "Login failed",
+      },
+      "data": {
+        "id": None,
+        "username": None,
+        "password": None,
+        "role": None,
+      }
+    })

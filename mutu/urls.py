@@ -13,4 +13,6 @@ urlpatterns = [
   path('cekKaryawan', views.cek_karyawan, name='cek_karyawan'),
   path('cariKaru', views.cariKaru, name='cariKaru'),
   path('kirimKronologi', views.kirimKronologi, name='kirimKronologi'),
+  path('userMutu', views.userMutu, name='userMutu'),
+  path('loginMutu', views.loginMutu, name='loginMutu'),
 ]
