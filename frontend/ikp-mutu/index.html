@@ -25,10 +25,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    .hidden {
+      visibility: hidden;
+    }
     .print {
       display: none;
     }
    @media print {
+    .hidden {
+      visibility: visible;
+    }
      .print {
        display: block;
      }
@@ -37,7 +43,7 @@
        display: none !important;
      }
    
-     input[type='text'], input[type='date'], textarea {
+     input[type='text'], input[type='date'], input[type='datetime-local'], textarea {
        border: none !important;
        box-shadow: none !important;
        outline: none !important;
