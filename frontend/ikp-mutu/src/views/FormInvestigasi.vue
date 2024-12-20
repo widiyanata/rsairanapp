@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col">
-        <h1 class="text-uppercase">Investigasi</h1>
+        <h1 class="text-uppercase no-print">Investigasi</h1>
         <hr>
       </div>
     </div>
@@ -292,7 +292,7 @@
         <h2 class="text-center mb-4 h4">FORM LAPORAN INVESTIGASI SEDERHANA</h2>
         <div class="container bg-white">
 
-          <form ref="formInvestigasi" @submit.prevent="submitForm">
+          <form ref="formInvestigasi" @submit.prevent="submitForm" class="py-3">
             <div class="mb-1 row">
               <label for="pasien" class="col-sm-4">Pasien:</label>
               <div class="col-sm-6 no-print">
