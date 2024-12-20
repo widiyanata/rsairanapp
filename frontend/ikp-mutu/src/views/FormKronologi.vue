@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <div id="print-area" class="print">
+    <div id="print-area" class="container hidden">
       <div class="kop-surat mb-4">
         <div class="row">
           <div class="col-12">
@@ -111,7 +111,7 @@
                   class="form-control form-control-sm">
               </td>
               <td>
-                <textarea v-model="kejadianEntries[index].Uraian" cols="30" rows="1"
+                <textarea v-model="kejadianEntries[index].Uraian"
                   class="form-control form-control-sm"></textarea>
               </td>
             </tr>
@@ -180,13 +180,14 @@
                     </tr>
                     <tr>
                       <th>Unit Kerja / Jabatan</th>
-                      <td> {{ nama_pembuat.role }}</td>
+                      <td style="text-transform: capitalize;"> {{ nama_pembuat.role }}</td>
                     </tr>
                     <tr>
                       <th>Karu/Atasan</th>
                       <td>
                         <div class="input-group input-group-sm">
-                          <select id="kirimkefield" v-model="kirimke" class="form-select form-select-sm" :disabled="isKirim">
+                          <select id="kirimkefield" v-model="kirimke" class="form-select form-select-sm"
+                            :disabled="isKirim">
                             <option value="">-- Pilih --</option>
                             <option v-for="user in listKaru" :value="user.id" :key="user.id">{{ user.nama }}</option>
                           </select>
@@ -196,7 +197,7 @@
                     <tr>
                       <th class="align-top">Pasien</th>
                       <td>
-                        {{ pasien.KPKD_PASIENN }} - {{ pasien.KPKD_PASIEN }}
+                        {{ pasien.KPKD_PASIEN }}
 
                         <div v-if="!pasien.KPKD_PASIEN" class="input-group input-group-sm no-print">
                           <input type="search" class="form-control" v-model="cari"
@@ -253,11 +254,12 @@
                           class="form-control form-control-sm" :disabled="isKirim">
                       </td>
                       <td>
-                        <textarea v-model="kejadianEntries[index].Uraian" 
+                        <textarea ref="textarearefs" v-model="kejadianEntries[index].Uraian" rows="1"
                           class="form-control form-control-sm" style="min-width: 200px;" :disabled="isKirim"></textarea>
                       </td>
                       <td>
-                        <button v-if="!isKirim" class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> - </button>
+                        <button v-if="!isKirim" class="btn btn-danger btn-sm" @click="hapusRowKejadian(index)"> -
+                        </button>
                       </td>
                     </tr>
                   </tbody>
@@ -274,18 +276,20 @@
               </div>
 
               <div class="btn-group my-3">
-                
-                <button v-if="kejadianEntries.length > 0" class="btn btn-light btn-sm no-print" @click="print" data-bs-dismiss="modal"> <i
-                  class="fas fa-print"></i> <span>Cetak</span></button>
+
+                <button v-if="kejadianEntries.length > 0" class="btn btn-light btn-sm no-print" @click="print"
+                  data-bs-dismiss="modal"> <i class="fas fa-print"></i> <span>Cetak</span></button>
                 <!-- <button class="btn btn-danger btn-sm" @click="hapusRowKejadian"> - Hapus</button> -->
                 <!-- <button v-if="batalHapus" class="btn btn-warning btn-sm"
                   @click="batalHapus ? getKronologi(pasien.KPNO_TRANSAKSI) : ''; batalHapus = !batalHapus">Batal
                   hapus</button> -->
-                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi" :disabled="isKirim">
+                <button v-if="pasien.KPKD_PASIEN" class="btn btn-success btn-sm" @click="simpanKronologi"
+                  :disabled="isKirim">
                   <i class="fas fa-save"></i>
                   <span class=""> Simpan</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-primary" :class="isKirim ? 'disabled' : ''" @click="kirimKronologi"><i class="fas fa-paper-plane"></i>
+                <button type="button" class="btn btn-sm btn-primary" :class="isKirim ? 'disabled' : ''"
+                  @click="kirimKronologi"><i class="fas fa-paper-plane"></i>
                   <span v-if="!isKirim" class=""> Kirim kronologi </span>
                   <span v-else> Sudah dikirim</span>
                 </button>
@@ -651,9 +655,9 @@ const kirimKronologi = async () => {
       })
     })
     const res = await data.json()
-    console.log('respon kirim ke: ',res)
+    console.log('respon kirim ke: ', res)
     loading.value = false
-    
+
     // get kronologi by no trans dari selectedrow
     await getKronologi(selectedRow.value)
   } catch (error) {
@@ -679,6 +683,37 @@ const getUserKaru = async () => {
 onMounted(() => {
   getUserKaru()
 })
+
+const textarearefs = ref([])
+const adjustAllHeight = () => {
+  nextTick(() => {
+    textarearefs.value.forEach((el, index) => {
+      if (el) {
+        el.style.height = "auto"
+        el.style.height = `${el.scrollHeight}px`
+      }
+    })
+  })
+}
+
+const resizeAllTextareas = () => {
+  const textareas = document.querySelectorAll("textarea");
+  console.log('textareas:', textareas)
+  textareas.forEach((textarea) => {
+    textarea.style.height = "auto"; // Reset height
+    textarea.style.height = textarea.scrollHeight + 14 + "px"; // Adjust to content
+  });
+}
+
+watch(kejadianEntries, (newVal) => {
+  console.log('sadasdsa',newVal)
+  console.log(textarearefs.value)
+  setTimeout(() => {
+    // adjustAllHeight()
+    resizeAllTextareas()
+  }, 500)
+}, {deep: true})
+
 
 </script>
 
