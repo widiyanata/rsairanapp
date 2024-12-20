@@ -15,7 +15,7 @@ const user = JSON.parse(sessionStorage.getItem('user'));
         <div>
           <h3>Lembar Kronologi</h3>
           <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
-          <a v-if="user.role == 'mutu' || user.role == 'perawat' || user.role !== 'karu'" :href="`/kronologi`" class="icon-link">
+          <a v-if="user.role != 'mutu' && user.role !== 'karu'" :href="`/kronologi`" class="icon-link">
             Kronologi
             <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
           </a>
