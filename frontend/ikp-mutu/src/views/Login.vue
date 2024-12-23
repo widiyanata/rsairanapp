@@ -142,7 +142,7 @@ const user_perawat = ref('');
 // jika role perawat, maka ketika ketik username, cari username dari table perawat
 const cariUser = async () => {
   try {
-    const data = await fetch(`http://10.30.0.6:8009/cariUser?cari=${username.value}&role=${role.value}`);
+    const data = await fetch(`http://10.30.0.12:8009/cariUser?cari=${username.value}&role=${role.value}`);
     const userData = await data.json();
     console.log('data user dari DB: ',userData);
     user_perawat.value = userData.data
@@ -205,7 +205,7 @@ const cekNik = async (nik) => {
 
   // fetch data dari API
   try {
-    const res = await fetch(`http://10.30.0.6:8009/cekNik?nik=${nik}`);
+    const res = await fetch(`http://10.30.0.12:8009/cekNik?nik=${nik}`);
     const data = await res.json();
     console.log(data);
     if (data.data.length > 0) {
@@ -230,7 +230,7 @@ const cekKaryawan = async (nama) => {
 
   // fetch data dari API
   try {
-    const res = await fetch(`http://10.30.0.6:8009/cekKaryawan?q=${nama}`);
+    const res = await fetch(`http://10.30.0.12:8009/cekKaryawan?q=${nama}`);
     const data = await res.json();
     console.log(data);
     if (data.data.length > 0) {
@@ -255,7 +255,7 @@ const loginMutu = async () => {
   console.log(karyawan.value);
 
   try {
-    const res = await fetch('http://10.30.0.6:8009/loginMutu', {
+    const res = await fetch('http://10.30.0.12:8009/loginMutu', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
