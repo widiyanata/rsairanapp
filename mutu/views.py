@@ -93,7 +93,7 @@ def kronologi(request):
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
     tanda_tangan = data.get('tanda_tangan', {})
-    kirimke = data.get('kirimke', {})
+    kirimke = data.get('kirimke', '')
 
     # Log the received data
     print(f'pasien: {pasien}, kejadian: {kejadian}, dibuat_oleh: {dibuat_oleh}')
