@@ -355,17 +355,19 @@
                       <tr v-for="(entry, index) in rekomendasi" :key="index">
                         <td class="text-center">{{ index + 1 }}</td>
                         <td>
-                          <textarea v-model="entry.Rekomendasi" rows="2" class="form-control form-control-sm"></textarea>
+                          <textarea v-model="entry.Rekomendasi" rows="2"
+                            class="form-control form-control-sm"></textarea>
                         </td>
                         <td>
-                          <textarea v-model="entry.Tindakan" cols="" rows="2" class="form-control form-control-sm"></textarea>
+                          <textarea v-model="entry.Tindakan" cols="" rows="2"
+                            class="form-control form-control-sm"></textarea>
                         </td>
                         <td>
                           <textarea v-model="entry.PenanggungJawab" rows="2"
                             class="form-control form-control-sm"></textarea>
                         </td>
                         <td>
-                          <input v-model="entry.Tanggal" type="date" class="form-control form-control-sm"/>
+                          <input v-model="entry.Tanggal" type="date" class="form-control form-control-sm" />
                         </td>
                         <td class="no-print text-center">
                           <button type="button" class="btn btn-danger btn-sm" @click="hapusRowRekomendasi(index)"> <i
@@ -520,7 +522,7 @@ const submitForm = async (e) => {
   console.log('investigasi', investigasi.value);
 
   try {
-    const res = await fetch('http://10.30.0.6:8009/investigasi', {
+    const res = await fetch('http://10.30.0.12:8009/investigasi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -561,7 +563,7 @@ const submitForm = async (e) => {
 const riwayatInvestigasi = ref([])
 const getRiwayatInvestigasi = async () => {
   try {
-    const res = await fetch('http://10.30.0.6:8009/investigasi');
+    const res = await fetch('http://10.30.0.12:8009/investigasi');
     const data = await res.json();
     console.log('riwayat investigasi', data);
     return riwayatInvestigasi.value = data.data;
@@ -573,7 +575,7 @@ const getRiwayatInvestigasi = async () => {
 const riwayatGrading = ref([])
 const getRiwayatGrading = async (no_transaksi = '') => {
   try {
-    const res = await fetch(`http://10.30.0.6:8009/grading?cari=${no_transaksi}`);
+    const res = await fetch(`http://10.30.0.12:8009/grading?cari=${no_transaksi}`);
     const data = await res.json();
     console.log('riwayat grading', data);
     return riwayatGrading.value = data.data;
@@ -630,7 +632,7 @@ const rekomendasi = ref([
 ])
 const getRekomendasi = async () => {
   try {
-    const res = await fetch('http://10.30.0.6:8009/rekomendasi');
+    const res = await fetch('http://10.30.0.12:8009/rekomendasi');
     const data = await res.json();
     console.log('rekomendasi', data);
     return rekomendasi.value = data.data;
@@ -665,6 +667,11 @@ const hapusRowRekomendasi = (index) => {
 const resetRowRekomendasi = () => {
   console.log('reset row rekomendasi')
   rekomendasi.value = []
+}
+
+const listKronologi = ref([])
+const getListKronologi = () => {
+  
 }
 </script>
 <style scoped>
