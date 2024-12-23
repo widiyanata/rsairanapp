@@ -28,7 +28,7 @@ const user = JSON.parse(sessionStorage.getItem('user'));
         <div>
           <h3>Grading Karu</h3>
           <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
-          <a v-if="user.role == 'mutu' || user.role == 'karu'" :href="`/grading`" class="icon-link">
+          <a v-if="user.role == 'karu'" :href="`/grading`" class="icon-link">
             Grading
             <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
           </a>
