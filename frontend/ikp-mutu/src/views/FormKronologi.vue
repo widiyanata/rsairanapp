@@ -340,7 +340,7 @@ import { inject, nextTick, onMounted, ref, watch } from 'vue'
 
 // import { ExportToWord, ExportToExcel  } from 'vue-doc-exporter'
 
-const apiBaseUrl = 'http://10.30.0.6:8009'
+const apiBaseUrl = 'http://10.30.0.12:8009'
 
 const pasiens = ref('')
 const pasien = ref({
@@ -585,6 +585,8 @@ const simpanKronologi = async () => {
       showConfirmButton: false,
       timer: 1500
     })
+
+    window.location.reload()
   } catch (error) {
     console.error('Error fetching kronologi:', error)
   }
