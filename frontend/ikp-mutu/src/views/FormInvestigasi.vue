@@ -20,9 +20,8 @@
                 <th>No Trans.</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="(entry, index) in riwayatGrading" :key="index"
-                @click="getDetailGrading(entry); selectRow(entry); getListKronologi()" :class="{ 'rowActive': selectedRow === entry }">
+            <tbody v-for="(entry, index) in riwayatGrading" :key="index">
+              <tr @click="selectRow(entry); getDetailGrading(entry);  getListKronologi()" :class="{ 'rowActive': selectedRow === entry, 'table-success': entry.verifikasi }">
                 <td>{{ index + 1 }}</td>
                 <td>
                   <span class="badge text-secondary">{{ entry.created_at.split('T')[0] }}</span>
@@ -32,13 +31,25 @@
                   <small class="me-1">{{ entry.NAMAPASIEN }}</small>
                   <span class="badge text-dark bg-white border">{{ entry.no_rm }}</span>
                 </td>
-                <td> <span class="badge text-dark">{{ entry.no_transaksi }}</span> </td>
+                <td> 
+                  <span class="badge text-dark">{{ entry.no_transaksi }}</span> 
+                  <br>
+                  <span v-if="entry.verifikasi"> <span class="badge bg-success"> <i class="fas fa-check-double"></i> Sudah diverifikasi</span> </span>
+                </td>
+              </tr>
+              <tr v-if="!entry.verifikasi && entry === selectedRow">
+                <td></td>
+                <th class="text-end">Aksi: </th>
+                <td colspan="2">
+                  <span v-if="entry.verifikasi"> <span class="badge bg-success"> <i class="fas fa-check-double"></i> Sudah diverifikasi</span> </span>
+                  <button v-else class="btn btn-sm btn-outline-success" @click="verifikasiKronologi(entry.no_transaksi)"> <i class="fas fa-check-square    "></i> Verifikasi</button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <div v-if="selectedRow" class="accordion mb-4" id="accordionExample">
+        <div :class="!detailGrading || !selectedRow ? 'd-none' : ''" class="accordion mb-4" id="accordionExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingDetailGrading">
               <button
@@ -449,7 +460,7 @@
                   </table>
                 </div>
                 <div class="btn-group no-print">
-                  <button type="button" class="btn btn-success btn-sm" @click="tambahRowRekomendasi"> + Tambah
+                  <button v-if="selectedRow && selectedRow.verifikasi !== 1" type="button" class="btn btn-success btn-sm" @click="tambahRowRekomendasi"> + Tambah
                     baris</button>
                   <!-- <button type="button" class="btn btn-warning btn-sm" @click="resetRowRekomendasi">Reset</button> -->
                   <!-- <button type="button" class="btn btn-primary btn-sm" @click="simpanRekomendasi">Simpan</button> -->
@@ -505,7 +516,7 @@
               </div>
             </div>
             <div class="text-center no-print my-4">
-              <button type="submit" class="btn btn-success">
+              <button v-if="selectedRow && selectedRow.verifikasi !== 1" type="submit" class="btn btn-success">
                 <i class="fas fa-save"></i>
                 Simpan</button>
               <!-- <button type="reset" class="btn btn-danger">Reset</button> -->
@@ -668,8 +679,8 @@ const getDetailGrading = async (data) => {
     Tanggal: ''
   }]
 
-  setFormDetailGrading(JSON.parse(detailGrading.value.rincian_kejadian) || {})
-  setFormInvestigasi(JSON.parse(detailGrading.value.investigasi) || {})
+  await setFormDetailGrading(JSON.parse(detailGrading.value.rincian_kejadian) || {})
+  await setFormInvestigasi(JSON.parse(detailGrading.value.investigasi) || {})
 }
 
 const selectedRow = ref(null)
@@ -749,6 +760,32 @@ const getListKronologi = async () => {
     listKronologi.value = data.data;
   } catch (error) {
     
+  }
+}
+
+// Verifikasi kronologi
+const verifikasiKronologi = async (no_transaksi) => {
+  console.log('verifikasi kronologi')
+  try {
+    const res = await fetch('http://10.30.0.12:8009/verifikasiKronologi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        'no_transaksi': no_transaksi,
+        'status': 1,
+        'oleh': sessionStorage.getItem('user')
+      })
+    });
+    const data = await res.json();
+    console.log('verifikasi kronologi', data);
+    if (data.data.length > 0) {
+      getRiwayatGrading()
+      selectedRow.value = null
+    }
+  } catch (error) {
+    console.error('Error fetching investigasi:', error);
   }
 }
 </script>

@@ -176,10 +176,11 @@ def cari_user(request):
 def grading(request):
   if request.method == 'GET':
     query = """
-    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN, mutu_investigasi.rekomendasi
+    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN, mutu_investigasi.rekomendasi, mutu_verifikasi.status as verifikasi
     FROM mutu_grading_insiden 
     LEFT JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN  
     LEFT JOIN mutu_investigasi ON mutu_investigasi.no_transaksi = mutu_grading_insiden.no_transaksi
+    LEFT JOIN mutu_verifikasi ON mutu_grading_insiden.no_transaksi = mutu_verifikasi.no_transaksi
     """
 
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
@@ -665,3 +666,57 @@ def getListKronologi(request):
       }
 
     return JsonResponse(res, safe=False)
+
+@csrf_exempt
+def verifikasiKronologi(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    print('data verifikasi:', data)
+    no_transaksi = data.get('no_transaksi')
+    oleh = data.get('oleh')
+    keterangan = data.get('keterangan', '')
+    status = data.get('status', 0)
+
+    with connection.cursor() as cursor:
+      # cek exist
+      query = "SELECT * FROM mutu_verifikasi WHERE no_transaksi = '{}'".format(no_transaksi)
+      cursor.execute(query)
+      rows = dictfetchall(cursor)
+
+      if len(rows) > 0:
+        # update
+        query = """
+        UPDATE mutu_verifikasi SET oleh = '{}', keterangan = '{}', status = {} 
+        OUTPUT inserted.id_verifikasi, inserted.no_transaksi, inserted.oleh, inserted.keterangan, inserted.status WHERE no_transaksi = '{}'""".format(json.dumps(oleh), keterangan, status, no_transaksi)
+        cursor.execute(query)
+        rows = dictfetchall(cursor)
+
+        res = {
+          "status": {
+              "success": True,
+              "code": 200,
+              "message": "Verifikasi kronologi sukses",
+          },
+          "data": rows
+        }
+      
+      else:
+        # insert and output inserted row
+        query = """
+        INSERT INTO mutu_verifikasi (no_transaksi, oleh, keterangan, status)
+        OUTPUT inserted.id_verifikasi, inserted.no_transaksi, inserted.oleh
+        VALUES (%s, %s, %s, %s)
+        """
+        cursor.execute(query, [no_transaksi, json.dumps(oleh), keterangan, status])
+        rows = dictfetchall(cursor)
+
+        res = {
+          "status": {
+              "success": True,
+              "code": 200,
+              "message": "Verifikasi kronologi sukses",
+          },
+          "data": rows
+        }
+
+      return JsonResponse(res, safe=False)

@@ -16,4 +16,5 @@ urlpatterns = [
   path('userMutu', views.userMutu, name='userMutu'),
   path('loginMutu', views.loginMutu, name='loginMutu'),
   path('getListKronologi', views.getListKronologi, name='getListKronologi'),
+  path('verifikasiKronologi', views.verifikasiKronologi, name='verifikasiKronologi'),
 ]
