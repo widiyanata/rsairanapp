@@ -644,3 +644,24 @@ def loginMutu(request):
         "role": None,
       }
     })
+  
+def getListKronologi(request):
+  with connection.cursor() as cursor:
+
+    no_transaksi = request.GET.get('no_transaksi', None)
+
+    if no_transaksi is not None:
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE no_transaksi = '{}'".format(no_transaksi)
+      cursor.execute(query)
+      rows = dictfetchall(cursor)
+
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Request list kronologi successful",
+        },
+        "data": rows
+      }
+
+    return JsonResponse(res, safe=False)
