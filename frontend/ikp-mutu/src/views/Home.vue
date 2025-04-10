@@ -15,10 +15,10 @@ const user = JSON.parse(sessionStorage.getItem('user'));
         <div>
           <h3>Lembar Kronologi</h3>
           <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
-          <a v-if="user.role != 'mutu' && user.role !== 'karu'" :href="`/kronologi`" class="icon-link">
-            Kronologi
+          <router-link v-if="user.role != 'mutu' && user.role !== 'karu'" to="/kronologi" class="icon-link">
+            Investigasi
             <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </a>
+          </router-link>
         </div>
       </div>
       <div class="feature col d-flex align-items-start gap-3">
@@ -28,10 +28,10 @@ const user = JSON.parse(sessionStorage.getItem('user'));
         <div>
           <h3>Grading Karu</h3>
           <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
-          <a v-if="user.role == 'karu'" :href="`/grading`" class="icon-link">
-            Grading
+          <router-link v-if="user.role == 'karu'" to="/grading" class="icon-link">
+            Investigasi
             <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </a>
+          </router-link>
         </div>
       </div>
       <div class="feature col d-flex align-items-start gap-3">
@@ -41,10 +41,11 @@ const user = JSON.parse(sessionStorage.getItem('user'));
         <div>
           <h3>Laporan Investigasi</h3>
           <p>Form investigasi lanjut atas insiden yang terjadi di RS Airan Raya oleh unit Mutu</p>
-          <a v-if="user.role == 'mutu'" :href="`/investigasi`" class="icon-link">
+          <router-link v-if="user.role == 'mutu'" to="/investigasi" class="icon-link">
             Investigasi
             <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </a>
+          </router-link>
+          
         </div>
       </div>
     </div>

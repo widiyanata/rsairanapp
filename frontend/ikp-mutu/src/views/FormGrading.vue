@@ -213,6 +213,18 @@ const umurPasien = computed(() => {
   return age;
 });
 
+const listKronologi = ref([])
+const getListKronologi = async () => {
+  try {
+    const res = await fetch('http://10.30.0.12:8009/getListKronologi?no_transaksi=' + selectedRow.value.no_transaksi);
+    const data = await res.json();
+    console.log('list kronologi', data);
+    listKronologi.value = data.data;
+  } catch (error) {
+    
+  }
+}
+
 </script>
 <template>
   <div>
@@ -245,7 +257,7 @@ const umurPasien = computed(() => {
                 <!-- Riwayat -->
                 <tr v-for="(entry, index) in riwayatKronologi" :key="index"
                   :class="{ 'rowActive': selectedRow === entry, 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }"
-                  @click="getDetailPasien(entry.no_transaksi); selectRow(entry)">
+                  @click="getDetailPasien(entry.no_transaksi); selectRow(entry); getListKronologi()">
                   <td>{{ index + 1 }}</td>
                   <td> <small>{{ entry.Tanggal.replace('T', ' jam ') }}</small> </td>
                   <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> <small
@@ -281,31 +293,6 @@ const umurPasien = computed(() => {
           <h4 class="d-flex align-items-center">
             Detail Kronologi
           </h4>
-          <small>dibuat oleh: {{ JSON.parse(selectedRow.dibuat_oleh).role }} -
-            {{ JSON.parse(selectedRow.dibuat_oleh).username }} </small>
-          <div class="mb-5">
-            <div v-if="loading" class="d-flex justify-content-center align-items-center p-2">
-              <div class="spinner-border text-primary spinner-border-sm" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-
-            <table v-else class="table table-sm table-hover align-top mb-1">
-              <thead>
-                <tr>
-                  <th width="100px">Tanggal</th>
-                  <th>Uraian</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in JSON.parse(selectedRow.Uraian)" :key="row">
-                  <td><span class="badge bg-secondary">{{ row.Tanggal.replace('T', ' jam ') }}</span></td>
-                  <td><small>{{ row.Uraian }}</small></td>
-                </tr>
-              </tbody>
-            </table>
-
-          </div>
 
           <div class="d-none">
             <h4>Riwayat Grading</h4>
@@ -331,6 +318,34 @@ const umurPasien = computed(() => {
               </tbody>
             </table>
           </div>
+
+          <div v-if="listKronologi.length > 0" class="">
+              <!-- <h2 class="mb-4 h4">Detail Kronologi</h2> -->
+              <div class="border-bottom">
+                <table class="table table-sm table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Tgl.</th>
+                      <th>Uraian</th>
+                    </tr>
+                  </thead>
+                  <tbody v-for="(kronologi, index) in listKronologi" :key="index" >
+                    <tr class="table-warning">
+                      <td colspan="2">Dibuat Oleh: {{ JSON.parse(kronologi.dibuat_oleh).username }}</td>
+                    </tr>
+                    <tr v-for="(uraian, index) in JSON.parse(kronologi.Uraian)" :key="index">
+                      <td>
+                        <span class="badge bg-white text-dark border">{{ uraian.Tanggal }}</span>
+                      </td>
+                      <td>
+                        {{ uraian.Uraian }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+            </div>
         </div>
         <div class="col-md-8">
           <div v-if="detailPasien.KPNO_TRANSAKSI" class="">

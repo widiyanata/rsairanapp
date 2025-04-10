@@ -337,10 +337,18 @@
                 <!-- Detail Kronologi -->
                 <div v-if="selectedRow && listKronologi.length > 0" class="">
                   <!-- <h2 class="mb-4 h4">Detail Kronologi</h2> -->
-                  <div v-for="(kronologi, index) in listKronologi" :key="index" class="border-bottom">
-                    <p class="mb-0">dibuat oleh: <b> {{ JSON.parse(kronologi.dibuat_oleh).username }}</b> </p>
-                    <table class="table table-sm table-striped table-hover">
-                      <tbody>
+                  <div class="">
+                    <table class="table table-sm table-hover">
+                      <thead>
+                        <tr>
+                          <th>Tgl.</th>
+                          <th>Uraian</th>
+                        </tr>
+                      </thead>
+                      <tbody v-for="(kronologi, index) in listKronologi" :key="index" >
+                        <tr class="table-warning">
+                          <td colspan="2">Dibuat Oleh: {{ JSON.parse(kronologi.dibuat_oleh).username }}</td>
+                        </tr>
                         <tr v-for="(uraian, index) in JSON.parse(kronologi.Uraian)" :key="index">
                           <td>
                             <span class="badge bg-white text-dark border">{{ uraian.Tanggal }}</span>

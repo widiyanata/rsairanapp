@@ -1,18 +1,20 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from './views/Home.vue';
 import Login from './views/Login.vue';
+
+import Investigasi from './views/FormInvestigasi.vue';
 
 const routes = [
   { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true } },
   { path: '/login', name: 'Login', component: Login },
   { path: '/kronologi', name: 'Kronologi', component: () => import('./views/FormKronologi.vue'), meta: { requiresAuth: true } },
   { path: '/grading', name: 'Grading', component: () => import('./views/FormGrading.vue'), meta: { requiresAuth: true } },
-  { path: '/investigasi', name: 'Investigasi', component: () => import('./views/FormInvestigasi.vue'), meta: { requiresAuth: true } },
+  { path: '/investigasi', name: 'Investigasi', component: Investigasi, meta: { requiresAuth: true } },
 
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 });
 
