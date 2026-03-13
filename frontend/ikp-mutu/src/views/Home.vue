@@ -1,116 +1,133 @@
 <script setup>
+import { computed } from 'vue';
 
-const user = JSON.parse(sessionStorage.getItem('user'));
+const user = computed(() => {
+  const userData = sessionStorage.getItem('user');
+  return userData ? JSON.parse(userData) : null;
+});
 
+const cards = [
+  {
+    title: 'Lembar Kronologi',
+    description: 'Pencatatan insiden dan kejadian di unit pelayanan.',
+    icon: 'fas fa-history',
+    path: '/kronologi',
+    roles: ['perawat', 'admin']
+  },
+  {
+    title: 'Grading Karu',
+    description: 'Penilaian matriks risiko oleh masing-masing unit.',
+    icon: 'fas fa-chart-line',
+    path: '/grading',
+    roles: ['karu', 'admin']
+  },
+  {
+    title: 'Laporan Investigasi',
+    description: 'Investigasi komprehensif oleh Komite Mutu.',
+    icon: 'fas fa-search-plus',
+    path: '/investigasi',
+    roles: ['mutu', 'admin']
+  }
+];
+
+const visibleCards = computed(() => {
+  if (!user.value) return [];
+  const currentUser = user.value;
+  if (currentUser.role === 'admin') return cards;
+  
+  return cards.filter(card => {
+    const role = currentUser.role;
+    if (card.path === '/kronologi') return role !== 'mutu' && role !== 'karu';
+    if (card.path === '/grading') return role === 'karu';
+    if (card.path === '/investigasi') return role === 'mutu';
+    return false;
+  });
+});
 </script>
+
 <template>
-  <div class="container px-4 py-5" id="featured-3">
-    <h3 class="h5">RS Airan Raya</h3>
-    <h2 class="pb-2 border-bottom">Komite Mutu </h2>
-    <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-      <div class="feature col d-flex align-items-start gap-3">
-        <div class="feature-icon bg-primary bg-gradient">
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#collection"></use></svg>
-        </div>
-        <div>
-          <h3>Lembar Kronologi</h3>
-          <p>Form kronologi kejadian yang terjadi di RS Airan Raya</p>
-          <router-link v-if="user.role != 'mutu' && user.role !== 'karu'" to="/kronologi" class="icon-link">
-            Investigasi
-            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </router-link>
-        </div>
+  <div class="home-container py-4">
+    <div class="welcome-section mb-5 animate-fade-in">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <div class="v-bar"></div>
+        <h1 class="h3 fw-bold mb-0">Selamat Datang, {{ user?.username }}</h1>
       </div>
-      <div class="feature col d-flex align-items-start gap-3">
-        <div class="feature-icon bg-primary bg-gradient">
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#people-circle"></use></svg>
-        </div>
-        <div>
-          <h3>Grading Karu</h3>
-          <p>Form penilaian insiden yang terjadi di RS Airan Raya oleh Karu masing-masing unit</p>
-          <router-link v-if="user.role == 'karu'" to="/grading" class="icon-link">
-            Investigasi
-            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </router-link>
-        </div>
+      <p class="text-muted small ms-4">Dashboard Komite Mutu & Keselamatan Pasien RS Airan Raya</p>
+    </div>
+
+    <div class="row g-4 animate-fade-in" style="animation-delay: 0.1s;">
+      <div v-for="(card, index) in visibleCards" :key="index" class="col-12 col-md-4">
+        <router-link :to="card.path" class="text-decoration-none">
+          <div class="card-minimal h-100 d-flex flex-column gap-3 p-4">
+            <div class="icon-box-minimal flex-center mb-1">
+              <i :class="card.icon"></i>
+            </div>
+            <div>
+              <h3 class="h5 mb-2">{{ card.title }}</h3>
+              <p class="text-muted small mb-0">{{ card.description }}</p>
+            </div>
+            <div class="mt-auto pt-3 d-flex align-items-center gap-2 text-primary small fw-bold">
+              Buka Modul
+              <i class="fas fa-arrow-right" style="font-size: 10px;"></i>
+            </div>
+          </div>
+        </router-link>
       </div>
-      <div class="feature col d-flex align-items-start gap-3">
-        <div class="feature-icon bg-primary bg-gradient">
-          <svg class="bi" width="1em" height="1em"><use xlink:href="#toggles2"></use></svg>
+    </div>
+
+    <!-- Minimal Stats -->
+    <div class="mt-5 pt-5 animate-fade-in" style="animation-delay: 0.3s;">
+      <h6 class="label-minimal mb-4">Statistik Terkini</h6>
+      <div class="row g-4">
+        <div class="col-6 col-md-3">
+          <div class="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
+            <div class="h2 fw-bold mb-1">24</div>
+            <div class="text-muted small text-uppercase ls-1">Kronologi</div>
+          </div>
         </div>
-        <div>
-          <h3>Laporan Investigasi</h3>
-          <p>Form investigasi lanjut atas insiden yang terjadi di RS Airan Raya oleh unit Mutu</p>
-          <router-link v-if="user.role == 'mutu'" to="/investigasi" class="icon-link">
-            Investigasi
-            <svg class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"></use></svg>
-          </router-link>
-          
+        <div class="col-6 col-md-3">
+          <div class="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
+            <div class="h2 fw-bold mb-1">12</div>
+            <div class="text-muted small text-uppercase ls-1">Grading</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
+            <div class="h2 fw-bold mb-1">05</div>
+            <div class="text-muted small text-uppercase ls-1">Investigasi</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-3 d-flex align-items-end">
+          <div class="ms-md-auto text-muted small pb-2">
+            <i class="fas fa-circle text-success me-2" style="font-size: 8px;"></i>
+            Sistem Stabil
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 <style scoped>
-.b-example-divider {
-  height: 3rem;
-  background-color: rgba(0, 0, 0, .1);
-  border: solid rgba(0, 0, 0, .15);
-  border-width: 1px 0;
-  box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+.v-bar {
+  width: 4px;
+  height: 1.5rem;
+  background: var(--primary);
+  border-radius: 2px;
 }
 
-.bi {
-  vertical-align: -.125em;
-  fill: currentColor;
+.icon-box-minimal {
+  width: 40px;
+  height: 40px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  font-size: 1.1rem;
 }
 
-.feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  color: #fff;
-  border-radius: .75rem;
-}
+.ls-1 { letter-spacing: 1px; font-weight: 700; font-size: 9px; }
 
-.icon-link {
-  display: inline-flex;
-  align-items: center;
-}
-.icon-link > .bi {
-  margin-top: .125rem;
-  margin-left: .125rem;
-  transition: transform .25s ease-in-out;
-  fill: currentColor;
-}
-.icon-link:hover > .bi {
-  transform: translate(.25rem);
-}
-
-.icon-square {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-  height: 3rem;
-  font-size: 1.5rem;
-  border-radius: .75rem;
-}
-
-.rounded-4 { border-radius: .5rem; }
-.rounded-5 { border-radius: 1rem; }
-
-.text-shadow-1 { text-shadow: 0 .125rem .25rem rgba(0, 0, 0, .25); }
-.text-shadow-2 { text-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25); }
-.text-shadow-3 { text-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .25); }
-
-.card-cover {
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+.card-minimal {
+  background: #fff;
 }
 </style>

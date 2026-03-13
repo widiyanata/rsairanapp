@@ -8,6 +8,7 @@ const routes = [
   { path: '/', name: 'Home', component: Home, meta: { requiresAuth: true } },
   { path: '/login', name: 'Login', component: Login },
   { path: '/kronologi', name: 'Kronologi', component: () => import('./views/FormKronologi.vue'), meta: { requiresAuth: true } },
+  { path: '/kronologi/form/:id?', name: 'FormKronologiDetail', component: () => import('./views/FormKronologiDetail.vue'), meta: { requiresAuth: true } },
   { path: '/grading', name: 'Grading', component: () => import('./views/FormGrading.vue'), meta: { requiresAuth: true } },
   { path: '/investigasi', name: 'Investigasi', component: Investigasi, meta: { requiresAuth: true } },
 
