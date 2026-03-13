@@ -1,7 +1,7 @@
 <template>
   <div class="kronologi-detail-page animate-fade-in">
     <!-- Header -->
-    <div class="d-flex align-items-center justify-content-between mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-5 no-print">
       <div class="d-flex align-items-center gap-4">
         <router-link to="/kronologi" class="btn-minimal btn-minimal-outline p-2 border-0">
           <i class="fas fa-chevron-left"></i>
@@ -123,8 +123,95 @@
         </div>
       </div>
     </div>
-  </div>
-</template>
+    </div>
+
+    <!-- Print Template (Hidden on screen) -->
+    <div class="print-container d-none">
+      <div class="print-header d-flex align-items-center justify-content-between pb-3 border-bottom border-3 border-dark mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <img src="/logo-airan-transparant.png" alt="Logo" style="height: 60px;">
+          <div>
+            <h4 class="mb-0 fw-bold">RS AIRAN RAYA</h4>
+            <div class="small">Jl. Airan Raya No. 99, Way Huwi, Kec. Jati Agung, Kab. Lampung Selatan</div>
+            <div class="small">Telp: (0721) 5617779 | Email: rs.airanraya@gmail.com</div>
+          </div>
+        </div>
+        <div class="header-stamp border border-2 border-dark p-2 text-center" style="width: 120px;">
+          <small class="fw-bold">FORM IKP-1</small>
+        </div>
+      </div>
+
+      <div class="text-center mb-4">
+        <h4 class="fw-bold text-decoration-underline">LAPORAN KRONOLOGI INSIDEN</h4>
+        <div class="small">No. Transaksi: {{ pasien.KPNO_TRANSAKSI || '-' }}</div>
+      </div>
+
+      <div class="print-section mb-4">
+        <h6 class="fw-bold border-bottom pb-1 mb-3">DATA PASIEN</h6>
+        <table class="table table-sm table-bordered border-dark">
+          <tr>
+            <th width="30%" class="bg-light">Nama Pasien</th>
+            <td>{{ pasien.KPKD_PASIENN || '-' }}</td>
+          </tr>
+          <tr>
+            <th class="bg-light">No. Rekam Medis</th>
+            <td>{{ pasien.KPKD_PASIEN || '-' }}</td>
+          </tr>
+          <tr>
+            <th class="bg-light">Unit Pelayanan</th>
+            <td>{{ nama_pembuat.role || '-' }}</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="print-section mb-4">
+        <h6 class="fw-bold border-bottom pb-1 mb-3">URAIAN KRONOLOGI</h6>
+        <table class="table table-bordered border-dark">
+          <thead class="bg-light">
+            <tr>
+              <th width="5%" class="text-center">No</th>
+              <th width="25%">Waktu Kejadian</th>
+              <th>Kronologi Kejadian (Detil)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(entry, idx) in kejadianEntries" :key="idx">
+              <td class="text-center">{{ idx + 1 }}</td>
+              <td>{{ entry.Tanggal ? new Date(entry.Tanggal).toLocaleString('id-ID') : '-' }}</td>
+              <td>{{ entry.Uraian || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="print-signatures mt-5 pt-4">
+        <div class="row text-center">
+          <div class="col-6">
+            <div class="mb-5">Mengetahui,</div>
+            <div class="signature-space mb-2">
+              <div v-if="isKirim" class="text-muted small italic">(Telah dikirim & disetujui digital)</div>
+              <div v-else class="text-muted small italic">(Belum dikirim)</div>
+            </div>
+            <div class="fw-bold text-decoration-underline">{{ listKaru.find(k => k.id == kirimke)?.nama || '..........................' }}</div>
+            <div class="small">Kepala Ruangan / Atasan</div>
+          </div>
+          <div class="col-6">
+            <div class="mb-2">Pembuat Laporan,</div>
+            <div class="signature-space mb-2">
+              <img v-if="tandaTangan" :src="tandaTangan" alt="Tanda Tangan" style="height: 80px;">
+              <div v-else style="height: 80px;"></div>
+            </div>
+            <div class="fw-bold text-decoration-underline">{{ nama_pembuat.username || '..........................' }}</div>
+            <div class="small">Pelapor Insiden</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="print-footer fixed-bottom pb-4 px-5 text-muted small d-none d-print-block">
+        Dicetak pada: {{ new Date().toLocaleString('id-ID') }} | Oleh: {{ nama_pembuat.username }}
+      </div> -->
+    </div>
+  </template>
 
 <script setup>
 import { inject, nextTick, onMounted, ref, watch, computed } from 'vue'
@@ -276,4 +363,36 @@ onMounted(() => {
 .border-dashed { border-style: dashed !important; }
 
 textarea { resize: none; overflow: hidden; }
+
+/* Print Styles */
+@media print {
+  /* Hide UI elements */
+  nav, .sidebar, .header-minimal, .btn-minimal, .card-minimal, .sticky-top, .breadcrumb-minimal, .form-section, .signature-minimal, .d-flex.btn-group, .my-3 {
+    display: none !important;
+  }
+
+  .main-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .content-body {
+    padding: 0 !important;
+  }
+
+  .print-container {
+    display: block !important;
+    padding: 20px;
+    color: #000;
+  }
+
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  .print-header { border-bottom: 2px solid #000 !important; }
+  .table-bordered th, .table-bordered td { border: 1px solid #000 !important; }
+  .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
+}
 </style>
