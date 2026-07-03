@@ -279,6 +279,122 @@ export default function InvestigasiForm() {
                           </div>
                         ))}
                       </div>
+
+                      <label className="form-label fw-bold">Orang Pertama Yang Melaporkan Insiden *</label>
+                      <div className="mb-2">
+                        {[
+                          { id: 'karyawan', value: 'karyawan', label: 'Karyawan: Dokter / Perawat / Petugas lainnya' },
+                          { id: 'pasien-pelapor', value: 'pasien', label: 'Pasien' },
+                          { id: 'keluarga', value: 'keluarga', label: 'Keluarga / Pendamping Pasien' },
+                          { id: 'pengunjung', value: 'pengunjung', label: 'Pengunjung' },
+                        ].map((item) => (
+                          <div key={item.id} className="form-check">
+                            <input className="form-check-input" type="radio" name="pelaporPertama" id={`inv-${item.id}`} value={item.value} />
+                            <label className="form-check-label" htmlFor={`inv-${item.id}`}>{item.label}</label>
+                          </div>
+                        ))}
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="pelaporPertama" id="inv-lainlain1" value="lainlain" />
+                          <label className="form-check-label" htmlFor="inv-lainlain1">Lain-lain</label>
+                          <input type="text" className="form-control mt-2" name="pelaporPertamaText" placeholder="Sebutkan" />
+                        </div>
+                      </div>
+
+                      <label className="form-label fw-bold">Insiden terjadi pada *</label>
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="insindentuj" id="inv-it-pasien" value="pasien" />
+                          <label className="form-check-label" htmlFor="inv-it-pasien">Pasien</label>
+                        </div>
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="insindentuj" id="inv-it-lainlain" value="lainlain" />
+                          <label className="form-check-label" htmlFor="inv-it-lainlain">Lain-lain</label>
+                          <input type="text" className="form-control form-control-sm mt-2" placeholder="Sebutkan" name="insindentujText" />
+                        </div>
+                      </div>
+
+                      <label className="form-label fw-bold">Insiden menyangkut pasien</label>
+                      <div className="mb-2">
+                        {[
+                          { id: 'rawatinap', value: 'pasien rawat inap', label: 'Pasien rawat inap' },
+                          { id: 'rawatjalan', value: 'pasien rawat jalan', label: 'Pasien rawat jalan' },
+                          { id: 'ugd', value: 'pasien ugd', label: 'Pasien UGD' },
+                          { id: 'lainlain3', value: 'lainlain', label: 'Lain-lain' },
+                        ].map((item) => (
+                          <div key={item.id} className="form-check">
+                            <input className="form-check-input" type="radio" name="insidenmenyangkut" id={`inv-im-${item.id}`} value={item.value} />
+                            <label className="form-check-label" htmlFor={`inv-im-${item.id}`}>{item.label}</label>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label fw-bold">Tempat Insiden</label>
+                        <input type="text" className="form-control form-control-sm" name="tempatInsiden" placeholder="Lokasi kejadian" />
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label fw-bold">Insiden terjadi pada pasien</label>
+                        <input type="text" className="form-control form-control-sm" name="insidenTerjadiPada" placeholder="Sebutkan detail spesialisasi" />
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label fw-bold">Unit Kerja tempat terjadinya insiden</label>
+                        <input type="text" className="form-control form-control-sm" name="unitKerja" placeholder="Unit kerja" />
+                      </div>
+
+                      <label className="form-label fw-bold">Akibat Insiden Terhadap Pasien *</label>
+                      <div className="mb-2">
+                        {[
+                          { id: 'kematian', value: 'kematian', label: 'Kematian' },
+                          { id: 'cederairreversibel', value: 'cedera irreversibel', label: 'Cedera Irreversibel / Cedera Berat' },
+                          { id: 'cederareversibel', value: 'cedera reversibel', label: 'Cedera Reversibel / Cedera Sedang' },
+                        ].map((item) => (
+                          <div key={item.id} className="form-check">
+                            <input className="form-check-input" type="radio" name="akibatinsiden" id={`inv-ak-${item.id}`} value={item.value} />
+                            <label className="form-check-label" htmlFor={`inv-ak-${item.id}`}>{item.label}</label>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label fw-bold">Tindakan yang dilakukan segera setelah kejadian, dan hasilnya</label>
+                        <textarea className="form-control form-control-sm" rows="3" name="tindakanHasil" placeholder="Tindakan segera & hasil"></textarea>
+                      </div>
+
+                      <label className="form-label fw-bold">Tindakan dilakukan oleh *</label>
+                      <div className="mb-2">
+                        {[
+                          { id: 'tim', value: 'tim', label: 'Tim', extra: <input type="text" className="form-control mt-2" name="dilakukanOlehTim" placeholder="Terdiri dari..." /> },
+                          { id: 'dokter', value: 'dokter', label: 'Dokter' },
+                          { id: 'perawat', value: 'perawat', label: 'Perawat' },
+                          { id: 'petugaslainnya', value: 'petugaslainnya', label: 'Petugas lainnya', extra: <input type="text" className="form-control mt-2" name="dilakukanOlehLainnya" placeholder="Sebutan" /> },
+                        ].map((item) => (
+                          <div key={item.id} className="form-check">
+                            <input className="form-check-input" type="radio" name="dilakukanOleh" id={`inv-do-${item.id}`} value={item.value} />
+                            <label className="form-check-label" htmlFor={`inv-do-${item.id}`}>{item.label}</label>
+                            {item.extra}
+                          </div>
+                        ))}
+                      </div>
+
+                      <label className="form-label fw-bold">Apakah kejadian yang sama pernah terjadi di Unit Kerja lain? *</label>
+                      <div className="mb-2">
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="kejadiansama" id="inv-ks-ya" value="ya" />
+                          <label className="form-check-label" htmlFor="inv-ks-ya">Ya</label>
+                        </div>
+                        <div className="form-check">
+                          <input className="form-check-input" type="radio" name="kejadiansama" id="inv-ks-tidak" value="tidak" />
+                          <label className="form-check-label" htmlFor="inv-ks-tidak">Tidak</label>
+                        </div>
+                      </div>
+
+                      <div className="mb-2">
+                        <label className="form-label fw-bold">Jika ya, kapan dan langkah/tindakan apa yang telah diambil?</label>
+                        <textarea className="form-control form-control-sm" rows="3" name="kejadianSamaText" placeholder="Jelaskan langkah/tindakan"></textarea>
+                      </div>
+
                       <label className="form-label fw-bold">Grading Risiko</label>
                       <div className="mb-2">
                         {['biru', 'hijau', 'kuning', 'merah'].map((val) => (
