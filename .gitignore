@@ -14993,3 +14993,6 @@ frontend/komitemutu/index.html
 frontend/komitemutu/src/App.vue
 frontend/komitemutu/src/views/FormGrading.vue
 frontend/komitemutu/src/views/FormKronologi.vue
+
+graphify-out/
+.agents/
