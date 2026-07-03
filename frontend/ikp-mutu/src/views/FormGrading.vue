@@ -26,6 +26,30 @@ watch(loading, (newVal, oldVal) => {
 
 // data kronologi
 const riwayatKronologi = ref([])
+
+const riwayatKronologiGrouped = computed(() => {
+  const map = new Map()
+
+  const sorted = [...riwayatKronologi.value].sort((a, b) => {
+    if (b.id_kronologi !== a.id_kronologi) return b.id_kronologi - a.id_kronologi
+    return new Date(b.Tanggal) - new Date(a.Tanggal)
+  })
+
+  sorted.forEach(entry => {
+    const username = JSON.parse(entry.dibuat_oleh).username
+    if (!map.has(entry.no_transaksi)) {
+      map.set(entry.no_transaksi, { ...entry, pembuat: [username] })
+    } else {
+      const existing = map.get(entry.no_transaksi)
+      if (!existing.pembuat.includes(username)) {
+        existing.pembuat.push(username)
+      }
+    }
+  })
+
+  return Array.from(map.values())
+})
+
 const getKronologi = async () => {
   loading.value = true
   try {
@@ -74,9 +98,9 @@ const getDetailPasien = async (no_transaksi) => {
 const rincianKejadian = ref({})
 
 const dibuat_oleh = ref({
-  user_id: sessionStorage.getItem('user')['id'] || '',
-  user_name: sessionStorage.getItem('user')['username'] || '',
-  jabatan: sessionStorage.getItem('user')['role'] || ''
+  user_id: user?.id || '',
+  user_name: user?.username || '',
+  jabatan: user?.role || ''
 })
 const submitForm = async (e) => {
   e.preventDefault()
@@ -200,6 +224,7 @@ const simpanTandaTanganPenerima = (ttd) => {
 }
 
 const umurPasien = computed(() => {
+  if (!detailPasien.value || !detailPasien.value.TGL_LAHIR) return '';
   console.log('umur pasien', detailPasien.value.TGL_LAHIR);
   const today = new Date();
   const birthDate = new Date(detailPasien.value.TGL_LAHIR);
@@ -254,20 +279,24 @@ const getListKronologi = async () => {
                 </tr>
               </thead>
               <tbody>
-                <!-- Riwayat -->
-                <tr v-for="(entry, index) in riwayatKronologi" :key="index"
-                  :class="{ 'rowActive': selectedRow === entry, 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }"
+                <tr v-for="(entry, index) in riwayatKronologiGrouped" :key="index"
+                  :class="{ 'rowActive': selectedRow && selectedRow.no_transaksi === entry.no_transaksi }"
                   @click="getDetailPasien(entry.no_transaksi); selectRow(entry); getListKronologi()">
                   <td>{{ index + 1 }}</td>
-                  <td> <small>{{ entry.Tanggal.replace('T', ' jam ') }}</small> </td>
-                  <td> <small class="fw-bold">{{ entry.nama_pasien }} </small> <small
-                      class="badge bg-white text-secondary border">({{ entry.no_rm }})</small> </td>
+                  <td><small>{{ entry.Tanggal.replace('T', ' jam ') }}</small></td>
+                  <td>
+                    <small class="fw-bold">{{ entry.nama_pasien }}</small>
+                    <small class="badge bg-white text-secondary border">({{ entry.no_rm }})</small>
+                  </td>
                   <td>
                     <a class="badge bg-white text-primary text-decoration-none border" href="#">
                       <small>{{ entry.no_transaksi }}</small>
                     </a>
                   </td>
-                  <td><span class="badge text-secondary ms-1 border">{{ JSON.parse(entry.dibuat_oleh).username }}</span>
+                  <td>
+                    <span v-for="(nama, i) in entry.pembuat" :key="i" class="badge text-secondary ms-1 border">
+                      {{ nama }}
+                    </span>
                   </td>
                 </tr>
               </tbody>

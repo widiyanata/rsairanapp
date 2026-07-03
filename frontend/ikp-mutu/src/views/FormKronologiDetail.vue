@@ -1,5 +1,6 @@
 <template>
-  <div class="kronologi-detail-page animate-fade-in">
+  <div class="kronologi-detail-wrapper">
+    <div class="kronologi-detail-page animate-fade-in">
     <!-- Header -->
     <div class="d-flex align-items-center justify-content-between mb-5 no-print">
       <div class="d-flex align-items-center gap-4">
@@ -149,18 +150,20 @@
       <div class="print-section mb-4">
         <h6 class="fw-bold border-bottom pb-1 mb-3">DATA PASIEN</h6>
         <table class="table table-sm table-bordered border-dark">
-          <tr>
-            <th width="30%" class="bg-light">Nama Pasien</th>
-            <td>{{ pasien.KPKD_PASIENN || '-' }}</td>
-          </tr>
-          <tr>
-            <th class="bg-light">No. Rekam Medis</th>
-            <td>{{ pasien.KPKD_PASIEN || '-' }}</td>
-          </tr>
-          <tr>
-            <th class="bg-light">Unit Pelayanan</th>
-            <td>{{ nama_pembuat.role || '-' }}</td>
-          </tr>
+          <tbody>
+            <tr>
+              <th width="30%" class="bg-light">Nama Pasien</th>
+              <td>{{ pasien.KPKD_PASIENN || '-' }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light">No. Rekam Medis</th>
+              <td>{{ pasien.KPKD_PASIEN || '-' }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light">Unit Pelayanan</th>
+              <td>{{ nama_pembuat.role || '-' }}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
 
@@ -211,7 +214,8 @@
         Dicetak pada: {{ new Date().toLocaleString('id-ID') }} | Oleh: {{ nama_pembuat.username }}
       </div> -->
     </div>
-  </template>
+  </div>
+</template>
 
 <script setup>
 import { inject, nextTick, onMounted, ref, watch, computed } from 'vue'
