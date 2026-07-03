@@ -14996,3 +14996,6 @@ frontend/komitemutu/src/views/FormKronologi.vue
 
 graphify-out/
 .agents/
+services/whatsapp/node_modules/
+services/whatsapp/.wwebjs_auth/
+services/whatsapp/.wwebjs_cache/
