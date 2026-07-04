@@ -18,6 +18,8 @@ urlpatterns = [
   path('updateUserMutu', views.updateUserMutu, name='updateUserMutu'),
   path('deleteUserMutu', views.deleteUserMutu, name='deleteUserMutu'),
   path('loginMutu', views.loginMutu, name='loginMutu'),
+  path('getPermissions', views.getPermissions, name='getPermissions'),
+  path('updatePermissions', views.updatePermissions, name='updatePermissions'),
   path('getListKronologi', views.getListKronologi, name='getListKronologi'),
   path('verifikasiKronologi', views.verifikasiKronologi, name='verifikasiKronologi'),
 ]

@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { DASHBOARD_CARDS, hasAccess } from '../config/permissions';
+import { DASHBOARD_CARDS } from '../config/permissions';
 import api from '../config/api';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, hasAccessDynamic } = useAuth();
   const [stats, setStats] = useState({ kronologi: 0, grading: 0, investigasi: 0 });
   const [loading, setLoading] = useState(true);
 
-  const visibleCards = DASHBOARD_CARDS.filter((card) =>
-    hasAccess(user?.role, card.roles)
-  );
+  const visibleCards = DASHBOARD_CARDS.filter((card) => {
+    let feature = 'dashboard';
+    if (card.path === '/kronologi') feature = 'kronologi';
+    else if (card.path === '/grading') feature = 'grading';
+    else if (card.path === '/investigasi') feature = 'investigasi';
+    else if (card.path === '/users') feature = 'users';
+    
+    return hasAccessDynamic(feature);
+  });
 
   useEffect(() => {
     const fetchStats = async () => {

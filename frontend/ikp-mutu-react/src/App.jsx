@@ -27,25 +27,25 @@ function AppRoutes() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Dashboard />} />
 
-          {/* Kronologi — Perawat, Lainya */}
-          <Route element={<ProtectedRoute allowedRoles={[ROLES.PERAWAT, ROLES.LAINYA, ROLES.ADMIN]} />}>
+          {/* Kronologi */}
+          <Route element={<ProtectedRoute feature="kronologi" />}>
             <Route path="/kronologi" element={<KronologiList />} />
             <Route path="/kronologi/form" element={<KronologiForm />} />
             <Route path="/kronologi/form/:id" element={<KronologiForm />} />
           </Route>
 
-          {/* Grading — Karu */}
-          <Route element={<ProtectedRoute allowedRoles={[ROLES.KARU, ROLES.ADMIN]} />}>
+          {/* Grading */}
+          <Route element={<ProtectedRoute feature="grading" />}>
             <Route path="/grading" element={<GradingForm />} />
           </Route>
 
-          {/* Investigasi — Mutu */}
-          <Route element={<ProtectedRoute allowedRoles={[ROLES.MUTU, ROLES.ADMIN]} />}>
+          {/* Investigasi */}
+          <Route element={<ProtectedRoute feature="investigasi" />}>
             <Route path="/investigasi" element={<InvestigasiForm />} />
           </Route>
 
-          {/* User Management — Admin */}
-          <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+          {/* User Management */}
+          <Route element={<ProtectedRoute feature="users" />}>
             <Route path="/users" element={<UserManagement />} />
           </Route>
         </Route>

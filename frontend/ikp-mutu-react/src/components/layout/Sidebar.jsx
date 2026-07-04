@@ -1,13 +1,19 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { MENU_ITEMS, hasAccess } from '../../config/permissions';
+import { MENU_ITEMS } from '../../config/permissions';
 
 export default function Sidebar({ isOpen, onClose, isMobile }) {
-  const { user, logout } = useAuth();
+  const { user, logout, hasAccessDynamic } = useAuth();
 
-  const visibleMenuItems = MENU_ITEMS.filter(
-    (item) => hasAccess(user?.role, item.roles)
-  );
+  const visibleMenuItems = MENU_ITEMS.filter((item) => {
+    let feature = 'dashboard';
+    if (item.path === '/kronologi') feature = 'kronologi';
+    else if (item.path === '/grading') feature = 'grading';
+    else if (item.path === '/investigasi') feature = 'investigasi';
+    else if (item.path === '/users') feature = 'users';
+    
+    return hasAccessDynamic(feature);
+  });
 
   return (
     <>

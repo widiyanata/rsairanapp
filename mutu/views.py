@@ -762,6 +762,41 @@ def loginMutu(request):
       }
     })
   
+@csrf_exempt
+def getPermissions(request):
+  with connection.cursor() as cursor:
+    cursor.execute("SELECT role, feature FROM mutu_permissions")
+    rows = dictfetchall(cursor)
+
+  res = {
+    "status": {
+        "success": True,
+        "code": 200,
+        "message": "Request successful",
+    },
+    "data": rows
+  }
+  return JsonResponse(res, safe=False)
+
+@csrf_exempt
+def updatePermissions(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    role = data.get('role')
+    features = data.get('features', [])
+
+    if not role:
+      return JsonResponse({'status': False, 'message': 'Missing role parameter'}, status=400)
+
+    with connection.cursor() as cursor:
+      cursor.execute("DELETE FROM mutu_permissions WHERE role = %s", [role])
+      if features:
+        inserts = [(role, f) for f in features]
+        cursor.executemany("INSERT INTO mutu_permissions (role, feature) VALUES (%s, %s)", inserts)
+
+    return JsonResponse({'status': True, 'message': 'Permissions updated successfully'})
+  return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+
 def getListKronologi(request):
   with connection.cursor() as cursor:
     no_transaksi = request.GET.get('no_transaksi', None)

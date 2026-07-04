@@ -1,14 +1,13 @@
 import { useAuth } from '../../contexts/AuthContext';
-import { hasAccess } from '../../config/permissions';
 
 /**
- * Conditionally render children based on user role
- * Usage: <RoleGate roles={['mutu', 'admin']}><VerifikasiButton /></RoleGate>
+ * Conditionally render children based on dynamic feature permissions
+ * Usage: <RoleGate feature="investigasi"><VerifikasiButton /></RoleGate>
  */
-export default function RoleGate({ roles, children, fallback = null }) {
-  const { user } = useAuth();
+export default function RoleGate({ feature, children, fallback = null }) {
+  const { hasAccessDynamic } = useAuth();
 
-  if (!user || !hasAccess(user.role, roles)) {
+  if (!hasAccessDynamic(feature)) {
     return fallback;
   }
 
