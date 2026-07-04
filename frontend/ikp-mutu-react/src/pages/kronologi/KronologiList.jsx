@@ -15,7 +15,7 @@ export default function KronologiList() {
       setLoading(true);
       try {
         let params = '';
-        if (user?.role !== 'mutu') {
+        if (user?.role !== 'mutu' && user?.role !== 'admin') {
           params = `&dibuat_oleh=${JSON.stringify(user)}`;
         }
         const { data } = await api.get(`/kronologi?${params}`);
