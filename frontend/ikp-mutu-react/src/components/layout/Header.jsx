@@ -10,6 +10,7 @@ export default function Header({ isSidebarOpen, onToggleSidebar }) {
     if (path.startsWith('/kronologi')) return 'Kronologi';
     if (path.startsWith('/grading')) return 'Grading';
     if (path.startsWith('/investigasi')) return 'Investigasi';
+    if (path.startsWith('/users')) return 'User Management';
     return '';
   };
 

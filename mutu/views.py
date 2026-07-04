@@ -622,6 +622,92 @@ def userMutu(request):
     return JsonResponse(res, safe=False)
 
 @csrf_exempt
+def createUserMutu(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+    role = data.get('role')
+    nama = data.get('nama')
+    telp = data.get('telp', '')
+
+    if not all([username, password, role, nama]):
+      return JsonResponse({'status': False, 'message': 'Missing required fields'}, status=400)
+
+    from django.contrib.auth.hashers import make_password
+    hashed_password = make_password(password)
+
+    with connection.cursor() as cursor:
+      # Check if username already exists
+      cursor.execute("SELECT id FROM mutu_users WHERE username = %s", [username])
+      if cursor.fetchone():
+        return JsonResponse({'status': False, 'message': 'Username already exists'}, status=400)
+
+      query = """
+          INSERT INTO mutu_users (username, password, role, nama, telp) 
+          VALUES (%s, %s, %s, %s, %s)
+      """
+      cursor.execute(query, [username, hashed_password, role, nama, telp])
+
+    return JsonResponse({'status': True, 'message': 'User berhasil ditambahkan'})
+  return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def updateUserMutu(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    id_user = data.get('id')
+    username = data.get('username')
+    password = data.get('password')
+    role = data.get('role')
+    nama = data.get('nama')
+    telp = data.get('telp', '')
+
+    if not all([id_user, username, role, nama]):
+      return JsonResponse({'status': False, 'message': 'Missing required fields'}, status=400)
+
+    with connection.cursor() as cursor:
+      # Check if username exists on another user
+      cursor.execute("SELECT id FROM mutu_users WHERE username = %s AND id != %s", [username, id_user])
+      if cursor.fetchone():
+        return JsonResponse({'status': False, 'message': 'Username already exists'}, status=400)
+
+      if password:
+        from django.contrib.auth.hashers import make_password
+        hashed_password = make_password(password)
+        query = """
+            UPDATE mutu_users 
+            SET username = %s, password = %s, role = %s, nama = %s, telp = %s 
+            WHERE id = %s
+        """
+        cursor.execute(query, [username, hashed_password, role, nama, telp, id_user])
+      else:
+        query = """
+            UPDATE mutu_users 
+            SET username = %s, role = %s, nama = %s, telp = %s 
+            WHERE id = %s
+        """
+        cursor.execute(query, [username, role, nama, telp, id_user])
+
+    return JsonResponse({'status': True, 'message': 'User berhasil diperbarui'})
+  return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def deleteUserMutu(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    id_user = data.get('id')
+
+    if not id_user:
+      return JsonResponse({'status': False, 'message': 'Missing user ID'}, status=400)
+
+    with connection.cursor() as cursor:
+      cursor.execute("DELETE FROM mutu_users WHERE id = %s", [id_user])
+
+    return JsonResponse({'status': True, 'message': 'User berhasil dihapus'})
+  return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+
+@csrf_exempt
 def loginMutu(request):
   if request.method == 'POST':
     data = json.loads(request.body)

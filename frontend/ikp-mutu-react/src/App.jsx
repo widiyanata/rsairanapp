@@ -8,6 +8,7 @@ import KronologiList from './pages/kronologi/KronologiList';
 import KronologiForm from './pages/kronologi/KronologiForm';
 import GradingForm from './pages/grading/GradingForm';
 import InvestigasiForm from './pages/investigasi/InvestigasiForm';
+import UserManagement from './pages/admin/UserManagement';
 import { ROLES } from './config/permissions';
 
 function AppRoutes() {
@@ -41,6 +42,11 @@ function AppRoutes() {
           {/* Investigasi — Mutu */}
           <Route element={<ProtectedRoute allowedRoles={[ROLES.MUTU, ROLES.ADMIN]} />}>
             <Route path="/investigasi" element={<InvestigasiForm />} />
+          </Route>
+
+          {/* User Management — Admin */}
+          <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route path="/users" element={<UserManagement />} />
           </Route>
         </Route>
       </Route>

@@ -36,6 +36,12 @@ export const MENU_ITEMS = [
     icon: 'fas fa-search-plus',
     roles: [ROLES.MUTU, ROLES.ADMIN],
   },
+  {
+    name: 'User Management',
+    path: '/users',
+    icon: 'fas fa-users-cog',
+    roles: [ROLES.ADMIN],
+  },
 ];
 
 export const DASHBOARD_CARDS = [
@@ -59,6 +65,13 @@ export const DASHBOARD_CARDS = [
     icon: 'fas fa-search-plus',
     path: '/investigasi',
     roles: [ROLES.MUTU, ROLES.ADMIN],
+  },
+  {
+    title: 'User Management',
+    description: 'Kelola data pengguna, role, dan nomor telepon WhatsApp.',
+    icon: 'fas fa-users-cog',
+    path: '/users',
+    roles: [ROLES.ADMIN],
   },
 ];
 
