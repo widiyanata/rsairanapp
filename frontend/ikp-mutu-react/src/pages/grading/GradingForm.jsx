@@ -438,6 +438,39 @@ export default function GradingForm() {
                           </div>
                         </div>
 
+                        <label className="form-label fw-bold">Insiden terjadi pada *</label>
+                        <div className="mb-2">
+                          <div className="form-check">
+                            <input className="form-check-input" type="radio" name="insindentuj" id="grading-it-pasien" value="pasien" required />
+                            <label className="form-check-label" htmlFor="grading-it-pasien">Pasien</label>
+                          </div>
+                          <div className="form-check">
+                            <input className="form-check-input" type="radio" name="insindentuj" id="grading-it-lainlain" value="lainlain" required />
+                            <label className="form-check-label" htmlFor="grading-it-lainlain">Lain-lain</label>
+                            <input type="text" className="form-control form-control-sm mt-2" placeholder="Sebutkan, misal: Karyawan / Pengunjung" name="insindentujText" />
+                          </div>
+                        </div>
+
+                        <label className="form-label fw-bold">Insiden menyangkut pasien</label>
+                        <div className="mb-2">
+                          {[
+                            { id: 'rawatinap', value: 'pasien rawat inap', label: 'Pasien rawat inap' },
+                            { id: 'rawatjalan', value: 'pasien rawat jalan', label: 'Pasien rawat jalan' },
+                            { id: 'ugd', value: 'pasien ugd', label: 'Pasien UGD' },
+                            { id: 'lainlain3', value: 'lainlain', label: 'Lain-lain' },
+                          ].map((item) => (
+                            <div key={item.id} className="form-check">
+                              <input className="form-check-input" type="radio" name="insidenmenyangkut" id={`grading-im-${item.id}`} value={item.value} />
+                              <label className="form-check-label" htmlFor={`grading-im-${item.id}`}>{item.label}</label>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mb-2">
+                          <label className="form-label fw-bold">Insiden terjadi pada pasien</label>
+                          <input type="text" className="form-control form-control-sm" name="insidenTerjadiPada" placeholder="Sebutkan detail spesialisasi" />
+                        </div>
+
                         <div className="mb-2">
                           <label className="form-label fw-bold">Tempat Insiden</label>
                           <input type="text" className="form-control form-control-sm" name="tempatInsiden" placeholder="Lokasi kejadian (sebutkan)" />
@@ -480,6 +513,23 @@ export default function GradingForm() {
                               {item.extra}
                             </div>
                           ))}
+                        </div>
+
+                        <label className="form-label fw-bold">Apakah kejadian yang sama pernah terjadi di Unit Kerja lain? *</label>
+                        <div className="mb-2">
+                          <div className="form-check">
+                            <input className="form-check-input" type="radio" name="kejadiansama" id="grading-ks-ya" value="ya" required />
+                            <label className="form-check-label" htmlFor="grading-ks-ya">Ya</label>
+                          </div>
+                          <div className="form-check">
+                            <input className="form-check-input" type="radio" name="kejadiansama" id="grading-ks-tidak" value="tidak" required />
+                            <label className="form-check-label" htmlFor="grading-ks-tidak">Tidak</label>
+                          </div>
+                        </div>
+
+                        <div className="mb-2">
+                          <label className="form-label fw-bold">Jika ya, kapan dan langkah/tindakan apa yang telah diambil?</label>
+                          <textarea className="form-control form-control-sm" rows="3" name="kejadianSamaText" placeholder="Jelaskan langkah/tindakan"></textarea>
                         </div>
 
                         <label className="form-label fw-bold">Grading Risiko Kejadian * (Diisi oleh atasan pelapor)</label>
