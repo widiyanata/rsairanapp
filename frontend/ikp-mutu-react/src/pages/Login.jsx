@@ -124,6 +124,7 @@ export default function Login() {
             className="input-minimal"
           >
             <option value="">-- Pilih Role --</option>
+            <option value="admin">Administrator</option>
             <option value="mutu">Tim Mutu</option>
             <option value="karu">Kepala Ruangan</option>
             <option value="perawat">Tenaga Perawat</option>
