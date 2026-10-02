@@ -46,73 +46,104 @@ export default function Dashboard() {
   const formatStat = (num) => String(num).padStart(2, '0');
 
   return (
-    <div className="home-container py-4">
-      {/* Welcome */}
-      <div className="welcome-section mb-5 animate-fade-in">
-        <div className="d-flex align-items-center gap-3 mb-2">
-          <div className="v-bar"></div>
-          <h1 className="h3 fw-bold mb-0">Selamat Datang, {user?.username}</h1>
+    <div className="home-container pb-4">
+      {/* Welcome Banner */}
+      <div className="welcome-section mb-4 p-4 rounded-4 bg-white border shadow-sm animate-fade-in position-relative overflow-hidden">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+          <div>
+            <div className="d-flex align-items-center gap-2 mb-1">
+              <span className="badge bg-primary-subtle text-primary border border-primary-subtle text-uppercase" style={{ fontSize: '10px' }}>
+                {user?.role || 'Staff'}
+              </span>
+              <span className="text-muted small">• RS Airan Raya</span>
+            </div>
+            <h1 className="h4 fw-bold mb-1 text-dark">
+              Halo, {user?.username} 👋
+            </h1>
+            <p className="text-muted small mb-0">
+              Sistem Pelaporan Mutu & Keselamatan Pasien (IKP)
+            </p>
+          </div>
+
+          {/* Quick Action Button for Nurses / Staff */}
+          {hasAccessDynamic('kronologi') && (
+            <Link
+              to="/kronologi/form"
+              className="btn btn-dark btn-sm rounded-pill px-3 py-2 d-inline-flex align-items-center justify-content-center gap-2 shadow-sm text-nowrap"
+              style={{ minHeight: '40px' }}
+            >
+              <i className="fas fa-plus-circle text-primary"></i>
+              <span>+ Buat Laporan Baru</span>
+            </Link>
+          )}
         </div>
-        <p className="text-muted small ms-4">
-          Dashboard Komite Mutu & Keselamatan Pasien RS Airan Raya
-        </p>
       </div>
 
       {/* Module Cards */}
-      <div className="row g-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-        {visibleCards.map((card, index) => (
-          <div key={index} className="col-12 col-md-4">
-            <Link to={card.path} className="text-decoration-none">
-              <div className="card-minimal h-100 d-flex flex-column gap-3 p-4">
-                <div className="icon-box-minimal flex-center mb-1">
-                  <i className={card.icon}></i>
+      <div className="mb-4">
+        <h6 className="label-minimal mb-3">Modul Layanan</h6>
+        <div className="row g-3 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {visibleCards.map((card, index) => (
+            <div key={index} className="col-12 col-md-4">
+              <Link to={card.path} className="text-decoration-none">
+                <div className="card-minimal h-100 d-flex flex-column gap-2 p-3 p-md-4 mobile-item-card">
+                  <div className="d-flex align-items-center justify-content-between">
+                    <div className="icon-box-minimal flex-center rounded-3 bg-light text-primary">
+                      <i className={card.icon}></i>
+                    </div>
+                    <i className="fas fa-arrow-right text-muted small"></i>
+                  </div>
+                  <div className="mt-2">
+                    <h3 className="h6 fw-bold mb-1 text-dark">{card.title}</h3>
+                    <p className="text-muted small mb-0" style={{ fontSize: '12px' }}>{card.description}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="h5 mb-2">{card.title}</h3>
-                  <p className="text-muted small mb-0">{card.description}</p>
-                </div>
-                <div className="mt-auto pt-3 d-flex align-items-center gap-2 text-primary small fw-bold">
-                  Buka Modul
-                  <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i>
-                </div>
-              </div>
-            </Link>
-          </div>
-        ))}
+              </Link>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Dynamic Stats */}
-      <div className="mt-5 pt-5 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-        <h6 className="label-minimal mb-4">Statistik Terkini</h6>
-        <div className="row g-4">
-          <div className="col-6 col-md-3">
-            <div className="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
-              <div className="h2 fw-bold mb-1">
+      <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <h6 className="label-minimal mb-3">Statistik Terkini</h6>
+        <div className="row g-3">
+          <div className="col-6 col-md-4">
+            <div className="p-3 bg-white border rounded-3 shadow-none">
+              <div className="d-flex align-items-center justify-content-between mb-1">
+                <span className="text-muted small text-uppercase ls-1">Kronologi</span>
+                <i className="fas fa-history text-muted small"></i>
+              </div>
+              <div className="h3 fw-bold mb-0 text-dark">
                 {loading ? '...' : formatStat(stats.kronologi)}
               </div>
-              <div className="text-muted small text-uppercase ls-1">Kronologi</div>
             </div>
           </div>
-          <div className="col-6 col-md-3">
-            <div className="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
-              <div className="h2 fw-bold mb-1">
+          <div className="col-6 col-md-4">
+            <div className="p-3 bg-white border rounded-3 shadow-none">
+              <div className="d-flex align-items-center justify-content-between mb-1">
+                <span className="text-muted small text-uppercase ls-1">Grading</span>
+                <i className="fas fa-chart-line text-muted small"></i>
+              </div>
+              <div className="h3 fw-bold mb-0 text-dark">
                 {loading ? '...' : formatStat(stats.grading)}
               </div>
-              <div className="text-muted small text-uppercase ls-1">Grading</div>
             </div>
           </div>
-          <div className="col-6 col-md-3">
-            <div className="p-4 border-start border-3 border-dark bg-light bg-opacity-50">
-              <div className="h2 fw-bold mb-1">
-                {loading ? '...' : formatStat(stats.investigasi)}
+          <div className="col-12 col-md-4">
+            <div className="p-3 bg-white border rounded-3 shadow-none d-flex align-items-center justify-content-between">
+              <div>
+                <span className="text-muted small text-uppercase ls-1 d-block mb-1">Investigasi</span>
+                <div className="h3 fw-bold mb-0 text-dark">
+                  {loading ? '...' : formatStat(stats.investigasi)}
+                </div>
               </div>
-              <div className="text-muted small text-uppercase ls-1">Investigasi</div>
-            </div>
-          </div>
-          <div className="col-12 col-md-3 d-flex align-items-end">
-            <div className="ms-md-auto text-muted small pb-2">
-              <i className="fas fa-circle text-success me-2" style={{ fontSize: '8px' }}></i>
-              Sistem Stabil
+              <div className="text-end text-muted small">
+                <span className="badge bg-success-subtle text-success border border-success-subtle">
+                  <i className="fas fa-circle text-success me-1" style={{ fontSize: '7px' }}></i>
+                  Aktif & Terhubung
+                </span>
+              </div>
             </div>
           </div>
         </div>

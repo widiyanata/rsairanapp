@@ -171,72 +171,154 @@ export default function InvestigasiForm() {
   }, []);
 
   return (
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col">
-          <h1 className="text-uppercase no-print h2 fw-bold">Investigasi</h1>
-          <hr />
-        </div>
-      </div>
-      <div className="row">
-        {/* Left: Riwayat Grading */}
-        <div className="col-md-5 no-print">
-          <h3>Riwayat Grading</h3>
-          <div className="table-responsive">
-            <table className="table table-sm table-hover">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Tanggal</th>
-                  <th>Pasien</th>
-                  <th>No Trans.</th>
-                </tr>
-              </thead>
-              <tbody>
-                {riwayatGrading.map((entry, index) => (
-                  <React.Fragment key={index}>
-                    <tr
-                      onClick={() => selectRow(entry)}
-                      className={`cursor-pointer ${selectedRow === entry ? 'table-active' : ''} ${entry.verifikasi ? 'table-success' : ''}`}
-                    >
-                      <td>{index + 1}</td>
-                      <td>
-                        <span className="badge text-secondary">{entry.created_at?.split('T')[0]}</span>{' '}
-                        <span className="badge text-secondary">{entry.created_at?.split('T')[1]}</span>
-                      </td>
-                      <td>
-                        <small className="me-1">{entry.NAMAPASIEN}</small>
-                        <span className="badge text-dark bg-white border">{entry.no_rm}</span>
-                      </td>
-                      <td>
-                        <span className="badge text-dark">{entry.no_transaksi}</span>
-                        <br />
-                        {entry.verifikasi && (
-                          <span className="badge bg-success">
-                            <i className="fas fa-check-double"></i> Sudah diverifikasi
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                    {!entry.verifikasi && entry === selectedRow && (
-                      <tr>
-                        <td></td>
-                        <th className="text-end">Aksi:</th>
-                        <td colSpan="2">
-                          <button
-                            className="btn btn-sm btn-outline-success"
-                            onClick={() => verifikasiKronologi(entry.no_transaksi)}
-                          >
-                            <i className="fas fa-check-square"></i> Verifikasi
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+    <div className="investigasi-page pb-4">
+      <div className="container-fluid p-0">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
+          <div>
+            <h1 className="h3 fw-bold mb-1">Investigasi Insiden</h1>
+            <p className="text-muted small mb-0">
+              Laporan investigasi komprehensif keselamatan pasien oleh Komite Mutu.
+            </p>
           </div>
+        </div>
+
+        <div className="row g-4">
+          {/* Left: Riwayat Grading */}
+          <div className="col-12 col-md-5 no-print">
+            <div className="card-minimal p-0 overflow-hidden shadow-sm mb-4">
+              <div className="p-3 border-bottom bg-light bg-opacity-50">
+                <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
+                  Riwayat Grading ({riwayatGrading.length})
+                </h3>
+              </div>
+
+              {/* Mobile Card List (d-md-none) */}
+              <div className="d-md-none p-2 bg-light bg-opacity-25">
+                {riwayatGrading.length > 0 ? (
+                  <div className="d-flex flex-column gap-2">
+                    {riwayatGrading.map((entry, index) => {
+                      const isSelected = selectedRow === entry;
+                      return (
+                        <div
+                          key={index}
+                          onClick={() => selectRow(entry)}
+                          className={`card-minimal p-3 bg-white border rounded-3 cursor-pointer shadow-none mobile-item-card ${
+                            isSelected ? 'border-primary border-2 shadow-sm' : ''
+                          }`}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-2">
+                            <span className="badge bg-light text-dark border small fw-normal">
+                              <i className="far fa-calendar-alt me-1 text-muted"></i>
+                              {entry.created_at?.split('T')[0]}
+                            </span>
+                            <span
+                              className={`badge rounded-pill fw-medium px-2 py-1 ${
+                                entry.verifikasi
+                                  ? 'text-success bg-success-subtle border border-success'
+                                  : 'text-warning-emphasis bg-warning-subtle border border-warning'
+                              }`}
+                              style={{ fontSize: '10px' }}
+                            >
+                              {entry.verifikasi ? '✓ Diverifikasi' : 'Belum Verifikasi'}
+                            </span>
+                          </div>
+
+                          <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '240px' }}>
+                            {entry.NAMAPASIEN}
+                          </div>
+                          <div className="text-muted small mt-1 d-flex align-items-center gap-2">
+                            <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '10px' }}>
+                              RM: {entry.no_rm}
+                            </span>
+                            <span className="badge bg-light text-muted border" style={{ fontSize: '10px' }}>
+                              {entry.no_transaksi}
+                            </span>
+                          </div>
+
+                          {!entry.verifikasi && isSelected && (
+                            <div className="mt-3 pt-2 border-top">
+                              <button
+                                className="btn btn-sm btn-success w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  verifikasiKronologi(entry.no_transaksi);
+                                }}
+                                style={{ minHeight: '40px' }}
+                              >
+                                <i className="fas fa-check-double"></i>
+                                <span>Verifikasi Insiden Ini</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-5 text-muted">
+                    <i className="fas fa-inbox h2 opacity-50 mb-2"></i>
+                    <p className="small mb-0">Belum ada riwayat grading</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Desktop Table (d-none d-md-block) */}
+              <div className="table-responsive d-none d-md-block">
+                <table className="table table-sm table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th className="ps-3">#</th>
+                      <th>Tanggal</th>
+                      <th>Pasien</th>
+                      <th>No Trans.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {riwayatGrading.map((entry, index) => (
+                      <React.Fragment key={index}>
+                        <tr
+                          onClick={() => selectRow(entry)}
+                          className={`cursor-pointer ${selectedRow === entry ? 'table-active' : ''} ${entry.verifikasi ? 'table-success' : ''}`}
+                        >
+                          <td className="ps-3">{index + 1}</td>
+                          <td>
+                            <span className="badge text-secondary">{entry.created_at?.split('T')[0]}</span>{' '}
+                            <span className="badge text-secondary">{entry.created_at?.split('T')[1]}</span>
+                          </td>
+                          <td>
+                            <small className="me-1 fw-bold">{entry.NAMAPASIEN}</small>
+                            <span className="badge text-dark bg-white border">{entry.no_rm}</span>
+                          </td>
+                          <td>
+                            <span className="badge text-dark">{entry.no_transaksi}</span>
+                            <br />
+                            {entry.verifikasi && (
+                              <span className="badge bg-success">
+                                <i className="fas fa-check-double"></i> Diverifikasi
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                        {!entry.verifikasi && entry === selectedRow && (
+                          <tr>
+                            <td></td>
+                            <th className="text-end">Aksi:</th>
+                            <td colSpan="2">
+                              <button
+                                className="btn btn-sm btn-outline-success"
+                                onClick={() => verifikasiKronologi(entry.no_transaksi)}
+                              >
+                                <i className="fas fa-check-square"></i> Verifikasi
+                              </button>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
           {/* Accordion: Detail Grading & Kronologi */}
           {detailGrading && selectedRow && (
@@ -594,14 +676,23 @@ export default function InvestigasiForm() {
                 </div>
               </div>
 
-              <div className="text-center no-print my-4">
+              <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 no-print my-4 pt-3 border-top">
                 {selectedRow && selectedRow.verifikasi !== 1 && (
-                  <button type="submit" className="btn btn-success">
-                    <i className="fas fa-save"></i> Simpan
+                  <button
+                    type="submit"
+                    className="btn btn-dark py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                    style={{ minHeight: '44px' }}
+                  >
+                    <i className="fas fa-save"></i> <span>Simpan Investigasi</span>
                   </button>
                 )}
-                <button type="button" className="btn btn-secondary ms-1" onClick={() => window.print()}>
-                  Cetak
+                <button
+                  type="button"
+                  className="btn btn-light border py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2"
+                  onClick={() => window.print()}
+                  style={{ minHeight: '44px' }}
+                >
+                  <i className="fas fa-print"></i> <span>Cetak Laporan</span>
                 </button>
               </div>
             </form>
@@ -609,5 +700,6 @@ export default function InvestigasiForm() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

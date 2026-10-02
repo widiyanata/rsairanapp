@@ -141,48 +141,60 @@ export default function KronologiForm() {
   }, [id]);
 
   return (
-    <div className="kronologi-detail-wrapper">
+    <div className="kronologi-detail-wrapper pb-5">
       <div className="kronologi-detail-page animate-fade-in">
         {/* Header */}
-        <div className="d-flex align-items-center justify-content-between mb-5 no-print">
-          <div className="d-flex align-items-center gap-4">
-            <Link to="/kronologi" className="btn-minimal btn-minimal-outline p-2 border-0">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4 no-print">
+          <div className="d-flex align-items-center gap-3">
+            <Link
+              to="/kronologi"
+              className="btn-minimal btn-minimal-outline p-2 border rounded-circle flex-center"
+              style={{ width: '38px', height: '38px' }}
+              title="Kembali ke Daftar"
+            >
               <i className="fas fa-chevron-left"></i>
             </Link>
             <div>
-              <h1 className="h3 fw-bold mb-0">
+              <h1 className="h4 fw-bold mb-0">
                 {isEdit ? 'Edit Laporan' : 'Pelaporan Baru'}
               </h1>
               {pasien.KPKD_PASIEN && (
                 <div className="text-muted small mt-1">
-                  Pasien Terpilih: <strong>{pasien.KPKD_PASIENN}</strong>
+                  Pasien: <strong className="text-dark">{pasien.KPKD_PASIENN}</strong>
                 </div>
               )}
             </div>
           </div>
-          <div className="d-flex gap-2">
-            <button onClick={() => window.print()} className="btn-minimal btn-minimal-outline">
+          <div className="d-flex align-items-center gap-2">
+            <button
+              onClick={() => window.print()}
+              className="btn-minimal btn-minimal-outline py-2 px-3 flex-fill justify-content-center"
+            >
               <i className="fas fa-print"></i>
               <span>Cetak</span>
             </button>
             {pasien.KPKD_PASIEN && !isKirim && (
-              <button className="btn-minimal btn-minimal-primary" onClick={simpanKronologi}>
+              <button
+                className="btn-minimal btn-minimal-primary py-2 px-3 flex-fill justify-content-center"
+                onClick={simpanKronologi}
+                disabled={loading}
+              >
                 <i className="fas fa-save"></i>
-                <span>{isEdit ? 'Perbarui Draf' : 'Simpan Draf'}</span>
+                <span>{isEdit ? 'Perbarui' : 'Simpan Draf'}</span>
               </button>
             )}
           </div>
         </div>
 
-        <div className="row g-5">
+        <div className="row g-4 g-lg-5">
           {/* Form Body */}
-          <div className="col-lg-8">
+          <div className="col-12 col-lg-8">
             {/* Patient Selection */}
             <div className="card-minimal mb-4 shadow-sm">
-              <h6 className="label-minimal mb-3">Pilih Pasien *</h6>
+              <h6 className="label-minimal mb-2">Pilih Pasien *</h6>
               {!pasien.KPKD_PASIEN ? (
                 <div>
-                  <div className="input-group-minimal border-bottom d-flex align-items-center gap-2 mb-3 py-1">
+                  <div className="input-group-minimal border rounded-3 d-flex align-items-center gap-2 px-3 py-1 bg-light">
                     <i className="fas fa-search text-muted small"></i>
                     <input
                       type="text"
@@ -190,21 +202,34 @@ export default function KronologiForm() {
                       onChange={(e) => setCari(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && cariPasien()}
                       className="bg-transparent border-0 small w-100 py-2"
-                      placeholder="Cari No. RM / Nama..."
+                      placeholder="Ketik Min. 3 Huruf RM / Nama lalu Enter..."
+                      style={{ outline: 'none', fontSize: '15px' }}
                     />
+                    <button
+                      type="button"
+                      onClick={cariPasien}
+                      className="btn btn-dark btn-sm px-3 rounded-2"
+                      disabled={loading || cari.length < 3}
+                    >
+                      Cari
+                    </button>
                   </div>
                   {pasiens && (
-                    <div className="search-results border rounded-3 mt-2 overflow-hidden animate-fade-in shadow-lg">
+                    <div className="search-results border rounded-3 mt-2 overflow-hidden animate-fade-in shadow-lg bg-white" style={{ maxHeight: '250px', overflowY: 'auto' }}>
                       {pasiens.map((p, idx) => (
                         <div
                           key={idx}
                           onClick={() => pilihPasien(p)}
-                          className="p-3 border-bottom hover-bg cursor-pointer bg-white"
+                          className="p-3 border-bottom hover-bg cursor-pointer bg-white d-flex align-items-center justify-content-between"
                         >
-                          <div className="fw-bold small">{p.KPKD_PASIENN}</div>
-                          <div className="text-muted" style={{ fontSize: '10px' }}>
-                            {p.KPNO_TRANSAKSI}
+                          <div>
+                            <div className="fw-bold text-dark">{p.KPKD_PASIENN}</div>
+                            <div className="text-muted small mt-1">
+                              <span className="badge bg-light text-dark border me-2">RM: {p.KPKD_PASIEN}</span>
+                              <span className="badge bg-secondary-subtle text-secondary">{p.KPNO_TRANSAKSI}</span>
+                            </div>
                           </div>
+                          <i className="fas fa-check-circle text-primary opacity-50"></i>
                         </div>
                       ))}
                     </div>
@@ -352,12 +377,44 @@ export default function KronologiForm() {
                   disabled={isKirim || !kirimke}
                   onClick={kirimKronologi}
                 >
-                  <span>{isKirim ? 'Selesai / Terkirim' : 'Kirim Laporan'}</span>
+                  <i className="fas fa-paper-plane me-2"></i>
+                  <span>{isKirim ? 'Selesai / Terkirim' : 'Kirim Laporan ke Karu'}</span>
                 </button>
               )}
             </div>
           </div>
         </div>
+
+        {/* Mobile Fixed Bottom Action Bar */}
+        {pasien.KPKD_PASIEN && !isKirim && (
+          <div
+            className="mobile-sticky-actions d-lg-none no-print p-3 bg-white border-top shadow-lg position-fixed start-0 end-0 d-flex gap-2"
+            style={{ bottom: '56px', zIndex: 95 }}
+          >
+            <button
+              type="button"
+              className="btn btn-outline-dark flex-fill py-2 d-flex align-items-center justify-content-center gap-2 rounded-3"
+              onClick={simpanKronologi}
+              disabled={loading}
+              style={{ minHeight: '44px' }}
+            >
+              <i className="fas fa-save"></i>
+              <span>{isEdit ? 'Perbarui' : 'Simpan Draf'}</span>
+            </button>
+            {kirimke && (
+              <button
+                type="button"
+                className="btn btn-primary flex-fill py-2 d-flex align-items-center justify-content-center gap-2 rounded-3"
+                onClick={kirimKronologi}
+                disabled={loading}
+                style={{ minHeight: '44px' }}
+              >
+                <i className="fas fa-paper-plane"></i>
+                <span>Kirim</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Print Template */}

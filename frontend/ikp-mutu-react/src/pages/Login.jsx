@@ -10,6 +10,7 @@ export default function Login() {
   const [role, setRole] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
 
   // For perawat search
@@ -97,33 +98,34 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light">
+    <div className="login-page d-flex align-items-center justify-content-center min-vh-100 bg-light p-3">
       <div
-        className="card-minimal login-card shadow-sm border-0 p-4 p-md-5 bg-white"
-        style={{ maxWidth: '400px', width: '100%' }}
+        className="card-minimal login-card shadow-sm border rounded-4 p-4 p-sm-5 bg-white"
+        style={{ maxWidth: '420px', width: '100%' }}
       >
         {/* Header */}
-        <div className="text-center mb-5">
+        <div className="text-center mb-4">
           <div
-            className="logo-placeholder mx-auto mb-4 flex-center bg-dark text-white rounded-circle"
-            style={{ width: '48px', height: '48px' }}
+            className="logo-placeholder mx-auto mb-3 flex-center bg-dark text-white rounded-circle shadow-sm"
+            style={{ width: '52px', height: '52px' }}
           >
-            <i className="fas fa-plus"></i>
+            <i className="fas fa-heartbeat fs-4 text-white"></i>
           </div>
-          <h2 className="h5 fw-bold mb-1">RS Airan Raya</h2>
-          <p className="text-muted small">Sistem Informasi Komite Mutu</p>
+          <h2 className="h4 fw-bold mb-1 text-dark">RS Airan Raya</h2>
+          <p className="text-muted small mb-0">Sistem Informasi Komite Mutu & Keselamatan Pasien</p>
         </div>
 
         {/* Role Selection */}
-        <div className="form-group-minimal mb-4">
-          <label htmlFor="role" className="label-minimal">Akses Sebagai</label>
+        <div className="form-group-minimal mb-3">
+          <label htmlFor="role" className="label-minimal">Akses Sebagai *</label>
           <select
             id="role"
             value={role}
             onChange={(e) => { setRole(e.target.value); setError(null); }}
             className="input-minimal"
+            style={{ minHeight: '44px' }}
           >
-            <option value="">-- Pilih Role --</option>
+            <option value="">-- Pilih Peran / Role --</option>
             <option value="admin">Administrator</option>
             <option value="mutu">Tim Mutu</option>
             <option value="karu">Kepala Ruangan</option>
@@ -237,21 +239,34 @@ export default function Login() {
 
                 <div className="form-group-minimal">
                   <label className="label-minimal">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="input-minimal"
-                    placeholder="••••••••"
-                    required
-                  />
+                  <div className="position-relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="input-minimal pe-5"
+                      placeholder="••••••••"
+                      style={{ minHeight: '44px' }}
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="btn position-absolute top-50 end-0 translate-middle-y border-0 text-muted p-2"
+                      style={{ zIndex: 2 }}
+                    >
+                      <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} small`}></i>
+                    </button>
+                  </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="btn-minimal btn-minimal-primary w-100 justify-content-center mt-2"
+                  className="btn-minimal btn-minimal-primary w-100 justify-content-center mt-2 py-2 rounded-3 shadow-sm"
+                  style={{ minHeight: '44px' }}
                 >
-                  Masuk
+                  <span>Masuk Aplikasi</span>
+                  <i className="fas fa-arrow-right ms-1"></i>
                 </button>
               </form>
             )}

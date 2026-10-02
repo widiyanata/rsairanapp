@@ -18,21 +18,29 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
   return (
     <>
       <aside className={`sidebar ${isOpen ? 'active' : ''}`}>
-        <div className="sidebar-header py-4 px-4 d-flex align-items-center justify-content-between">
+        <div className="sidebar-header py-4 px-4 d-flex align-items-center justify-content-between border-bottom border-light">
           <div className="d-flex align-items-center gap-2">
             <div className="logo-circle"></div>
-            <h5 className="mb-0 fw-bold ls-tight">IKP MUTU</h5>
+            <div>
+              <h5 className="mb-0 fw-bold ls-tight">IKP MUTU</h5>
+              <div className="text-muted" style={{ fontSize: '10px' }}>RS Airan Raya</div>
+            </div>
           </div>
           {isMobile && (
-            <button onClick={onClose} className="btn-icon">
+            <button
+              onClick={onClose}
+              className="btn-icon rounded-circle bg-light"
+              style={{ width: '36px', height: '36px' }}
+              aria-label="Tutup Menu"
+            >
               <i className="fas fa-times"></i>
             </button>
           )}
         </div>
 
-        <nav className="sidebar-nav px-3 flex-grow-1">
-          <div className="nav-label mb-3 px-3">Menu Utama</div>
-          <ul className="list-unstyled d-flex flex-column gap-1">
+        <nav className="sidebar-nav px-3 py-3 flex-grow-1 overflow-y-auto">
+          <div className="nav-label mb-2 px-3">Menu Utama</div>
+          <ul className="list-unstyled d-flex flex-column gap-2">
             {visibleMenuItems.map((item) => (
               <li key={item.path}>
                 <NavLink
@@ -51,21 +59,22 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
           </ul>
         </nav>
 
-        <div className="sidebar-footer p-4 border-top">
+        <div className="sidebar-footer p-3 p-md-4 border-top">
           <div className="user-minimal d-flex align-items-center gap-3">
-            <div className="avatar-minimal flex-center">
+            <div className="avatar-minimal flex-center fw-bold">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </div>
             <div className="user-details overflow-hidden">
               <div className="fw-bold small text-truncate">{user?.username}</div>
-              <div className="text-muted" style={{ fontSize: '10px' }}>
+              <div className="badge bg-secondary-subtle text-secondary text-uppercase" style={{ fontSize: '9px' }}>
                 {user?.role}
               </div>
             </div>
             <button
               onClick={logout}
-              className="btn-icon ms-auto text-muted"
+              className="btn-icon ms-auto text-danger p-2"
               title="Logout"
+              aria-label="Keluar Aplikasi"
             >
               <i className="fas fa-sign-out-alt"></i>
             </button>
@@ -74,7 +83,7 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
       </aside>
 
       {isMobile && isOpen && (
-        <div className="sidebar-overlay" onClick={onClose}></div>
+        <div className="sidebar-overlay active" onClick={onClose}></div>
       )}
     </>
   );

@@ -20,6 +20,7 @@ export default function GradingForm() {
   const [tandaTanganPenerima, setTandaTanganPenerima] = useState(null);
   const [penerimaLaporan, setPenerimaLaporan] = useState('');
   const [activeTab, setActiveTab] = useState('data-pasien');
+  const [showKronologiMobile, setShowKronologiMobile] = useState(false);
 
   const dibuatOleh = {
     user_id: user?.id || '',
@@ -188,159 +189,256 @@ export default function GradingForm() {
   ];
 
   return (
-    <div>
-      <div className="container-fluid">
-        <div className="row no-print">
-          <div className="col-12">
-            <h1 className="text-uppercase h2 fw-bold">Grading Insiden</h1>
-            <hr />
+    <div className="grading-page pb-4">
+      <div className="container-fluid p-0">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
+          <div>
+            <h1 className="h3 fw-bold mb-1">Grading Risiko Insiden</h1>
+            <p className="text-muted small mb-0">
+              Penilaian matriks risiko kejadian oleh Kepala Ruangan / Unit Terkait.
+            </p>
           </div>
         </div>
 
         {/* List View */}
         {!selectedRow && (
-          <div className="row">
-            <div className="col-md-12 no-print">
-              <h3>Riwayat Kronologi</h3>
-              <div className="table-responsive">
-                <table className="table table-sm table-hover align-middle">
-                  <thead>
-                    <tr>
-                      <th>No.</th>
-                      <th>Tanggal</th>
-                      <th>Nama</th>
-                      <th>No Trans.</th>
-                      <th>Dibuat</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {riwayatKronologiGrouped.map((entry, index) => (
-                      <tr
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={() => selectRow(entry)}
-                      >
-                        <td>{index + 1}</td>
-                        <td>
-                          <small>{entry.Tanggal?.replace('T', ' jam ')}</small>
-                        </td>
-                        <td>
-                          <small className="fw-bold">{entry.nama_pasien}</small>{' '}
-                          <small className="badge bg-white text-secondary border">
-                            ({entry.no_rm})
-                          </small>
-                        </td>
-                        <td>
-                          <span className="badge bg-white text-primary border">
-                            <small>{entry.no_transaksi}</small>
-                          </span>
-                        </td>
-                        <td>
-                          {entry.pembuat?.map((nama, i) => (
-                            <span key={i} className="badge text-secondary ms-1 border">
-                              {nama}
+          <div className="card-minimal p-0 overflow-hidden shadow-sm no-print">
+            <div className="p-3 border-bottom bg-light bg-opacity-50">
+              <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
+                Daftar Pelaporan Menunggu Grading ({riwayatKronologiGrouped.length})
+              </h3>
+            </div>
+
+            {/* Mobile Cards (d-md-none) */}
+            <div className="d-md-none p-2 bg-light bg-opacity-25">
+              {loading ? (
+                <div className="text-center py-5 text-muted">
+                  <i className="fas fa-spinner fa-spin h3 mb-2"></i>
+                  <p className="small mb-0">Memuat data...</p>
+                </div>
+              ) : riwayatKronologiGrouped.length > 0 ? (
+                <div className="d-flex flex-column gap-2">
+                  {riwayatKronologiGrouped.map((entry, index) => (
+                    <div
+                      key={index}
+                      className="card-minimal p-3 bg-white border rounded-3 cursor-pointer shadow-none mobile-item-card"
+                      onClick={() => selectRow(entry)}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="badge bg-light text-dark border small fw-normal">
+                          <i className="far fa-calendar-alt me-1 text-muted"></i>
+                          {entry.Tanggal?.replace('T', ' ')}
+                        </span>
+                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle" style={{ fontSize: '10px' }}>
+                          {entry.no_transaksi}
+                        </span>
+                      </div>
+
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div>
+                          <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '240px' }}>
+                            {entry.nama_pasien}
+                          </div>
+                          <div className="text-muted small mt-1 d-flex flex-wrap align-items-center gap-1">
+                            <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '10px' }}>
+                              RM: {entry.no_rm}
                             </span>
-                          ))}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                            {entry.pembuat?.map((nama, i) => (
+                              <span key={i} className="badge bg-light text-muted border" style={{ fontSize: '10px' }}>
+                                <i className="far fa-user me-1"></i>{nama}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-primary ps-2">
+                          <i className="fas fa-chevron-right small"></i>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-5 text-muted">
+                  <i className="fas fa-clipboard-check h2 opacity-50 mb-2"></i>
+                  <p className="small mb-0">Tidak ada laporan yang menunggu grading</p>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Table (d-none d-md-block) */}
+            <div className="table-responsive d-none d-md-block">
+              <table className="table-minimal align-middle">
+                <thead>
+                  <tr>
+                    <th className="ps-4">No.</th>
+                    <th>Tanggal</th>
+                    <th>Nama Pasien</th>
+                    <th>No Transaksi</th>
+                    <th>Dibuat Oleh</th>
+                    <th className="text-end pe-4">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {riwayatKronologiGrouped.map((entry, index) => (
+                    <tr
+                      key={index}
+                      className="cursor-pointer hover-fade"
+                      onClick={() => selectRow(entry)}
+                    >
+                      <td className="ps-4 text-muted small">#{index + 1}</td>
+                      <td>
+                        <small className="fw-medium">{entry.Tanggal?.replace('T', ' jam ')}</small>
+                      </td>
+                      <td>
+                        <span className="fw-bold">{entry.nama_pasien}</span>{' '}
+                        <span className="badge bg-light text-secondary border ms-1">
+                          RM: {entry.no_rm}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="badge bg-white text-primary border">
+                          <small>{entry.no_transaksi}</small>
+                        </span>
+                      </td>
+                      <td>
+                        {entry.pembuat?.map((nama, i) => (
+                          <span key={i} className="badge text-secondary bg-light border ms-1">
+                            {nama}
+                          </span>
+                        ))}
+                      </td>
+                      <td className="text-end pe-4">
+                        <button className="btn btn-sm btn-outline-dark rounded-pill px-3 py-1" style={{ fontSize: '12px' }}>
+                          Grade <i className="fas fa-arrow-right ms-1"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
 
         {/* Detail View */}
         {selectedRow && (
-          <div className="row">
+          <div className="row g-4">
             <div className="col-12 no-print">
-              <div className="d-flex align-items-center mb-3">
+              <div className="p-3 bg-white border rounded-3 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div className="d-flex align-items-center gap-3">
+                  <button
+                    type="button"
+                    className="btn btn-dark btn-sm rounded-circle flex-center"
+                    style={{ width: '36px', height: '36px' }}
+                    onClick={() => setSelectedRow(null)}
+                    title="Kembali ke Daftar"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  <div>
+                    <div className="fw-bold text-dark fs-6">
+                      {detailPasien?.NAMAPASIEN || selectedRow.nama_pasien}
+                    </div>
+                    <div className="text-muted small" style={{ fontSize: '11px' }}>
+                      RM: <strong>{detailPasien?.KD_PASIEN || selectedRow.no_rm}</strong> • Trans: <strong>{selectedRow.no_transaksi}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Kronologi Toggle Button */}
                 <button
                   type="button"
-                  className="btn btn-sm btn-dark me-2"
-                  onClick={() => setSelectedRow(null)}
+                  className="btn btn-sm btn-outline-secondary d-md-none rounded-pill px-3"
+                  onClick={() => setShowKronologiMobile(!showKronologiMobile)}
                 >
-                  <i className="fas fa-chevron-left"></i> <span>Kembali</span>
+                  <i className={`fas ${showKronologiMobile ? 'fa-eye-slash' : 'fa-history'} me-1`}></i>
+                  {showKronologiMobile ? 'Tutup Kronologi' : `Kronologi (${listKronologi.length})`}
                 </button>
-                <span>
-                  <b>{detailPasien?.KD_PASIEN}</b> -{' '}
-                  <b className="text-primary">{detailPasien?.NAMAPASIEN}</b>
-                </span>
               </div>
             </div>
 
-            {/* Left: Detail Kronologi */}
-            <div className="col-md-4 no-print">
-              <h4>Detail Kronologi</h4>
-              {listKronologi.length > 0 && (
-                <div className="border-bottom">
-                  <table className="table table-sm table-bordered table-hover">
-                    <thead>
-                      <tr>
-                        <th>Tgl.</th>
-                        <th>Uraian</th>
-                      </tr>
-                    </thead>
-                    {listKronologi.map((kronologi, index) => {
-                      let username = '-';
-                      let uraianArr = [];
-                      try {
-                        username = JSON.parse(kronologi.dibuat_oleh).username;
-                        uraianArr = JSON.parse(kronologi.Uraian);
-                      } catch {}
-                      return (
-                        <tbody key={index}>
-                          <tr className="table-warning">
-                            <td colSpan="2">Dibuat Oleh: {username}</td>
-                          </tr>
-                          {uraianArr.map((uraian, idx) => (
-                            <tr key={idx}>
-                              <td>
-                                <span className="badge bg-white text-dark border">
-                                  {uraian.Tanggal}
-                                </span>
-                              </td>
-                              <td>{uraian.Uraian}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      );
-                    })}
-                  </table>
+            {/* Left / Top: Detail Kronologi */}
+            <div className={`col-12 col-md-4 no-print ${showKronologiMobile ? 'd-block' : 'd-none d-md-block'}`}>
+              <div className="card-minimal p-3 bg-white shadow-sm border mb-3">
+                <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                  <h6 className="label-minimal mb-0">Detail Kronologi</h6>
+                  <span className="badge bg-light text-muted border">{listKronologi.length} Kejadian</span>
                 </div>
-              )}
+                {listKronologi.length > 0 ? (
+                  <div className="table-responsive" style={{ maxHeight: '420px', overflowY: 'auto' }}>
+                    <table className="table table-sm table-bordered">
+                      <thead>
+                        <tr className="bg-light">
+                          <th style={{ width: '40%' }}>Waktu</th>
+                          <th>Uraian</th>
+                        </tr>
+                      </thead>
+                      {listKronologi.map((kronologi, index) => {
+                        let username = '-';
+                        let uraianArr = [];
+                        try {
+                          username = JSON.parse(kronologi.dibuat_oleh).username;
+                          uraianArr = JSON.parse(kronologi.Uraian);
+                        } catch {}
+                        return (
+                          <tbody key={index}>
+                            <tr className="table-secondary">
+                              <td colSpan="2" className="small fw-semibold">
+                                <i className="far fa-user me-1"></i>Oleh: {username}
+                              </td>
+                            </tr>
+                            {uraianArr.map((uraian, idx) => (
+                              <tr key={idx}>
+                                <td>
+                                  <span className="badge bg-light text-dark border small" style={{ fontSize: '9px' }}>
+                                    {uraian.Tanggal}
+                                  </span>
+                                </td>
+                                <td className="small">{uraian.Uraian}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        );
+                      })}
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-muted small py-3 text-center">Tidak ada catatan kronologi</div>
+                )}
+              </div>
             </div>
 
             {/* Right: Form Grading */}
-            <div className="col-md-8">
+            <div className="col-12 col-md-8">
               {detailPasien.KPNO_TRANSAKSI && (
                 <div>
                   <div className="kop-surat mb-4 print w-100">
                     <img src="/kop_surat.jpg" alt="" className="w-100" />
                   </div>
                   <form ref={formRef} id="formInsiden" onSubmit={submitForm}>
-                    <h3 className="mb-4 text-uppercase">Laporan Insiden</h3>
-
-                    {/* Tabs */}
-                    <div className="d-flex justify-content-between align-items-center no-print">
-                      <ul className="nav nav-tabs nav-fill" role="tablist">
+                    {/* Mobile Pill-Style Tabs */}
+                    <div className="mobile-tabs-container mb-3 no-print">
+                      <div className="d-flex gap-2 p-1 bg-light rounded-pill border overflow-x-auto text-nowrap no-scrollbar">
                         {tabs.map((tab) => (
-                          <li key={tab.id} className="nav-item">
-                            <button
-                              type="button"
-                              className={`nav-link ${activeTab === tab.id ? 'active' : ''}`}
-                              onClick={() => setActiveTab(tab.id)}
-                            >
-                              {tab.label}
-                            </button>
-                          </li>
+                          <button
+                            key={tab.id}
+                            type="button"
+                            className={`btn btn-sm rounded-pill px-3 py-2 flex-fill text-nowrap transition-all ${
+                              activeTab === tab.id
+                                ? 'btn-dark shadow-sm fw-bold'
+                                : 'btn-light border-0 text-muted'
+                            }`}
+                            onClick={() => setActiveTab(tab.id)}
+                            style={{ minHeight: '38px', fontSize: '12px' }}
+                          >
+                            {tab.label}
+                          </button>
                         ))}
-                      </ul>
+                      </div>
                     </div>
 
                     {/* Tab Content */}
-                    <div className="tab-content mb-5">
+                    <div className="tab-content mb-4">
                       {/* Tab 1: Data Pasien */}
                       <div className={`tab-pane p-3 bg-white shadow mb-4 ${activeTab === 'data-pasien' ? 'active show' : 'd-none'}`}>
                         <h5>I. DATA PASIEN</h5>
@@ -570,18 +668,30 @@ export default function GradingForm() {
                     </div>
 
                     {/* Actions */}
-                    <div className="text-center mb-4 p-3 no-print">
-                      <button type="button" className="btn btn-dark me-2" onClick={() => setSelectedRow(null)}>
+                    <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-5 p-3 no-print border-top bg-light rounded-3">
+                      <button
+                        type="button"
+                        className="btn btn-outline-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2"
+                        onClick={() => setSelectedRow(null)}
+                        style={{ minHeight: '44px' }}
+                      >
                         <i className="fas fa-chevron-left"></i> <span>Kembali</span>
                       </button>
-                      <div className="btn-group">
-                        <button type="submit" className="btn btn-success">
-                          <i className="fas fa-save"></i> Simpan
-                        </button>
-                        <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
-                          <i className="fas fa-print"></i> Cetak
-                        </button>
-                      </div>
+                      <button
+                        type="submit"
+                        className="btn btn-dark py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                        style={{ minHeight: '44px' }}
+                      >
+                        <i className="fas fa-save"></i> <span>Simpan Grading</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-light border py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2"
+                        onClick={() => window.print()}
+                        style={{ minHeight: '44px' }}
+                      >
+                        <i className="fas fa-print"></i> <span>Cetak</span>
+                      </button>
                     </div>
                   </form>
                 </div>
