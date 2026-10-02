@@ -86,16 +86,16 @@ export default function Dashboard() {
           {visibleCards.map((card, index) => (
             <div key={index} className="col-12 col-md-4">
               <Link to={card.path} className="text-decoration-none">
-                <div className="card-minimal h-100 d-flex flex-column gap-2 p-3 p-md-4 mobile-item-card">
+                <div className="card-minimal h-100 d-flex flex-column gap-2 p-3 p-md-3 mobile-item-card">
                   <div className="d-flex align-items-center justify-content-between">
-                    <div className="icon-box-minimal flex-center rounded-3 bg-light text-primary">
+                    {/* <div className="icon-box-minimal flex-center rounded-3 bg-light text-primary">
                       <i className={card.icon}></i>
+                    </div> */}
+                    <div className="">
+                      <h3 className="h6 fw-bold mb-1 text-dark">{card.title}</h3>
+                      <p className="text-muted small mb-0" style={{ fontSize: '12px' }}>{card.description}</p>
                     </div>
                     <i className="fas fa-arrow-right text-muted small"></i>
-                  </div>
-                  <div className="mt-2">
-                    <h3 className="h6 fw-bold mb-1 text-dark">{card.title}</h3>
-                    <p className="text-muted small mb-0" style={{ fontSize: '12px' }}>{card.description}</p>
                   </div>
                 </div>
               </Link>

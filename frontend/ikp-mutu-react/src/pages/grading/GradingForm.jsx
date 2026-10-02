@@ -183,9 +183,9 @@ export default function GradingForm() {
 
   // Tab config
   const tabs = [
-    { id: 'data-pasien', label: 'I. DATA PASIEN' },
-    { id: 'rincian-kejadian', label: 'II. RINCIAN KEJADIAN' },
-    { id: 'tanda-tangan', label: 'TANDA TANGAN' },
+    { id: 'data-pasien', label: 'I. DATA' },
+    { id: 'rincian-kejadian', label: 'II. RINCIAN' },
+    { id: 'tanda-tangan', label: 'TTD' },
   ];
 
   return (

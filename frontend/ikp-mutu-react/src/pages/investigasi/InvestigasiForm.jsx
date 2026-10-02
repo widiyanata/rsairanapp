@@ -171,20 +171,19 @@ export default function InvestigasiForm() {
   }, []);
 
   return (
-    <div className="investigasi-page pb-4">
-      <div className="container-fluid p-0">
-        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
-          <div>
-            <h1 className="h3 fw-bold mb-1">Investigasi Insiden</h1>
-            <p className="text-muted small mb-0">
-              Laporan investigasi komprehensif keselamatan pasien oleh Komite Mutu.
-            </p>
-          </div>
+    <div className="investigasi-page pb-4 w-100 overflow-hidden">
+      <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
+        <div>
+          <h1 className="h3 fw-bold mb-1">Investigasi Insiden</h1>
+          <p className="text-muted small mb-0">
+            Laporan investigasi komprehensif keselamatan pasien oleh Komite Mutu.
+          </p>
         </div>
+      </div>
 
-        <div className="row g-4">
-          {/* Left: Riwayat Grading */}
-          <div className="col-12 col-md-5 no-print">
+      <div className="row g-3 g-lg-4">
+        {/* Left: Riwayat Grading */}
+        <div className="col-12 col-lg-5 no-print" style={{ minWidth: 0 }}>
             <div className="card-minimal p-0 overflow-hidden shadow-sm mb-4">
               <div className="p-3 border-bottom bg-light bg-opacity-50">
                 <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
@@ -536,138 +535,266 @@ export default function InvestigasiForm() {
         </div>
 
         {/* Right: Investigasi Form */}
-        <div className={`col-md-7 ${!detailGrading || !selectedRow ? 'd-none' : ''}`}>
-          <div className="kop-surat mb-4 print">
-            <img className="w-100" src="/kop_surat.jpg" alt="" />
-          </div>
-          <h2 className="text-center mb-4 h4">FORM LAPORAN INVESTIGASI SEDERHANA</h2>
-          <div className="container bg-white">
-            <form ref={formInvestigasiRef} onSubmit={submitForm} className="py-3">
-              <div className="mb-1 row">
-                <label className="col-sm-4">Pasien:</label>
-                <div className="col-sm-6 no-print">
-                  <input type="text" className="form-control form-control-sm" value={selectedRow?.NAMAPASIEN || ''} disabled />
-                </div>
-                <div className="col-sm-2">
-                  <input type="text" className="form-control form-control-sm" value={selectedRow?.KD_PASIEN || ''} disabled />
-                </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Penyebab yang melatarbelakangi / akar masalah Insiden:</label>
-                <div className="col-sm-8">
-                  <textarea name="latarbelakang" rows="4" className="form-control form-control-sm"></textarea>
-                </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Tgl. Mulai Investigasi:</label>
-                <div className="col-sm-8">
-                  <input type="date" className="form-control form-control-sm" name="tglMulai" />
-                </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Tgl. Selesai Investigasi:</label>
-                <div className="col-sm-8">
-                  <input type="date" className="form-control form-control-sm" name="tglSelesai" />
-                </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Kepala Ruangan:</label>
-                <div className="col-sm-8">
-                  <input type="text" className="form-control form-control-sm" name="kepalaRuangan" />
-                </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Kasie / Kasubag:</label>
-                <div className="col-sm-8">
-                  <input type="text" className="form-control form-control-sm" name="kasieKasubag" />
+        <div className={`col-12 col-lg-7 ${!detailGrading || !selectedRow ? 'd-none' : ''}`} style={{ minWidth: 0 }}>
+          <div className="card-minimal p-3 p-sm-4 bg-white border rounded-3 shadow-sm w-100 overflow-hidden">
+            <div className="kop-surat mb-4 print">
+              <img className="w-100" src="/kop_surat.jpg" alt="" />
+            </div>
+            
+            <h2 className="text-center mb-4 h5 fw-bold text-uppercase">
+              FORM LAPORAN INVESTIGASI SEDERHANA
+            </h2>
+
+            <form ref={formInvestigasiRef} onSubmit={submitForm}>
+              {/* Pasien Info */}
+              <div className="mb-3">
+                <label className="label-minimal mb-1">Informasi Pasien</label>
+                <div className="d-flex flex-column flex-sm-row gap-2">
+                  <input
+                    type="text"
+                    className="input-minimal flex-grow-1"
+                    value={selectedRow?.NAMAPASIEN || ''}
+                    disabled
+                    placeholder="Nama Pasien"
+                  />
+                  <input
+                    type="text"
+                    className="input-minimal"
+                    style={{ maxWidth: '140px' }}
+                    value={selectedRow?.KD_PASIEN || ''}
+                    disabled
+                    placeholder="No RM"
+                  />
                 </div>
               </div>
 
-              {/* Rekomendasi Table */}
-              <div className="row">
-                <div className="col">
-                  <div className="table-responsive">
-                    <table className="table table-bordered">
-                      <thead className="table-light align-top">
-                        <tr>
-                          <th className="text-center">No</th>
-                          <th>Rekomendasi</th>
-                          <th>Tindakan yang telah dilakukan</th>
-                          <th>Penanggung jawab</th>
-                          <th>Tanggal</th>
-                          <th className="no-print">#</th>
+              {/* Akar Masalah */}
+              <div className="mb-3">
+                <label className="label-minimal mb-1">Penyebab yang melatarbelakangi / akar masalah Insiden:</label>
+                <textarea
+                  name="latarbelakang"
+                  rows="3"
+                  className="input-minimal"
+                  placeholder="Jelaskan akar masalah kejadian..."
+                ></textarea>
+              </div>
+
+              {/* Tanggal Investigasi */}
+              <div className="row g-2 mb-3">
+                <div className="col-12 col-sm-6">
+                  <label className="label-minimal mb-1">Tgl. Mulai Investigasi</label>
+                  <input type="date" className="input-minimal" name="tglMulai" />
+                </div>
+                <div className="col-12 col-sm-6">
+                  <label className="label-minimal mb-1">Tgl. Selesai Investigasi</label>
+                  <input type="date" className="input-minimal" name="tglSelesai" />
+                </div>
+              </div>
+
+              {/* Penanggung Jawab */}
+              <div className="row g-2 mb-3">
+                <div className="col-12 col-sm-6">
+                  <label className="label-minimal mb-1">Kepala Ruangan</label>
+                  <input
+                    type="text"
+                    className="input-minimal"
+                    name="kepalaRuangan"
+                    placeholder="Nama Kepala Ruangan"
+                  />
+                </div>
+                <div className="col-12 col-sm-6">
+                  <label className="label-minimal mb-1">Kasie / Kasubag</label>
+                  <input
+                    type="text"
+                    className="input-minimal"
+                    name="kasieKasubag"
+                    placeholder="Nama Kasie / Kasubag"
+                  />
+                </div>
+              </div>
+
+              {/* Rekomendasi Section */}
+              <div className="mb-4 pt-3 border-top">
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <h6 className="label-minimal mb-0">Tindakan & Rekomendasi</h6>
+                  {selectedRow && selectedRow.verifikasi !== 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-dark rounded-pill px-3"
+                      onClick={tambahRowRekomendasi}
+                    >
+                      <i className="fas fa-plus me-1"></i> Tambah Baris
+                    </button>
+                  )}
+                </div>
+
+                {/* Mobile View: Cards (d-md-none) */}
+                <div className="d-md-none d-flex flex-column gap-3 mb-3">
+                  {rekomendasi?.map((entry, index) => (
+                    <div key={index} className="p-3 bg-light border rounded-3 position-relative">
+                      <div className="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom">
+                        <span className="fw-bold small text-muted">#{index + 1} Rekomendasi</span>
+                        {rekomendasi.length > 1 && (
+                          <button
+                            type="button"
+                            className="btn btn-sm text-danger p-0 border-0"
+                            onClick={() => hapusRowRekomendasi(index)}
+                            title="Hapus"
+                          >
+                            <i className="fas fa-trash-alt"></i> Hapus
+                          </button>
+                        )}
+                      </div>
+                      <div className="mb-2">
+                        <label className="label-minimal" style={{ fontSize: '10px' }}>Rekomendasi</label>
+                        <textarea
+                          value={entry.Rekomendasi}
+                          onChange={(e) => updateRekomendasi(index, 'Rekomendasi', e.target.value)}
+                          rows="2"
+                          className="input-minimal bg-white"
+                          placeholder="Rekomendasi tindakan..."
+                        ></textarea>
+                      </div>
+                      <div className="mb-2">
+                        <label className="label-minimal" style={{ fontSize: '10px' }}>Tindakan yang telah dilakukan</label>
+                        <textarea
+                          value={entry.Tindakan}
+                          onChange={(e) => updateRekomendasi(index, 'Tindakan', e.target.value)}
+                          rows="2"
+                          className="input-minimal bg-white"
+                          placeholder="Tindakan yang telah diambil..."
+                        ></textarea>
+                      </div>
+                      <div className="row g-2">
+                        <div className="col-12 col-sm-6">
+                          <label className="label-minimal" style={{ fontSize: '10px' }}>Penanggung Jawab</label>
+                          <textarea
+                            value={entry.PenanggungJawab}
+                            onChange={(e) => updateRekomendasi(index, 'PenanggungJawab', e.target.value)}
+                            rows="1"
+                            className="input-minimal bg-white"
+                            placeholder="PJ..."
+                          ></textarea>
+                        </div>
+                        <div className="col-12 col-sm-6">
+                          <label className="label-minimal" style={{ fontSize: '10px' }}>Tanggal</label>
+                          <input
+                            type="date"
+                            value={entry.Tanggal}
+                            onChange={(e) => updateRekomendasi(index, 'Tanggal', e.target.value)}
+                            className="input-minimal bg-white"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop View: Table (d-none d-md-block) */}
+                <div className="table-responsive d-none d-md-block mb-3">
+                  <table className="table table-bordered mb-0">
+                    <thead className="table-light align-top">
+                      <tr>
+                        <th className="text-center" style={{ width: '40px' }}>No</th>
+                        <th>Rekomendasi</th>
+                        <th>Tindakan yang telah dilakukan</th>
+                        <th>Penanggung jawab</th>
+                        <th style={{ width: '150px' }}>Tanggal</th>
+                        <th className="no-print text-center" style={{ width: '45px' }}>#</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rekomendasi?.map((entry, index) => (
+                        <tr key={index}>
+                          <td className="text-center">{index + 1}</td>
+                          <td>
+                            <textarea
+                              value={entry.Rekomendasi}
+                              onChange={(e) => updateRekomendasi(index, 'Rekomendasi', e.target.value)}
+                              rows="2"
+                              className="input-minimal"
+                              placeholder="Rekomendasi..."
+                            ></textarea>
+                          </td>
+                          <td>
+                            <textarea
+                              value={entry.Tindakan}
+                              onChange={(e) => updateRekomendasi(index, 'Tindakan', e.target.value)}
+                              rows="2"
+                              className="input-minimal"
+                              placeholder="Tindakan..."
+                            ></textarea>
+                          </td>
+                          <td>
+                            <textarea
+                              value={entry.PenanggungJawab}
+                              onChange={(e) => updateRekomendasi(index, 'PenanggungJawab', e.target.value)}
+                              rows="2"
+                              className="input-minimal"
+                              placeholder="PJ..."
+                            ></textarea>
+                          </td>
+                          <td>
+                            <input
+                              type="date"
+                              value={entry.Tanggal}
+                              onChange={(e) => updateRekomendasi(index, 'Tanggal', e.target.value)}
+                              className="input-minimal"
+                            />
+                          </td>
+                          <td className="no-print text-center align-middle">
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm rounded-circle p-0"
+                              style={{ width: '30px', height: '30px' }}
+                              onClick={() => hapusRowRekomendasi(index)}
+                              title="Hapus"
+                            >
+                              <i className="fas fa-trash-alt" style={{ fontSize: '11px' }}></i>
+                            </button>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {rekomendasi?.map((entry, index) => (
-                          <tr key={index}>
-                            <td className="text-center">{index + 1}</td>
-                            <td>
-                              <textarea value={entry.Rekomendasi} onChange={(e) => updateRekomendasi(index, 'Rekomendasi', e.target.value)} rows="2" className="form-control form-control-sm"></textarea>
-                            </td>
-                            <td>
-                              <textarea value={entry.Tindakan} onChange={(e) => updateRekomendasi(index, 'Tindakan', e.target.value)} rows="2" className="form-control form-control-sm"></textarea>
-                            </td>
-                            <td>
-                              <textarea value={entry.PenanggungJawab} onChange={(e) => updateRekomendasi(index, 'PenanggungJawab', e.target.value)} rows="2" className="form-control form-control-sm"></textarea>
-                            </td>
-                            <td>
-                              <input type="date" value={entry.Tanggal} onChange={(e) => updateRekomendasi(index, 'Tanggal', e.target.value)} className="form-control form-control-sm" />
-                            </td>
-                            <td className="no-print text-center">
-                              <button type="button" className="btn btn-danger btn-sm" onClick={() => hapusRowRekomendasi(index)}>
-                                <i className="fas fa-trash"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="btn-group no-print">
-                    {selectedRow && selectedRow.verifikasi !== 1 && (
-                      <button type="button" className="btn btn-success btn-sm" onClick={tambahRowRekomendasi}>
-                        + Tambah baris
-                      </button>
-                    )}
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
               {/* Analisa */}
-              <h4 className="mt-4">ANALISA SUB KOMITE KESELAMATAN PASIEN:</h4>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Tanggal:</label>
-                <div className="col-sm-8">
-                  <input type="date" className="form-control form-control-sm" name="tglAnalisa" />
+              <div className="pt-3 border-top mb-4">
+                <h6 className="label-minimal mb-3">Analisa Sub Komite Keselamatan Pasien</h6>
+                <div className="mb-3">
+                  <label className="label-minimal mb-1">Tanggal Analisa</label>
+                  <input type="date" className="input-minimal" name="tglAnalisa" style={{ maxWidth: '240px' }} />
                 </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Investigasi Lengkap:</label>
-                <div className="col-sm-8">
-                  {['YA', 'TIDAK'].map((val) => (
-                    <div key={val} className="form-check form-check-inline">
-                      <input className="form-check-input" type="radio" name="investigasiLengkap" id={`inv-lengkap-${val}`} value={val} />
-                      <label className="form-check-label" htmlFor={`inv-lengkap-${val}`}>{val}</label>
-                    </div>
-                  ))}
+
+                <div className="mb-3">
+                  <label className="label-minimal mb-1">Investigasi Lengkap:</label>
+                  <div className="d-flex gap-3">
+                    {['YA', 'TIDAK'].map((val) => (
+                      <div key={val} className="form-check m-0">
+                        <input className="form-check-input" type="radio" name="investigasiLengkap" id={`inv-lengkap-${val}`} value={val} />
+                        <label className="form-check-label ms-1" htmlFor={`inv-lengkap-${val}`}>{val}</label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Diperlukan Investigasi lebih lanjut:</label>
-                <div className="col-sm-8">
-                  {['YA', 'TIDAK'].map((val) => (
-                    <div key={val} className="form-check form-check-inline">
-                      <input className="form-check-input" type="radio" name="investigasiLanjut" id={`inv-lanjut-${val}`} value={val} />
-                      <label className="form-check-label" htmlFor={`inv-lanjut-${val}`}>{val}</label>
-                    </div>
-                  ))}
+
+                <div className="mb-3">
+                  <label className="label-minimal mb-1">Diperlukan Investigasi lebih lanjut:</label>
+                  <div className="d-flex gap-3">
+                    {['YA', 'TIDAK'].map((val) => (
+                      <div key={val} className="form-check m-0">
+                        <input className="form-check-input" type="radio" name="investigasiLanjut" id={`inv-lanjut-${val}`} value={val} />
+                        <label className="form-check-label ms-1" htmlFor={`inv-lanjut-${val}`}>{val}</label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-1 row">
-                <label className="col-sm-4">Investigasi setelah Grading ulang:</label>
-                <div className="col-sm-8">
-                  <select className="form-select" name="grading">
+
+                <div className="mb-3">
+                  <label className="label-minimal mb-1">Investigasi setelah Grading ulang:</label>
+                  <select className="input-minimal" name="grading" style={{ maxWidth: '240px' }}>
                     <option value="BIRU">BIRU</option>
                     <option value="HIJAU">HIJAU</option>
                     <option value="KUNING">KUNING</option>
@@ -676,6 +803,7 @@ export default function InvestigasiForm() {
                 </div>
               </div>
 
+              {/* Actions */}
               <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 no-print my-4 pt-3 border-top">
                 {selectedRow && selectedRow.verifikasi !== 1 && (
                   <button
@@ -700,6 +828,5 @@ export default function InvestigasiForm() {
         </div>
       </div>
     </div>
-  </div>
   );
 }

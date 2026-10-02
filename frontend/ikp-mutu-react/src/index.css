@@ -38,12 +38,14 @@
   padding: 0;
 }
 
-body {
+html, body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background);
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Layout Utilities */
@@ -68,6 +70,9 @@ h1, h2, h3, h4, h5, h6 {
 .app-container {
   display: flex;
   background: #fff;
+  min-width: 0;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 .sidebar {
@@ -92,7 +97,16 @@ h1, h2, h3, h4, h5, h6 {
   flex: 1;
   margin-left: 260px;
   min-height: 100vh;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   transition: margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-body {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .sidebar-collapsed .main-wrapper,
