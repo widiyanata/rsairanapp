@@ -69,18 +69,18 @@ def kunjungan_pasien(request):
 @csrf_exempt
 def kronologi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
+    query = "SELECT * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
     params = []
     
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None and 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       no_transaksi = request.GET['no_transaksi']
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [no_transaksi, dibuat_oleh]
 
     elif 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [dibuat_oleh]
 
     print('query kronologi:', query, 'params:', params)
@@ -187,20 +187,25 @@ def cari_user(request):
 def grading(request):
   if request.method == 'GET':
     query = """
-    SELECT TOP 10 mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN, mutu_investigasi.rekomendasi, mutu_verifikasi.status as verifikasi
+    SELECT mutu_grading_insiden.*, mutu_investigasi.investigasi, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN, mutu_investigasi.rekomendasi, mutu_verifikasi.status as verifikasi
     FROM mutu_grading_insiden 
     LEFT JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN  
     LEFT JOIN mutu_investigasi ON mutu_investigasi.no_transaksi = mutu_grading_insiden.no_transaksi
     LEFT JOIN mutu_verifikasi ON mutu_grading_insiden.no_transaksi = mutu_verifikasi.no_transaksi
+    ORDER BY mutu_grading_insiden.id_insiden DESC
     """
     params = []
 
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      query = "SELECT TOP 10 * FROM mutu_grading_insiden JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN WHERE no_transaksi = %s "
+      query = """
+      SELECT mutu_grading_insiden.*, PASIEN.NAMAPASIEN, PASIEN.KD_PASIEN 
+      FROM mutu_grading_insiden 
+      LEFT JOIN PASIEN ON mutu_grading_insiden.no_rm = PASIEN.KD_PASIEN 
+      WHERE no_transaksi = %s 
+      ORDER BY mutu_grading_insiden.id_insiden DESC
+      """
       params = [no_transaksi]
-
-    print('query grading:', query)
 
     with connection.cursor() as cursor:
       cursor.execute(query, params)
@@ -222,21 +227,39 @@ def grading(request):
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
 
-    # Tanda tangan
+    # Tanda tangan & verifikasi
     tanda_tangan_pelapor = data.get('tanda_tangan_pelapor', '')
     tanda_tangan_penerima = data.get('tanda_tangan_penerima', '')
     penerima_laporan = data.get('penerima_laporan', '')
+    status_verifikasi_kasie = data.get('status_verifikasi_kasie')
+    verified_by_kasie = data.get('verified_by_kasie')
+    verified_by_kasie_str = json.dumps(verified_by_kasie) if verified_by_kasie else None
+    kirim_ke_kasie = data.get('kirim_ke_kasie')
+
+    if not status_verifikasi_kasie:
+      status_verifikasi_kasie = 'TERVERIFIKASI' if tanda_tangan_penerima else 'MENUNGGU_VERIFIKASI'
+
+    no_transaksi = pasien.get('KPNO_TRANSAKSI') or data.get('no_transaksi')
+    no_rm = pasien.get('KPKD_PASIEN') or pasien.get('KD_PASIEN') or data.get('no_rm')
 
     with connection.cursor() as cursor:
-        # cek existing data
+        # cek existing data berdasarkan no_transaksi
         query = """
             SELECT TOP 1 * FROM mutu_grading_insiden 
-            WHERE no_transaksi = %s AND dibuat_oleh = %s
+            WHERE no_transaksi = %s
         """
-        cursor.execute(query, [pasien.get('KPNO_TRANSAKSI'), dibuat_oleh])
-        rows = cursor.fetchone()
+        cursor.execute(query, [no_transaksi])
+        existing = dictfetchall(cursor)
 
-        if rows:
+        if len(existing) > 0:
+          existing_row = existing[0]
+          final_ttd_pelapor = tanda_tangan_pelapor or existing_row.get('tanda_tangan_pelapor')
+          final_ttd_penerima = tanda_tangan_penerima or existing_row.get('tanda_tangan_penerima')
+          final_penerima = penerima_laporan or existing_row.get('penerima_laporan')
+          final_dibuat_oleh = existing_row.get('dibuat_oleh') or dibuat_oleh
+          final_verified_by = verified_by_kasie_str or existing_row.get('verified_by_kasie')
+          final_kirim_ke_kasie = kirim_ke_kasie or existing_row.get('kirim_ke_kasie')
+
           # Update data
           query = """
               UPDATE mutu_grading_insiden
@@ -244,66 +267,94 @@ def grading(request):
               dibuat_oleh = %s,
               tanda_tangan_pelapor = %s,
               tanda_tangan_penerima = %s,
-              penerima_laporan = %s
+              penerima_laporan = %s,
+              status_verifikasi_kasie = %s,
+              tgl_verifikasi_kasie = CASE WHEN %s = 'TERVERIFIKASI' THEN GETDATE() ELSE tgl_verifikasi_kasie END,
+              verified_by_kasie = %s,
+              kirim_ke_kasie = %s,
+              updated_at = GETDATE()
               WHERE no_transaksi = %s
-              AND dibuat_oleh = %s
           """
           cursor.execute(query, [
             json.dumps(kejadian),
-            dibuat_oleh,
-            tanda_tangan_pelapor,
-            tanda_tangan_penerima,
-            penerima_laporan,
-            pasien.get('KPNO_TRANSAKSI'),
-            dibuat_oleh
+            final_dibuat_oleh,
+            final_ttd_pelapor,
+            final_ttd_penerima,
+            final_penerima,
+            status_verifikasi_kasie,
+            status_verifikasi_kasie,
+            final_verified_by,
+            final_kirim_ke_kasie,
+            no_transaksi
           ])
         else:
+          final_kirim_ke_kasie = kirim_ke_kasie
           # Insert new data
           query = """
             INSERT INTO mutu_grading_insiden 
-            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh, tanda_tangan_pelapor, tanda_tangan_penerima, penerima_laporan) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (no_rm, no_transaksi, rincian_kejadian, dibuat_oleh, tanda_tangan_pelapor, tanda_tangan_penerima, penerima_laporan, status_verifikasi_kasie, tgl_verifikasi_kasie, verified_by_kasie, kirim_ke_kasie, created_at, updated_at) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, CASE WHEN %s = 'TERVERIFIKASI' THEN GETDATE() ELSE NULL END, %s, %s, GETDATE(), GETDATE())
           """
           cursor.execute(query, [
-              pasien.get('KPKD_PASIEN'),
-              pasien.get('KPNO_TRANSAKSI'),
+              no_rm,
+              no_transaksi,
               json.dumps(kejadian),
               dibuat_oleh,
               tanda_tangan_pelapor,
               tanda_tangan_penerima,
-              penerima_laporan
+              penerima_laporan,
+              status_verifikasi_kasie,
+              status_verifikasi_kasie,
+              verified_by_kasie_str,
+              final_kirim_ke_kasie
           ])
 
-    # Trigger WA notification to Mutu Team
+    # Trigger WA notifications
     try:
-      with connection.cursor() as cursor:
-        cursor.execute("SELECT nama, telp FROM mutu_users WHERE role = 'mutu'")
-        mutu_users = dictfetchall(cursor)
-      
       insiden_nama = kejadian.get('insiden', 'Insiden Tanpa Nama')
       warna_grading = kejadian.get('gradingrisiko', 'TIDAK ADA').upper()
       nama_pasien = pasien.get('NAMAPASIEN', 'Pasien Tanpa Nama')
-      no_trans = pasien.get('KPNO_TRANSAKSI', '')
+      no_trans = no_transaksi
 
-      for mu in mutu_users:
-        if mu.get('telp'):
-          msg = f"Halo {mu['nama']},\n\nLaporan grading insiden baru telah diselesaikan oleh Karu untuk pasien {nama_pasien} (No. Trans: {no_trans}).\n\nDetail Insiden: {insiden_nama}\nGrade Risiko: {warna_grading}\n\nMohon segera lakukan investigasi di aplikasi IKP-Mutu."
-          send_wa_notification(mu['telp'], msg)
+      with connection.cursor() as cursor:
+        if status_verifikasi_kasie == 'TERVERIFIKASI':
+          cursor.execute("SELECT nama, telp FROM mutu_users WHERE role = 'mutu'")
+          mutu_users = dictfetchall(cursor)
+          kasie_nama = penerima_laporan or 'Kasie'
+          for mu in mutu_users:
+            if mu.get('telp'):
+              msg = f"Halo {mu['nama']},\n\nLaporan grading insiden untuk pasien {nama_pasien} (No. Trans: {no_trans}) telah DIVERIFIKASI dan ditandatangani oleh Kasie ({kasie_nama}).\n\nDetail Insiden: {insiden_nama}\nGrade Risiko: {warna_grading}\n\nMohon segera lakukan investigasi di aplikasi IKP-Mutu."
+              send_wa_notification(mu['telp'], msg)
+        else:
+          if final_kirim_ke_kasie:
+            cursor.execute("SELECT nama, telp FROM mutu_users WHERE id = %s", [final_kirim_ke_kasie])
+            target_kasie = dictfetchall(cursor)
+            for ku in target_kasie:
+              if ku.get('telp'):
+                msg = f"Halo {ku['nama']},\n\nLaporan grading insiden baru telah dikirimkan ke Anda oleh Karu untuk pasien {nama_pasien} (No. Trans: {no_trans}).\n\nDetail Insiden: {insiden_nama}\nGrade Risiko: {warna_grading}\n\nMohon segera lakukan verifikasi dan tanda tangan di aplikasi IKP-Mutu."
+                send_wa_notification(ku['telp'], msg)
+          else:
+            cursor.execute("SELECT nama, telp FROM mutu_users WHERE role = 'kasie'")
+            kasie_users = dictfetchall(cursor)
+            for ku in kasie_users:
+              if ku.get('telp'):
+                msg = f"Halo {ku['nama']},\n\nLaporan grading insiden baru telah diselesaikan oleh Karu untuk pasien {nama_pasien} (No. Trans: {no_trans}).\n\nDetail Insiden: {insiden_nama}\nGrade Risiko: {warna_grading}\n\nMohon segera lakukan verifikasi dan tanda tangan di aplikasi IKP-Mutu."
+                send_wa_notification(ku['telp'], msg)
     except Exception as e:
       print(f"Error triggering WA notification for grading: {e}")
 
-    return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
+    return JsonResponse({'status': True, 'message': 'Data grading berhasil disimpan'})
   
 # Investigasi
 @csrf_exempt
 def investigasi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_investigasi "
+    query = "SELECT * FROM mutu_investigasi ORDER BY id_investigasi DESC"
     params = []
 
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      query = "SELECT TOP 10 * FROM mutu_investigasi WHERE no_transaksi = %s "
+      query = "SELECT * FROM mutu_investigasi WHERE no_transaksi = %s ORDER BY id_investigasi DESC"
       params = [no_transaksi]
 
     print('query investigasi:', query)
@@ -527,13 +578,13 @@ def cek_karyawan(request):
   })
 
 def cariKaru(request):
-  query = "SELECT TOP 10 * FROM mutu_users"
+  query = "SELECT id, username, role, nama, telp FROM mutu_users"
   conditions = []
   params = []
 
   if 'cari' in request.GET and request.GET['cari'] is not None:
-    conditions.append("username LIKE %s")
-    params.append(f"%{request.GET['cari']}%")
+    conditions.append("(username LIKE %s OR nama LIKE %s)")
+    params.extend([f"%{request.GET['cari']}%", f"%{request.GET['cari']}%"])
 
   if 'role' in request.GET and request.GET['role'] is not None:
     conditions.append("role = %s")
@@ -541,6 +592,8 @@ def cariKaru(request):
 
   if conditions:
     query = query + " WHERE " + " AND ".join(conditions)
+
+  query = query + " ORDER BY nama ASC"
 
   with connection.cursor() as cursor:
     cursor.execute(query, params)

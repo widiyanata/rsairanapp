@@ -172,15 +172,19 @@ export default function UserManagement() {
   });
 
   return (
-    <div className="user-management-page animate-fade-in">
+    <div className="user-management-page animate-fade-in pb-4">
       {/* Header */}
-      <div className="d-flex align-items-center justify-content-between mb-4">
+      <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
         <div>
-          <h1 className="h2 fw-bold mb-1">Manajemen Pengguna</h1>
+          <h1 className="h3 fw-bold mb-1">Manajemen Pengguna</h1>
           <p className="text-muted small mb-0">Kelola kredensial, role, dan kontak WhatsApp pengguna aplikasi IKP-Mutu.</p>
         </div>
         {activeTab === 'users' && !showForm && (
-          <button onClick={openAddForm} className="btn-minimal btn-minimal-primary shadow-sm">
+          <button
+            onClick={openAddForm}
+            className="btn-minimal btn-minimal-primary shadow-sm justify-content-center py-2 px-3"
+            style={{ minHeight: '42px' }}
+          >
             <i className="fas fa-plus"></i>
             <span>Tambah Pengguna</span>
           </button>
@@ -189,24 +193,30 @@ export default function UserManagement() {
 
       {/* Tabs Selector */}
       {!showForm && (
-        <ul className="nav nav-tabs mb-4">
-          <li className="nav-item">
+        <div className="mobile-tabs-container mb-4">
+          <div className="d-flex gap-2 p-1 bg-light rounded-pill border overflow-x-auto text-nowrap no-scrollbar">
             <button
-              className={`nav-link ${activeTab === 'users' ? 'active' : ''}`}
+              type="button"
+              className={`btn btn-sm rounded-pill px-3 py-2 flex-fill text-nowrap transition-all ${
+                activeTab === 'users' ? 'btn-dark shadow-sm fw-bold' : 'btn-light border-0 text-muted'
+              }`}
               onClick={() => setActiveTab('users')}
+              style={{ minHeight: '38px' }}
             >
               <i className="fas fa-user-friends me-2"></i> Data Pengguna
             </button>
-          </li>
-          <li className="nav-item">
             <button
-              className={`nav-link ${activeTab === 'permissions' ? 'active' : ''}`}
+              type="button"
+              className={`btn btn-sm rounded-pill px-3 py-2 flex-fill text-nowrap transition-all ${
+                activeTab === 'permissions' ? 'btn-dark shadow-sm fw-bold' : 'btn-light border-0 text-muted'
+              }`}
               onClick={() => setActiveTab('permissions')}
+              style={{ minHeight: '38px' }}
             >
               <i className="fas fa-user-shield me-2"></i> Akses Kontrol Dinamis
             </button>
-          </li>
-        </ul>
+          </div>
+        </div>
       )}
 
       {activeTab === 'users' ? (
@@ -274,6 +284,7 @@ export default function UserManagement() {
                   <option value="">-- Pilih Role --</option>
                   <option value="admin">Administrator</option>
                   <option value="mutu">Tim Mutu</option>
+                  <option value="kasie">Kepala Seksi (Kasie)</option>
                   <option value="karu">Kepala Ruangan (Karu)</option>
                   <option value="perawat">Tenaga Perawat</option>
                   <option value="lainya">Karyawan Lainnya</option>
@@ -310,22 +321,119 @@ export default function UserManagement() {
         ) : (
           /* Users List View */
           <div className="card-minimal p-0 overflow-hidden shadow-sm animate-fade-in">
-            <div className="px-4 py-3 border-bottom d-flex align-items-center justify-content-between bg-light bg-opacity-50">
-              <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">Daftar Pengguna</h3>
-              <div className="search-minimal d-flex align-items-center gap-2 border-bottom py-1" style={{ width: '250px' }}>
+            <div className="p-3 border-bottom d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 bg-light bg-opacity-50">
+              <h3 className="h6 mb-0 text-uppercase fw-bold ls-1 d-none d-sm-block">
+                Daftar Pengguna ({filteredUsers.length})
+              </h3>
+              <div
+                className="search-minimal d-flex align-items-center gap-2 border bg-white rounded-pill px-3 py-1 w-100"
+                style={{ maxWidth: '320px' }}
+              >
                 <i className="fas fa-search text-muted small"></i>
                 <input
                   type="text"
-                  className="bg-transparent border-0 small w-100"
+                  className="bg-transparent border-0 small w-100 py-1"
                   placeholder="Cari nama, username, role..."
                   style={{ outline: 'none' }}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch('')}
+                    className="btn-icon p-0 text-muted"
+                    style={{ width: '20px', height: '20px' }}
+                  >
+                    <i className="fas fa-times" style={{ fontSize: '11px' }}></i>
+                  </button>
+                )}
               </div>
             </div>
 
-            <div className="table-responsive">
+            {/* Mobile Cards (d-md-none) */}
+            <div className="d-md-none p-2 bg-light bg-opacity-25">
+              {loading ? (
+                <div className="text-center py-5 text-muted">
+                  <i className="fas fa-spinner fa-spin h3 mb-2"></i>
+                  <p className="small mb-0">Memuat data pengguna...</p>
+                </div>
+              ) : filteredUsers.length > 0 ? (
+                <div className="d-flex flex-column gap-2">
+                  {filteredUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="card-minimal p-3 bg-white border rounded-3 shadow-none mobile-item-card"
+                    >
+                      <div className="d-flex align-items-start justify-content-between mb-2">
+                        <div>
+                          <div className="fw-bold text-dark">{user.nama}</div>
+                          <div className="text-muted small">@{user.username}</div>
+                        </div>
+                        <span className={`badge rounded-pill fw-normal px-2 py-1 border text-uppercase ${
+                          user.role === 'admin' 
+                            ? 'text-danger bg-danger-subtle border-danger' 
+                            : user.role === 'mutu' 
+                            ? 'text-primary bg-primary-subtle border-primary'
+                            : user.role === 'kasie'
+                            ? 'text-info bg-info-subtle border-info'
+                            : user.role === 'karu'
+                            ? 'text-success bg-success-subtle border-success'
+                            : 'text-muted bg-light border-secondary border-opacity-25'
+                        }`} style={{ fontSize: '10px' }}>
+                          {user.role}
+                        </span>
+                      </div>
+
+                      <div className="d-flex align-items-center justify-content-between pt-2 border-top mt-2">
+                        <div className="small text-muted">
+                          {user.telp ? (
+                            <a
+                              href={`https://wa.me/${user.telp.replace(/^0/, '62')}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-decoration-none text-success d-flex align-items-center gap-1"
+                            >
+                              <i className="fab fa-whatsapp"></i>
+                              <span>{user.telp}</span>
+                            </a>
+                          ) : (
+                            <span className="text-muted fst-italic" style={{ fontSize: '11px' }}>
+                              Tidak ada WA
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="d-flex gap-1">
+                          <button
+                            onClick={() => openEditForm(user)}
+                            className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1"
+                            style={{ fontSize: '12px' }}
+                          >
+                            <i className="fas fa-edit me-1"></i> Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user)}
+                            className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1"
+                            style={{ fontSize: '12px' }}
+                          >
+                            <i className="fas fa-trash-alt"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-5 text-muted">
+                  <i className="fas fa-users-slash h2 opacity-50 mb-2"></i>
+                  <p className="small mb-0">Tidak ada pengguna ditemukan</p>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Table (d-none d-md-block) */}
+            <div className="table-responsive d-none d-md-block">
               <table className="table-minimal">
                 <thead>
                   <tr>
@@ -355,6 +463,8 @@ export default function UserManagement() {
                             ? 'text-danger bg-danger-subtle border-danger' 
                             : user.role === 'mutu' 
                             ? 'text-primary bg-primary-subtle border-primary'
+                            : user.role === 'kasie'
+                            ? 'text-info bg-info-subtle border-info'
                             : user.role === 'karu'
                             ? 'text-success bg-success-subtle border-success'
                             : 'text-muted bg-light border-secondary border-opacity-25'
@@ -420,6 +530,7 @@ export default function UserManagement() {
               >
                 <option value="admin">Administrator</option>
                 <option value="mutu">Tim Mutu</option>
+                <option value="kasie">Kepala Seksi (Kasie)</option>
                 <option value="karu">Kepala Ruangan (Karu)</option>
                 <option value="perawat">Tenaga Perawat</option>
                 <option value="lainya">Karyawan Lainnya</option>
