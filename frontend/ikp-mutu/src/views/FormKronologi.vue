@@ -79,7 +79,7 @@
 import { inject, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-const apiBaseUrl = 'http://10.30.0.12:8009'
+const apiBaseUrl = 'http://192.168.5.51:8009'
 const router = useRouter()
 
 // States

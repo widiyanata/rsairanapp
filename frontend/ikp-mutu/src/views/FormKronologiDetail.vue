@@ -222,7 +222,7 @@ import { inject, nextTick, onMounted, ref, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TandaTanganCanvas from '../TandaTanganCanvas.vue'
 
-const apiBaseUrl = 'http://10.30.0.12:8009'
+const apiBaseUrl = 'http://192.168.5.51:8009'
 const route = useRoute()
 const router = useRouter()
 
