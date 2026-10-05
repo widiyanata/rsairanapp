@@ -97,7 +97,7 @@ const isKaryawan = ref(false);
 const listKaryawan = ref([]);
 const karyawan = ref({ id: '', username: '', email: '', role: '' });
 
-const apiBaseUrl = 'http://10.30.0.12:8009';
+const apiBaseUrl = 'http://192.168.5.51:8009';
 
 const cariUser = async () => {
   try {

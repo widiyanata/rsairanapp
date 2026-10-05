@@ -612,7 +612,7 @@ const submitForm = async (e) => {
   console.log('investigasi', investigasi.value);
 
   try {
-    const res = await fetch('http://10.30.0.12:8009/investigasi', {
+    const res = await fetch('http://192.168.5.51:8009/investigasi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -653,7 +653,7 @@ const submitForm = async (e) => {
 const riwayatInvestigasi = ref([])
 const getRiwayatInvestigasi = async () => {
   try {
-    const res = await fetch('http://10.30.0.12:8009/investigasi');
+    const res = await fetch('http://192.168.5.51:8009/investigasi');
     const data = await res.json();
     console.log('riwayat investigasi', data);
     return riwayatInvestigasi.value = data.data;
@@ -665,7 +665,7 @@ const getRiwayatInvestigasi = async () => {
 const riwayatGrading = ref([])
 const getRiwayatGrading = async (no_transaksi = '') => {
   try {
-    const res = await fetch(`http://10.30.0.12:8009/grading?cari=${no_transaksi}`);
+    const res = await fetch(`http://192.168.5.51:8009/grading?cari=${no_transaksi}`);
     const data = await res.json();
     console.log('riwayat grading', data);
     return riwayatGrading.value = data.data;
@@ -722,7 +722,7 @@ const rekomendasi = ref([
 ])
 const getRekomendasi = async () => {
   try {
-    const res = await fetch('http://10.30.0.12:8009/rekomendasi');
+    const res = await fetch('http://192.168.5.51:8009/rekomendasi');
     const data = await res.json();
     console.log('rekomendasi', data);
     return rekomendasi.value = data.data;
@@ -762,7 +762,7 @@ const resetRowRekomendasi = () => {
 const listKronologi = ref([])
 const getListKronologi = async () => {
   try {
-    const res = await fetch('http://10.30.0.12:8009/getListKronologi?no_transaksi=' + selectedRow.value.no_transaksi);
+    const res = await fetch('http://192.168.5.51:8009/getListKronologi?no_transaksi=' + selectedRow.value.no_transaksi);
     const data = await res.json();
     console.log('list kronologi', data);
     listKronologi.value = data.data;
@@ -775,7 +775,7 @@ const getListKronologi = async () => {
 const verifikasiKronologi = async (no_transaksi) => {
   console.log('verifikasi kronologi')
   try {
-    const res = await fetch('http://10.30.0.12:8009/verifikasiKronologi', {
+    const res = await fetch('http://192.168.5.51:8009/verifikasiKronologi', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
