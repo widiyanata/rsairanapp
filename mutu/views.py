@@ -69,18 +69,18 @@ def kunjungan_pasien(request):
 @csrf_exempt
 def kronologi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
+    query = "SELECT * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
     params = []
     
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None and 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       no_transaksi = request.GET['no_transaksi']
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [no_transaksi, dibuat_oleh]
 
     elif 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
-      query = "SELECT TOP 10 * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [dibuat_oleh]
 
     print('query kronologi:', query, 'params:', params)
@@ -349,12 +349,12 @@ def grading(request):
 @csrf_exempt
 def investigasi(request):
   if request.method == 'GET':
-    query = "SELECT TOP 10 * FROM mutu_investigasi "
+    query = "SELECT * FROM mutu_investigasi ORDER BY id_investigasi DESC"
     params = []
 
     if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None:
       no_transaksi = request.GET['no_transaksi']
-      query = "SELECT TOP 10 * FROM mutu_investigasi WHERE no_transaksi = %s "
+      query = "SELECT * FROM mutu_investigasi WHERE no_transaksi = %s ORDER BY id_investigasi DESC"
       params = [no_transaksi]
 
     print('query investigasi:', query)
