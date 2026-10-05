@@ -22,4 +22,5 @@ urlpatterns = [
   path('updatePermissions', views.updatePermissions, name='updatePermissions'),
   path('getListKronologi', views.getListKronologi, name='getListKronologi'),
   path('verifikasiKronologi', views.verifikasiKronologi, name='verifikasiKronologi'),
+  path('updateProfile', views.updateProfile, name='updateProfile'),
 ]

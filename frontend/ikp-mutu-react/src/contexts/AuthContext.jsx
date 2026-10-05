@@ -45,10 +45,19 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateUser = useCallback((newUserData) => {
+    setUser((prev) => {
+      const updated = { ...prev, ...newUserData };
+      sessionStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const value = {
     user,
     login,
     logout,
+    updateUser,
     isAuthenticated: !!user,
     permissions,
     hasAccessDynamic,

@@ -9,6 +9,7 @@ import KronologiForm from './pages/kronologi/KronologiForm';
 import GradingForm from './pages/grading/GradingForm';
 import InvestigasiForm from './pages/investigasi/InvestigasiForm';
 import UserManagement from './pages/admin/UserManagement';
+import Profile from './pages/Profile';
 import { ROLES } from './config/permissions';
 
 function AppRoutes() {
@@ -48,6 +49,9 @@ function AppRoutes() {
           <Route element={<ProtectedRoute feature="users" />}>
             <Route path="/users" element={<UserManagement />} />
           </Route>
+
+          {/* Profile (Bisa diakses oleh semua pengguna yang login) */}
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Route>
 

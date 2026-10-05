@@ -15,6 +15,7 @@ export default function Header({ isSidebarOpen, onToggleSidebar }) {
     if (path.startsWith('/grading')) return { title: 'Grading Mutu', isSubpage: false };
     if (path.startsWith('/investigasi')) return { title: 'Investigasi', isSubpage: false };
     if (path.startsWith('/users')) return { title: 'User Management', isSubpage: false };
+    if (path.startsWith('/profile')) return { title: 'Profil Saya', isSubpage: false };
     return { title: 'IKP Mutu', isSubpage: false };
   };
 
@@ -71,12 +72,17 @@ export default function Header({ isSidebarOpen, onToggleSidebar }) {
 
         {/* User Role Badge on Mobile / Desktop */}
         <div className="user-badge-header d-flex align-items-center gap-2">
-          <div className="avatar-header-pill d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-light border">
+          <div
+            className="avatar-header-pill d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-light border cursor-pointer hover-bg-subtle"
+            onClick={() => navigate('/profile')}
+            title="Buka Manajemen Profil"
+            style={{ cursor: 'pointer' }}
+          >
             <span className="avatar-letter">
               {user?.username?.charAt(0).toUpperCase() || 'U'}
             </span>
-            <span className="small fw-semibold text-truncate d-none d-sm-inline" style={{ maxWidth: '100px' }}>
-              {user?.username}
+            <span className="small fw-semibold text-truncate d-none d-sm-inline" style={{ maxWidth: '120px' }}>
+              {user?.nama || user?.username}
             </span>
             <span className="badge bg-primary text-white text-uppercase" style={{ fontSize: '9px', padding: '2px 6px' }}>
               {user?.role || 'Staff'}

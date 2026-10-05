@@ -942,3 +942,62 @@ def verifikasiKronologi(request):
         "data": rows
       }
       return JsonResponse(res, safe=False)
+
+@csrf_exempt
+def updateProfile(request):
+  if request.method == 'POST':
+    try:
+      data = json.loads(request.body)
+      username = data.get('username')
+      nama = data.get('nama')
+      telp = data.get('telp', '')
+      old_password = data.get('old_password')
+      new_password = data.get('new_password')
+
+      if not username or not nama:
+        return JsonResponse({'status': False, 'message': 'Username dan Nama wajib diisi'}, status=400)
+
+      with connection.cursor() as cursor:
+        cursor.execute("SELECT TOP 1 id, username, password, role, nama, telp FROM mutu_users WHERE username = %s", [username])
+        rows = dictfetchall(cursor)
+
+        if not rows:
+          return JsonResponse({'status': False, 'message': 'User tidak ditemukan di sistem'}, status=404)
+
+        user_row = rows[0]
+        user_id = user_row['id']
+        current_db_password = user_row.get('password')
+
+        # Ganti password jika diminta
+        if new_password:
+          if not old_password:
+            return JsonResponse({'status': False, 'message': 'Password saat ini harus diisi untuk mengubah password'}, status=400)
+
+          from django.contrib.auth.hashers import check_password, make_password
+          is_correct = False
+          if current_db_password and (current_db_password.startswith('pbkdf2_') or current_db_password.startswith('bcrypt') or current_db_password.startswith('argon2')):
+            is_correct = check_password(old_password, current_db_password)
+          else:
+            is_correct = (old_password == current_db_password)
+
+          if not is_correct:
+            return JsonResponse({'status': False, 'message': 'Password saat ini tidak sesuai'}, status=400)
+
+          hashed_new_pw = make_password(new_password)
+          cursor.execute("UPDATE mutu_users SET nama = %s, telp = %s, password = %s WHERE id = %s", [nama, telp, hashed_new_pw, user_id])
+        else:
+          cursor.execute("UPDATE mutu_users SET nama = %s, telp = %s WHERE id = %s", [nama, telp, user_id])
+
+        # Ambil data terbaru
+        cursor.execute("SELECT TOP 1 id, username, role, nama, telp FROM mutu_users WHERE id = %s", [user_id])
+        updated_rows = dictfetchall(cursor)
+
+      return JsonResponse({
+        'status': True,
+        'message': 'Profil berhasil diperbarui',
+        'data': updated_rows
+      })
+    except Exception as e:
+      return JsonResponse({'status': False, 'message': str(e)}, status=500)
+
+  return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
