@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buku Panduan Pengguna (User Manual) - IKP Mutu RS Airan Raya</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --secondary: #0f172a;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --sidebar-w: 290px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Layout */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border);
+      background: #ffffff;
+    }
+
+    .hospital-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.2);
+    }
+
+    .logo-text h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--secondary);
+      line-height: 1.2;
+    }
+
+    .logo-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-search {
+      padding: 14px 20px 6px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      width: 100%;
+    }
+
+    .nav-menu {
+      padding: 12px 10px;
+      flex-grow: 1;
+    }
+
+    .nav-group-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 12px 12px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #334155;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover {
+      background: #f8fafc;
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    /* Main Content */
+    .main-wrapper {
+      margin-left: var(--sidebar-w);
+      flex-grow: 1;
+      padding: 40px 48px;
+      max-width: 1180px;
+    }
+
+    /* Top Bar */
+    .top-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .breadcrumb span {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .print-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .print-btn:hover {
+      background: #1e293b;
+    }
+
+    /* Manual Header Hero */
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 36px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(2, 132, 199, 0.25);
+      border: 1px solid rgba(2, 132, 199, 0.5);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #38bdf8;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .hero-banner h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-banner p {
+      font-size: 15px;
+      color: #94a3b8;
+      max-width: 720px;
+    }
+
+    /* Section Styling */
+    .manual-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      margin-bottom: 36px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      scroll-margin-top: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .icon-blue { background: #e0f2fe; color: #0284c7; }
+    .icon-green { background: #dcfce7; color: #16a34a; }
+    .icon-amber { background: #fef3c7; color: #d97706; }
+    .icon-purple { background: #f3e8ff; color: #9333ea; }
+    .icon-red { background: #fee2e2; color: #dc2626; }
+    .icon-indigo { background: #e0e7ff; color: #4f46e5; }
+
+    .section-title h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .section-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Content Typography */
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 24px 0 12px;
+    }
+
+    p, li {
+      font-size: 14.5px;
+      color: #334155;
+    }
+
+    ol, ul {
+      padding-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    /* Screenshot Browser Mockup */
+    .screenshot-card {
+      margin: 24px 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f8fafc;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    }
+
+    .mockup-header {
+      background: #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .mockup-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .mockup-url {
+      background: #ffffff;
+      padding: 4px 14px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      flex-grow: 1;
+      max-width: 450px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: monospace;
+      border: 1px solid #cbd5e1;
+    }
+
+    .screenshot-img-wrapper {
+      padding: 4px;
+      background: #ffffff;
+      text-align: center;
+      cursor: zoom-in;
+    }
+
+    .screenshot-img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+      transition: transform 0.2s ease;
+    }
+
+    .screenshot-caption {
+      padding: 10px 16px;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .screenshot-caption i {
+      color: var(--primary);
+    }
+
+    /* Workflow Cards */
+    .workflow-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .workflow-step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 26px;
+      margin-bottom: 12px;
+    }
+
+    .workflow-step h4 {
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .workflow-step p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Role Badges */
+    .badge-role {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .role-perawat { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+    .role-karu { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .role-kasie { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .role-mutu { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+    .role-admin { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+
+    /* Alert Boxes */
+    .alert-box {
+      display: flex;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .alert-info {
+      background: #f0f9ff;
+      border-left: 4px solid var(--primary);
+      color: #0369a1;
+    }
+
+    .alert-success {
+      background: #f0fdf4;
+      border-left: 4px solid var(--accent);
+      color: #15803d;
+    }
+
+    .alert-warning {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      color: #b45309;
+    }
+
+    .alert-box i {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      font-size: 13.5px;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    /* Modal / Lightbox for Screenshot */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      cursor: zoom-out;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-img {
+      max-width: 95%;
+      max-height: 95%;
+      border-radius: 8px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-wrapper {
+        margin-left: 0;
+        padding: 24px 20px;
+      }
+      .mobile-menu-btn {
+        display: inline-flex !important;
+      }
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .top-action-bar, .mockup-header, .print-btn, .modal-overlay, .search-box {
+        display: none !important;
+      }
+      .main-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .manual-section {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 16px 0 !important;
+        page-break-inside: avoid;
+      }
+      .screenshot-card {
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="hospital-logo">
+        <div class="logo-badge">
+          <i class="fas fa-heartbeat"></i>
+        </div>
+        <div class="logo-text">
+          <h2>RS Airan Raya</h2>
+          <p>Manual IKP & Mutu</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-search">
+      <div class="search-box">
+        <i class="fas fa-search text-muted" style="color: #94a3b8; font-size: 13px;"></i>
+        <input type="text" id="searchInput" placeholder="Cari topik panduan..." onkeyup="filterNav()">
+      </div>
+    </div>
+
+    <nav class="nav-menu" id="navMenu">
+      <div class="nav-group-title">Ringkasan</div>
+      <a href="#pendahuluan" class="nav-item active"><i class="fas fa-info-circle"></i> 1. Pendahuluan & Alur</a>
+      <a href="#login" class="nav-item"><i class="fas fa-sign-in-alt"></i> 2. Masuk Sistem (Login)</a>
+      <a href="#dashboard" class="nav-item"><i class="fas fa-th-large"></i> 3. Dashboard Pemantauan</a>
+
+      <div class="nav-group-title">Alur Pelaporan Berjenjang</div>
+      <a href="#kronologi" class="nav-item"><i class="fas fa-user-nurse"></i> 4. Staf / Perawat (IKP-1)</a>
+      <a href="#grading" class="nav-item"><i class="fas fa-chart-line"></i> 5. Kepala Ruangan (IKP-2)</a>
+      <a href="#verifikasi-kasie" class="nav-item"><i class="fas fa-user-check"></i> 6. Kepala Seksi (Kasie)</a>
+      <a href="#investigasi" class="nav-item"><i class="fas fa-search-plus"></i> 7. Komite Mutu (IKP-3)</a>
+
+      <div class="nav-group-title">Fitur Penunjang</div>
+      <a href="#profil-wa" class="nav-item"><i class="fab fa-whatsapp"></i> 8. Profil & Notif WhatsApp</a>
+      <a href="#cetak-dokumen" class="nav-item"><i class="fas fa-print"></i> 9. Cetak Dokumen Resmi</a>
+      <a href="#faq" class="nav-item"><i class="fas fa-question-circle"></i> 10. FAQ & Troubleshooting</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <main class="main-wrapper">
+    <!-- Top Action Bar -->
+    <div class="top-action-bar">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="breadcrumb">
+          Dokumentasi Resmi &rsaquo; <span>Buku Panduan Pengguna End User</span>
+        </div>
+      </div>
+      <div>
+        <button class="print-btn" onclick="window.print()">
+          <i class="fas fa-print"></i> Cetak Dokumen / Simpan PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- HERO HEADER -->
+    <header class="hero-banner">
+      <div class="hero-badge">
+        <i class="fas fa-shield-alt"></i> Standar Keselamatan Pasien Rumah Sakit
+      </div>
+      <h1>Panduan Pengguna Aplikasi IKP & Mutu</h1>
+      <p>Buku petunjuk operasional terpadu bagi seluruh staf pelapor, Kepala Ruangan (Karu), Kepala Seksi (Kasie), dan Komite Mutu RS Airan Raya Lampung Selatan.</p>
+    </header>
+
+    <!-- SECTION 1: PENDAHULUAN & ALUR -->
+    <section class="manual-section" id="pendahuluan">
+      <div class="section-header">
+        <div class="section-icon icon-blue">
+          <i class="fas fa-sitemap"></i>
+        </div>
+        <div class="section-title">
+          <h2>1. Pendahuluan & Alur Kerja Terintegrasi</h2>
+          <p>Memahami mekanisme kerja paperless dan alur disposisi pelaporan insiden</p>
+        </div>
+      </div>
+
+      <p>Sistem Pelaporan Insiden Keselamatan Pasien (IKP) dan Mutu RS Airan Raya dibangun untuk menggantikan proses pelaporan kertas tradisional menjadi digital yang cepat, transparan, dan akuntabel. Aplikasi ini dilengkapi dengan integrasi nomor rekam medis SIMRS, tanda tangan digital (e-signature), dan notifikasi otomatis WhatsApp di setiap tahapan verifikasi.</p>
+
+      <h3>Alur Kerja Berjenjang 4 Tahap (End-to-End Workflow)</h3>
+      <div class="workflow-container">
+        <div class="workflow-step">
+          <span class="step-number">1</span>
+          <h4>Staf / Perawat (IKP-1)</h4>
+          <p>Mencatat kronologi kejadian runut waktu, menarik data pasien dari SIMRS, membubuhkan tanda tangan digital, dan mengirimkan laporan ke Karu.</p>
+          <div style="margin-top: 10px;"><span class="badge-role role-perawat">Form IKP-1</span></div>
+        </div>
+
+        <div class="workflow-step">
+          <span class="step-number">2</span>
+          <h4>Kepala Ruangan (IKP-2)</h4>
+          <p>Menerima notifikasi WhatsApp, melengkapi rincian insiden, menentukan penilaian matriks risiko (Biru/Hijau/Kuning/Merah), TTD Karu, dan meneruskan ke Kasie.</p>
+          <div style="margin-top: 10px;"><span class="badge-role role-karu">Form IKP-2</span></div>
+        </div>
+
+        <div class="workflow-step">
+          <span class="step-number">3</span>
+          <h4>Kepala Seksi (Kasie)</h4>
+          <p>Menerima notifikasi WhatsApp, mereview keabsahan kronologi & ketepatan grading risiko unit, lalu membubuhkan tanda tangan pengesahan verifikasi.</p>
+          <div style="margin-top: 10px;"><span class="badge-role role-kasie">Verifikasi</span></div>
+        </div>
+
+        <div class="workflow-step">
+          <span class="step-number">4</span>
+          <h4>Komite Mutu (IKP-3)</h4>
+          <p>Menerima notifikasi setelah disahkan Kasie, menganalisis akar masalah (root cause), menyusun rencana tindakan & rekomendasi perbaikan mutu RS.</p>
+          <div style="margin-top: 10px;"><span class="badge-role role-mutu">Form IKP-3</span></div>
+        </div>
+      </div>
+
+      <div class="alert-box alert-info">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <strong>Notifikasi WhatsApp Otomatis:</strong> Setiap kali staf mengirim laporan atau pimpinan melakukan pengesahan, sistem akan otomatis mengirimkan pesan WhatsApp ke nomor handphone pejabat terkait secara real-time.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: LOGIN -->
+    <section class="manual-section" id="login">
+      <div class="section-header">
+        <div class="section-icon icon-indigo">
+          <i class="fas fa-sign-in-alt"></i>
+        </div>
+        <div class="section-title">
+          <h2>2. Panduan Masuk Sistem (Login)</h2>
+          <p>Langkah autentikasi akun berdasarkan peran pengguna</p>
+        </div>
+      </div>
+
+      <p>Untuk mengakses aplikasi, buka browser pada komputer ruangan atau handphone Anda lalu buka alamat URL aplikasi IKP Mutu.</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/login</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/01_login_page.png')">
+          <img src="manual_assets/01_login_page.png" alt="Halaman Login IKP Mutu" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 2.1:</strong> Tampilan Halaman Login dengan pilihan peran (role).
+        </div>
+      </div>
+
+      <h3>Petunjuk Login Berdasarkan Peran Pengguna:</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Peran Pengguna</th>
+            <th>Metode Masuk</th>
+            <th>Kredensial yang Digunakan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-role role-perawat">Tenaga Perawat</span></td>
+            <td>Pilih <strong>Akses Sebagai: Tenaga Perawat</strong>. Ketik min. 3 huruf nama Anda di kotak Username, klik nama yang cocok pada dropdown.</td>
+            <td>Password SIMRS / Kepegawaian Anda.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-role role-karu">Kepala Ruangan (Karu)</span></td>
+            <td>Pilih <strong>Akses Sebagai: Kepala Ruangan (Karu)</strong>. Ketik username akun Karu yang terdaftar.</td>
+            <td>Password akun Karu.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-role role-kasie">Kepala Seksi (Kasie)</span></td>
+            <td>Pilih <strong>Akses Sebagai: Kepala Seksi (Kasie)</strong>. Ketik username akun Kasie yang terdaftar.</td>
+            <td>Password akun Kasie.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-role role-mutu">Tim Mutu</span></td>
+            <td>Pilih <strong>Akses Sebagai: Tim Mutu</strong>. Ketik username akun Komite Mutu.</td>
+            <td>Password akun Mutu.</td>
+          </tr>
+          <tr>
+            <td><span class="badge-role role-admin">Karyawan Lainnya</span></td>
+            <td>Pilih <strong>Karyawan Lainnya</strong>. Ketik nama untuk mencari data NIK, lalu masukkan Email dinas Anda.</td>
+            <td>Email & NIK Pegawai.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SECTION 3: DASHBOARD -->
+    <section class="manual-section" id="dashboard">
+      <div class="section-header">
+        <div class="section-icon icon-blue">
+          <i class="fas fa-th-large"></i>
+        </div>
+        <div class="section-title">
+          <h2>3. Dashboard Pemantauan Real-time</h2>
+          <p>Pusat kendali dan ringkasan statistik yang disesuaikan dengan peran Anda</p>
+        </div>
+      </div>
+
+      <p>Setelah berhasil login, Anda akan disambut dengan halaman Dashboard utama. Dashboard menyajikan kartu-kartu metrik yang berubah secara dinamis sesuai peran Anda (misal: Kasie melihat laporan yang perlu verifikasi, Karu melihat laporan unitnya, dan Perawat melihat laporan pribadi).</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/02_dashboard.png')">
+          <img src="manual_assets/02_dashboard.png" alt="Dashboard IKP Mutu" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 3.1:</strong> Tampilan Dashboard ringkasan statistik dan kartu modul layanan.
+        </div>
+      </div>
+
+      <h3>Fitur Utama Dashboard:</h3>
+      <ul>
+        <li><strong>Banner Selamat Datang:</strong> Menampilkan nama pengguna, badge jabatan/role, dan tombol cepat <code>+ Buat Laporan Baru</code>.</li>
+        <li><strong>Kartu Statistik Peran:</strong>
+          <ul>
+            <li><strong>Kasie:</strong> Jumlah <em>Perlu Verifikasi Kasie</em> (dengan lencana merah bila ada antrean tugas), <em>Sudah Diverifikasi</em>, dan <em>Total Laporan Seksi</em>.</li>
+            <li><strong>Karu:</strong> Jumlah <em>Laporan Masuk (Unit)</em>, <em>Menunggu Grading Karu</em>, dan <em>Menunggu Verifikasi Kasie</em>.</li>
+            <li><strong>Perawat:</strong> Jumlah <em>Total Laporan Saya</em>, <em>Terkirim ke Karu</em>, dan <em>Draf Belum Terkirim</em>.</li>
+          </ul>
+        </li>
+        <li><strong>Pintasan Modul Layanan:</strong> Akses langsung ke Lembar Kronologi, Penilaian Grading Risiko, Investigasi Mutu, dan Pengaturan Pengguna.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 4: KRONOLOGI PERAWAT -->
+    <section class="manual-section" id="kronologi">
+      <div class="section-header">
+        <div class="section-icon icon-green">
+          <i class="fas fa-user-nurse"></i>
+        </div>
+        <div class="section-title">
+          <h2>4. Modul Staf / Perawat (Form IKP-1 Kronologi Insiden)</h2>
+          <p>Panduan pengisian kronologi kejadian oleh staf pelapor pertama</p>
+        </div>
+      </div>
+
+      <p>Modul ini digunakan oleh perawat atau tenaga kesehatan untuk mencatat kronologi peristiwa keselamatan pasien secara runtut waktu dan objektif.</p>
+
+      <h3>A. Melihat Daftar Riwayat Laporan</h3>
+      <p>Buka menu <strong>Kronologi</strong> untuk melihat daftar seluruh pelaporan insiden yang pernah Anda buat:</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/kronologi</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/03_kronologi_list.png')">
+          <img src="manual_assets/03_kronologi_list.png" alt="Daftar Kronologi" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 4.1:</strong> Daftar Riwayat Pelaporan Kejadian Staf dengan status Draf atau Terkirim.
+        </div>
+      </div>
+
+      <h3>B. Membuat Laporan Kronologi Baru (IKP-1)</h3>
+      <p>Klik tombol <strong>+ Buat Laporan</strong>. Formulir pelaporan akan terbuka:</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/kronologi/form</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/04_kronologi_form.png')">
+          <img src="manual_assets/04_kronologi_form.png" alt="Formulir Kronologi IKP-1" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 4.2:</strong> Formulir Kronologi Insiden (Pencarian Pasien, Baris Kejadian, TTD Digital, & Pemilihan Karu).
+        </div>
+      </div>
+
+      <h3>Langkah demi Langkah Pengisian IKP-1:</h3>
+      <ol>
+        <li><strong>Pilih Pasien:</strong> Ketik minimal 3 karakter No RM atau Nama Pasien pada kotak pencarian lalu klik <strong>Cari</strong> atau tekan <strong>Enter</strong>. Pilih pasien dari daftar hasil pencarian.</li>
+        <li><strong>Informasi Kejadian:</strong> Masukkan <strong>Tanggal & Jam</strong> waktu kejadian berlangsung, lalu ketik <strong>Uraian Singkat</strong> kejadian. Jika kronologi bertahap, klik <strong>+ Tambah Baris</strong> untuk menambah urutan waktu berikutnya.</li>
+        <li><strong>Tanda Tangan Digital Pelapor:</strong> Goreskan tanda tangan Anda pada kotak kanvas tanda tangan menggunakan mouse atau layar sentuh HP.</li>
+        <li><strong>Pilih Karu & Kirim:</strong> Pada panel kanan, pilih nama Kepala Ruangan Anda dari daftar <em>Kirim ke Atasan (Karu)</em>, lalu klik tombol biru <strong>Kirim Laporan ke Karu</strong>.</li>
+      </ol>
+
+      <div class="alert-box alert-success">
+        <i class="fas fa-check-circle"></i>
+        <div>
+          <strong>Pengiriman Berhasil:</strong> Begitu tombol <em>Kirim</em> diklik, laporan akan terkunci dari pengeditan ulang dan Kepala Ruangan yang Anda pilih akan segera menerima notifikasi pesan WhatsApp secara otomatis.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: GRADING KARU -->
+    <section class="manual-section" id="grading">
+      <div class="section-header">
+        <div class="section-icon icon-amber">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <div class="section-title">
+          <h2>5. Modul Kepala Ruangan (Form IKP-2 Grading Risiko)</h2>
+          <p>Penilaian matriks risiko unit, pengisian rincian insiden, dan disposisi ke Kasie</p>
+        </div>
+      </div>
+
+      <p>Kepala Ruangan (Karu) bertindak sebagai pemeriksa pertama yang mengevaluasi kejadian di unitnya, menentukan tingkat keparahan risiko, dan meneruskan laporan ke Kepala Seksi terkait.</p>
+
+      <h3>A. Membuka Daftar Grading</h3>
+      <p>Saat staf mengirim laporan, Karu menerima notifikasi WhatsApp. Buka menu <strong>Grading</strong> untuk melihat daftar laporan yang masuk:</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/grading</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/05_grading_list.png')">
+          <img src="manual_assets/05_grading_list.png" alt="Daftar Grading Risiko" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 5.1:</strong> Daftar Pelaporan Kejadian pada modul Grading dengan status verifikasi dan tombol tindakan.
+        </div>
+      </div>
+
+      <h3>B. Mengisi Rincian Insiden & Penilaian Risiko (Tab II. RINCIAN)</h3>
+      <p>Klik tombol <strong>Grade</strong> pada baris pasien. Anda dapat meninjau uraian kronologi perawat di panel sebelah kiri, kemudian buka tab <strong>II. RINCIAN</strong> pada form sebelah kanan:</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/grading (Tab II. RINCIAN)</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/06_grading_rincian.png')">
+          <img src="manual_assets/06_grading_rincian.png" alt="Form Rincian Kejadian" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 5.2:</strong> Pengisian Rincian Kejadian, Jenis Insiden (KNC/KTD/Sentinel), dan Skoring Matriks Risiko.
+        </div>
+      </div>
+
+      <h3>Poin Evaluasi yang Wajib Diisi Karu:</h3>
+      <ul>
+        <li><strong>Jenis Insiden:</strong> KNC (Nyaris Cedera), KTD (Tidak Diharapkan), atau SENTINEL.</li>
+        <li><strong>Akibat Insiden:</strong> Kematian, Cedera Irreversibel (Berat), Cedera Reversibel (Sedang), atau Cedera Ringan.</li>
+        <li><strong>Tindakan Segera:</strong> Tindakan awal yang langsung dilakukan petugas beserta hasilnya.</li>
+        <li><strong>Grading Risiko Kejadian:</strong>
+          <span style="color: #0284c7; font-weight: 700;">[BIRU - Rendah]</span>, 
+          <span style="color: #16a34a; font-weight: 700;">[HIJAU - Sedang]</span>, 
+          <span style="color: #d97706; font-weight: 700;">[KUNING - Tinggi]</span>, atau 
+          <span style="color: #dc2626; font-weight: 700;">[MERAH - Ekstrim]</span>.
+        </li>
+      </ul>
+    </section>
+
+    <!-- SECTION 6: VERIFIKASI KASIE -->
+    <section class="manual-section" id="verifikasi-kasie">
+      <div class="section-header">
+        <div class="section-icon icon-purple">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div class="section-title">
+          <h2>6. Modul Kepala Seksi (Verifikasi & Pengesahan Kasie)</h2>
+          <p>Tanda tangan pengesahan dan penerusan otomatis ke Komite Mutu RS</p>
+        </div>
+      </div>
+
+      <p>Kepala Seksi (Kasie) bertindak sebagai pejabat struktural yang memvalidasi keabsahan penilaian risiko Kepala Ruangan. Kasie hanya melihat laporan yang dialamatkan ke unit seksi yang dipimpinnya.</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/grading (Tab TTD & VERIFIKASI)</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/07_grading_verifikasi_kasie.png')">
+          <img src="manual_assets/07_grading_verifikasi_kasie.png" alt="Verifikasi Kasie" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 6.1:</strong> Lembar Pengesahan: Tanda Tangan Karu (kiri) dan Pemilihan/Verifikasi Kasie (kanan).
+        </div>
+      </div>
+
+      <h3>Tata Cara Verifikasi oleh Kasie:</h3>
+      <ol>
+        <li>Kasie menerima notifikasi WhatsApp saat Karu menyelesaikan grading.</li>
+        <li>Login dengan akun Kasie, buka menu <strong>Grading</strong>, pilih tab <strong>Menunggu Verifikasi Kasie</strong>.</li>
+        <li>Klik tombol <strong>Verifikasi TTD</strong> pada laporan pasien bersangkutan.</li>
+        <li>Tinjau rincian kejadian dan ketepatan grading risiko Karu.</li>
+        <li>Buka tab <strong>TTD & VERIFIKASI</strong>. Goreskan tanda tangan digital Kasie pada kolom verifikasi.</li>
+        <li>Klik <strong>Simpan / Verifikasi</strong>. Status laporan berubah menjadi <span class="badge-role role-karu">TERVERIFIKASI</span> dan notifikasi WhatsApp otomatis diteruskan ke tim Komite Mutu.</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 7: INVESTIGASI MUTU -->
+    <section class="manual-section" id="investigasi">
+      <div class="section-header">
+        <div class="section-icon icon-red">
+          <i class="fas fa-search-plus"></i>
+        </div>
+        <div class="section-title">
+          <h2>7. Modul Komite Mutu (Form IKP-3 Investigasi Sederhana)</h2>
+          <p>Investigasi akar masalah dan penetapan rekomendasi perbaikan mutu keselamatan</p>
+        </div>
+      </div>
+
+      <p>Komite Mutu Rumah Sakit bertanggung jawab melakukan investigasi sederhana atau Root Cause Analysis (RCA) terhadap laporan insiden yang telah disahkan oleh Kasie.</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/investigasi</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/08_investigasi_mutu.png')">
+          <img src="manual_assets/08_investigasi_mutu.png" alt="Form Investigasi Mutu" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 7.1:</strong> Formulir Investigasi Mutu Sederhana (IKP-3), Banner Verifikasi Kasie, & Tabel Rekomendasi.
+        </div>
+      </div>
+
+      <h3>Langkah Investigasi Mutu:</h3>
+      <ul>
+        <li><strong>Banner Status Kasie:</strong> Komite Mutu dapat memastikan bahwa laporan telah memiliki tanda tangan sah Kasie sebelum memulai investigasi.</li>
+        <li><strong>Tombol Sinkronkan dari Grading:</strong> Klik tombol ini agar nama Kasie dan Karu yang bertanggung jawab otomatis tersinkronisasi.</li>
+        <li><strong>Akar Masalah (Root Cause):</strong> Masukkan faktor penyebab yang mendasari terjadinya insiden.</li>
+        <li><strong>Tabel Rekomendasi & Tindakan:</strong> Tambahkan poin rekomendasi pencegahan, tindakan konkret yang diambil, Penanggung Jawab (PJ), dan tanggal batas penyelesaian.</li>
+        <li>Klik <strong>Simpan Laporan Investigasi</strong> dan selesaikan dengan tombol <strong>Verifikasi Kronologi Ini</strong>.</li>
+      </ul>
+    </section>
+
+    <!-- SECTION 8: PROFIL & WHATSAPP -->
+    <section class="manual-section" id="profil-wa">
+      <div class="section-header">
+        <div class="section-icon icon-green">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+        <div class="section-title">
+          <h2>8. Pengaturan Profil & Nomor WhatsApp</h2>
+          <p>Memastikan nomor handphone aktif agar pemberitahuan notifikasi otomatis terkirim</p>
+        </div>
+      </div>
+
+      <p>Notifikasi sistem terhubung langsung ke server WhatsApp. Sangat penting bagi seluruh Karu, Kasie, dan Tim Mutu untuk mendaftarkan nomor WhatsApp aktif mereka di menu profil masing-masing.</p>
+
+      <div class="screenshot-card">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="mockup-url">http://localhost:5173/profile</div>
+        </div>
+        <div class="screenshot-img-wrapper" onclick="openLightbox('manual_assets/09_profile_page.png')">
+          <img src="manual_assets/09_profile_page.png" alt="Pengaturan Profil dan WhatsApp" class="screenshot-img">
+        </div>
+        <div class="screenshot-caption">
+          <i class="fas fa-camera"></i> <strong>Gambar 8.1:</strong> Halaman Profil Pengguna untuk mengupdate Nama, Nomor Telepon/WhatsApp, dan Ganti Kata Sandi.
+        </div>
+      </div>
+
+      <h3>Cara Mendaftarkan Nomor WhatsApp:</h3>
+      <ol>
+        <li>Klik nama Anda di pojok kanan atas layar lalu pilih <strong>Profile</strong>.</li>
+        <li>Pada tab <strong>Informasi Akun</strong>, masukkan nama lengkap beserta gelar.</li>
+        <li>Pada kolom <strong>Nomor WhatsApp</strong>, masukkan nomor HP Anda (format: <code>08xxxxxxxxxx</code>).</li>
+        <li>Klik tombol <strong>Simpan Perubahan Profil</strong>.</li>
+      </ol>
+    </section>
+
+    <!-- SECTION 9: CETAK DOKUMEN -->
+    <section class="manual-section" id="cetak-dokumen">
+      <div class="section-header">
+        <div class="section-icon icon-indigo">
+          <i class="fas fa-print"></i>
+        </div>
+        <div class="section-title">
+          <h2>9. Panduan Cetak Dokumen Resmi Rumah Sakit</h2>
+          <p>Mencetak formulir IKP-1, IKP-2, dan IKP-3 berstandar akreditasi rumah sakit</p>
+        </div>
+      </div>
+
+      <p>Aplikasi telah dirancang agar hasil cetak otomatis menampilkan Kop Surat Resmi RS Airan Raya, stempel form, tabel data pasien, dan tanda tangan digital yang telah dibubuhkan.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Jenis Formulir</th>
+            <th>Peruntukan</th>
+            <th>Cara Cetak</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Form IKP-1</strong></td>
+            <td>Laporan Kronologi Insiden Staf / Perawat</td>
+            <td>Buka laporan di menu Kronologi, klik tombol <strong>Cetak</strong> di pojok kanan atas formulir.</td>
+          </tr>
+          <tr>
+            <td><strong>Form IKP-2</strong></td>
+            <td>Laporan Grading Risiko Kejadian Unit</td>
+            <td>Buka laporan di menu Grading, klik tombol <strong>Cetak Form</strong> di sebelah kanan atas.</td>
+          </tr>
+          <tr>
+            <td><strong>Form IKP-3</strong></td>
+            <td>Laporan Investigasi Sederhana Mutu</td>
+            <td>Buka laporan di menu Investigasi, klik tombol <strong>Cetak</strong> pada halaman investigasi.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert-box alert-warning">
+        <i class="fas fa-lightbulb"></i>
+        <div>
+          <strong>Tips Cetak / Simpan PDF:</strong> Pada jendela print browser, aktifkan centang <strong>"Background graphics"</strong> agar warna badge risiko dan kop surat tercetak jelas. Pilih <strong>Destination: Save as PDF</strong> jika ingin menyimpan salinan digital.
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10: FAQ -->
+    <section class="manual-section" id="faq">
+      <div class="section-header">
+        <div class="section-icon icon-amber">
+          <i class="fas fa-question-circle"></i>
+        </div>
+        <div class="section-title">
+          <h2>10. Tanya Jawab & Solusi Kendala (FAQ & Troubleshooting)</h2>
+          <p>Panduan penyelesaian kendala operasional yang sering ditanyakan</p>
+        </div>
+      </div>
+
+      <h3>Q1: Pasien tidak muncul saat diketik di kolom pencarian?</h3>
+      <p><strong>Solusi:</strong> Pastikan Anda mengetik minimal <strong>3 karakter</strong> (contoh: 4 digit nomor RM atau 3 huruf nama pasien). Tekan tombol <strong>Cari</strong> atau tekan tombol <strong>Enter</strong> pada keyboard.</p>
+
+      <h3>Q2: Mengapa saya tidak menerima notifikasi WhatsApp saat ada laporan masuk?</h3>
+      <p><strong>Solusi:</strong> Masuk ke menu <strong>Profile</strong> akun Anda. Pastikan kolom <strong>Nomor WhatsApp</strong> sudah terisi nomor aktif Anda dengan benar, lalu klik Simpan.</p>
+
+      <h3>Q3: Tanda tangan digital salah gores, bagaimana cara menghapusnya?</h3>
+      <p><strong>Solusi:</strong> Klik tombol <strong>Hapus / Bersihkan</strong> di bawah kanvas tanda tangan, lalu goreskan kembali tanda tangan Anda yang benar sebelum menekan tombol simpan.</p>
+
+      <h3>Q4: Apakah laporan yang sudah terkirim bisa diedit kembali oleh perawat?</h3>
+      <p><strong>Solusi:</strong> Laporan yang telah berstatus <em>Terkirim</em> akan dikunci demi menjaga integritas data medikolegal. Bila terdapat ralat informasi, sampaikan kepada Kepala Ruangan (Karu) agar dimasukkan dalam rincian investigasi unit.</p>
+
+      <h3>Q5: Kepala Seksi (Kasie) tidak menemukan laporan di daftarnya?</h3>
+      <p><strong>Solusi:</strong> Hal ini terjadi apabila Karu belum memilih nama Kasie tujuan saat melakukan grading. Karu perlu membuka kembali menu Grading, memilih nama Kasie bersangkutan pada tab <em>TTD & Verifikasi</em>, lalu menyimpan perubahan.</p>
+    </section>
+  </main>
+</div>
+
+<!-- LIGHTBOX MODAL UNTUK PREVIEW GAMBAR -->
+<div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
+  <img src="" alt="Screenshot Enlarge" class="modal-img" id="lightboxImg">
+</div>
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function openLightbox(src) {
+    document.getElementById('lightboxImg').src = src;
+    document.getElementById('lightboxModal').classList.add('active');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightboxModal').classList.remove('active');
+  }
+
+  function filterNav() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const navItems = document.querySelectorAll('#navMenu .nav-item');
+    navItems.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(input) ? 'flex' : 'none';
+    });
+  }
+
+  // Highlight active menu on scroll
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('.nav-item');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      if (pageYOffset >= sectionTop - 120) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
