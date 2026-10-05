@@ -284,6 +284,7 @@ export default function UserManagement() {
                   <option value="">-- Pilih Role --</option>
                   <option value="admin">Administrator</option>
                   <option value="mutu">Tim Mutu</option>
+                  <option value="kasie">Kepala Seksi (Kasie)</option>
                   <option value="karu">Kepala Ruangan (Karu)</option>
                   <option value="perawat">Tenaga Perawat</option>
                   <option value="lainya">Karyawan Lainnya</option>
@@ -374,6 +375,8 @@ export default function UserManagement() {
                             ? 'text-danger bg-danger-subtle border-danger' 
                             : user.role === 'mutu' 
                             ? 'text-primary bg-primary-subtle border-primary'
+                            : user.role === 'kasie'
+                            ? 'text-info bg-info-subtle border-info'
                             : user.role === 'karu'
                             ? 'text-success bg-success-subtle border-success'
                             : 'text-muted bg-light border-secondary border-opacity-25'
@@ -460,6 +463,8 @@ export default function UserManagement() {
                             ? 'text-danger bg-danger-subtle border-danger' 
                             : user.role === 'mutu' 
                             ? 'text-primary bg-primary-subtle border-primary'
+                            : user.role === 'kasie'
+                            ? 'text-info bg-info-subtle border-info'
                             : user.role === 'karu'
                             ? 'text-success bg-success-subtle border-success'
                             : 'text-muted bg-light border-secondary border-opacity-25'
@@ -525,6 +530,7 @@ export default function UserManagement() {
               >
                 <option value="admin">Administrator</option>
                 <option value="mutu">Tim Mutu</option>
+                <option value="kasie">Kepala Seksi (Kasie)</option>
                 <option value="karu">Kepala Ruangan (Karu)</option>
                 <option value="perawat">Tenaga Perawat</option>
                 <option value="lainya">Karyawan Lainnya</option>

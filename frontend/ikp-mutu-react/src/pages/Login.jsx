@@ -128,7 +128,8 @@ export default function Login() {
             <option value="">-- Pilih Peran / Role --</option>
             <option value="admin">Administrator</option>
             <option value="mutu">Tim Mutu</option>
-            <option value="karu">Kepala Ruangan</option>
+            <option value="kasie">Kepala Seksi (Kasie)</option>
+            <option value="karu">Kepala Ruangan (Karu)</option>
             <option value="perawat">Tenaga Perawat</option>
             <option value="lainya">Karyawan Lainnya</option>
           </select>
