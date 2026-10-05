@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../config/api';
 import Swal from 'sweetalert2';
@@ -20,6 +20,139 @@ export default function InvestigasiForm() {
   ]);
   const [showDetailGrading, setShowDetailGrading] = useState(true);
   const [showDetailKronologi, setShowDetailKronologi] = useState(false);
+
+  // Filter & Search state
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'ready', 'investigated', 'pending_kasie'
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Helpers
+  const getKaruName = (entry) => {
+    if (!entry?.dibuat_oleh) return '-';
+    try {
+      const obj = typeof entry.dibuat_oleh === 'string' ? JSON.parse(entry.dibuat_oleh) : entry.dibuat_oleh;
+      return obj?.user_name || obj?.nama || obj?.username || '-';
+    } catch {
+      return entry.dibuat_oleh || '-';
+    }
+  };
+
+  const getKasieInfo = (entry) => {
+    if (!entry) return { isVerified: false, name: '-', verifiedName: '-', date: null, ttd: null, targetKasie: null };
+
+    const isVerified = entry.status_verifikasi_kasie === 'TERVERIFIKASI' || !!entry.tanda_tangan_penerima;
+    let name = entry.penerima_laporan;
+
+    if (!name && entry.verified_by_kasie) {
+      try {
+        const obj = typeof entry.verified_by_kasie === 'string' ? JSON.parse(entry.verified_by_kasie) : entry.verified_by_kasie;
+        name = obj?.user_name || obj?.nama || obj?.username;
+      } catch {}
+    }
+
+    let targetKasie = null;
+    if (entry.kirim_ke_kasie) {
+      try {
+        const obj = typeof entry.kirim_ke_kasie === 'string' ? JSON.parse(entry.kirim_ke_kasie) : entry.kirim_ke_kasie;
+        targetKasie = obj?.user_name || obj?.nama;
+      } catch {}
+    }
+
+    return {
+      isVerified,
+      name: name || (targetKasie ? `${targetKasie}` : '-'),
+      verifiedName: name || '-',
+      targetKasie,
+      date: entry.tgl_verifikasi_kasie || null,
+      ttd: entry.tanda_tangan_penerima || null,
+    };
+  };
+
+  const isKasieVerified = (entry) => {
+    return entry?.status_verifikasi_kasie === 'TERVERIFIKASI' || !!entry?.tanda_tangan_penerima;
+  };
+
+  const hasInvestigasi = (entry) => {
+    if (!entry?.investigasi) return false;
+    try {
+      const inv = typeof entry.investigasi === 'string' ? JSON.parse(entry.investigasi) : entry.investigasi;
+      return Object.keys(inv || {}).length > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  const getGradeInfo = (entry) => {
+    let rincian = {};
+    try {
+      rincian = typeof entry?.rincian_kejadian === 'string' ? JSON.parse(entry.rincian_kejadian) : (entry?.rincian_kejadian || {});
+    } catch {}
+    const grade = (rincian.gradingrisiko || '').toUpperCase();
+
+    switch (grade) {
+      case 'BIRU':
+        return { grade: 'BIRU', badgeClass: 'bg-primary-subtle text-primary border border-primary', label: 'Biru' };
+      case 'HIJAU':
+        return { grade: 'HIJAU', badgeClass: 'bg-success-subtle text-success border border-success', label: 'Hijau' };
+      case 'KUNING':
+        return { grade: 'KUNING', badgeClass: 'bg-warning-subtle text-warning-emphasis border border-warning', label: 'Kuning' };
+      case 'MERAH':
+        return { grade: 'MERAH', badgeClass: 'bg-danger-subtle text-danger border border-danger', label: 'Merah' };
+      default:
+        return { grade: 'N/A', badgeClass: 'bg-light text-muted border', label: 'Belum Grade' };
+    }
+  };
+
+  // Filter & Search calculations
+  const counts = useMemo(() => {
+    let ready = 0;
+    let investigated = 0;
+    let pendingKasie = 0;
+
+    riwayatGrading.forEach((item) => {
+      const isKasie = isKasieVerified(item);
+      const isInv = hasInvestigasi(item);
+      if (isKasie && !isInv) ready++;
+      if (isInv) investigated++;
+      if (!isKasie) pendingKasie++;
+    });
+
+    return {
+      all: riwayatGrading.length,
+      ready,
+      investigated,
+      pendingKasie,
+    };
+  }, [riwayatGrading]);
+
+  const filteredGrading = useMemo(() => {
+    return riwayatGrading.filter((item) => {
+      const isKasie = isKasieVerified(item);
+      const isInv = hasInvestigasi(item);
+
+      if (activeTab === 'ready' && (!isKasie || isInv)) return false;
+      if (activeTab === 'investigated' && !isInv) return false;
+      if (activeTab === 'pending_kasie' && isKasie) return false;
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const pasien = (item.NAMAPASIEN || '').toLowerCase();
+        const noRm = (item.no_rm || '').toLowerCase();
+        const noTrans = (item.no_transaksi || '').toLowerCase();
+        const karu = getKaruName(item).toLowerCase();
+        const kasie = getKasieInfo(item).name.toLowerCase();
+
+        return (
+          pasien.includes(q) ||
+          noRm.includes(q) ||
+          noTrans.includes(q) ||
+          karu.includes(q) ||
+          kasie.includes(q)
+        );
+      }
+
+      return true;
+    });
+  }, [riwayatGrading, activeTab, searchQuery]);
 
   // API calls
   const getRiwayatGrading = async () => {
@@ -126,7 +259,7 @@ export default function InvestigasiForm() {
     );
   };
 
-  // Set form values when detail changes
+  // Set form values when detail changes & Auto-fill from grading
   useEffect(() => {
     if (formDetailGradingRef.current && detailGrading) {
       const data = detailGrading.rincian_kejadian ? JSON.parse(detailGrading.rincian_kejadian) : {};
@@ -150,16 +283,41 @@ export default function InvestigasiForm() {
     if (formInvestigasiRef.current && detailGrading) {
       const data = detailGrading.investigasi ? JSON.parse(detailGrading.investigasi) : {};
       const isEmpty = Object.keys(data).length === 0;
+
+      // Sinkronkan Karu, Kasie & Grade Risiko dari data grading
+      const karuName = getKaruName(detailGrading);
+      const kasieInfo = getKasieInfo(detailGrading);
+      const rincian = detailGrading.rincian_kejadian ? JSON.parse(detailGrading.rincian_kejadian) : {};
+      const gradeColor = (rincian.gradingrisiko || 'BIRU').toUpperCase();
+
       formInvestigasiRef.current.querySelectorAll('[name]').forEach((el) => {
+        const key = el.name;
         if (isEmpty) {
-          if (el.type === 'radio' || el.type === 'checkbox') el.checked = false;
-          else el.value = '';
+          if (el.type === 'radio' || el.type === 'checkbox') {
+            el.checked = false;
+          } else if (key === 'kepalaRuangan') {
+            el.value = karuName !== '-' ? karuName : '';
+          } else if (key === 'kasieKasubag') {
+            el.value = kasieInfo.verifiedName !== '-' ? kasieInfo.verifiedName : (kasieInfo.targetKasie || '');
+          } else if (key === 'grading') {
+            el.value = ['BIRU', 'HIJAU', 'KUNING', 'MERAH'].includes(gradeColor) ? gradeColor : 'BIRU';
+          } else if (key === 'tglMulai' || key === 'tglAnalisa') {
+            el.value = new Date().toISOString().split('T')[0];
+          } else {
+            el.value = '';
+          }
         } else {
-          const key = el.name;
           if (el.type === 'radio' || el.type === 'checkbox') {
             el.checked = Array.isArray(data[key]) ? data[key].includes(el.value) : data[key] === el.value;
           } else {
-            el.value = data[key] || '';
+            let val = data[key] || '';
+            // Autofill fallback jika field tersimpan masih kosong
+            if (!val) {
+              if (key === 'kepalaRuangan' && karuName !== '-') val = karuName;
+              if (key === 'kasieKasubag' && kasieInfo.verifiedName !== '-') val = kasieInfo.verifiedName;
+              if (key === 'grading') val = ['BIRU', 'HIJAU', 'KUNING', 'MERAH'].includes(gradeColor) ? gradeColor : 'BIRU';
+            }
+            el.value = val;
           }
         }
       });
@@ -176,7 +334,7 @@ export default function InvestigasiForm() {
         <div>
           <h1 className="h3 fw-bold mb-1">Investigasi Insiden</h1>
           <p className="text-muted small mb-0">
-            Laporan investigasi komprehensif keselamatan pasien oleh Komite Mutu.
+            Laporan investigasi keselamatan pasien oleh Komite Mutu terintegrasi dengan grading & verifikasi Kasie.
           </p>
         </div>
       </div>
@@ -186,17 +344,82 @@ export default function InvestigasiForm() {
         <div className="col-12 col-lg-5 no-print" style={{ minWidth: 0 }}>
             <div className="card-minimal p-0 overflow-hidden shadow-sm mb-4">
               <div className="p-3 border-bottom bg-light bg-opacity-50">
-                <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
-                  Riwayat Grading ({riwayatGrading.length})
-                </h3>
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
+                    Riwayat Grading ({riwayatGrading.length})
+                  </h3>
+                </div>
+
+                {/* Filter Tabs */}
+                <div className="d-flex flex-wrap gap-1 mb-2">
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'all' ? 'btn-dark' : 'btn-outline-secondary'}`}
+                    style={{ fontSize: '11px' }}
+                    onClick={() => setActiveTab('all')}
+                  >
+                    Semua ({counts.all})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'ready' ? 'btn-success' : 'btn-outline-success'}`}
+                    style={{ fontSize: '11px' }}
+                    onClick={() => setActiveTab('ready')}
+                    title="Sudah diverifikasi Kasie dan siap diinvestigasi oleh Komite Mutu"
+                  >
+                    <i className="fas fa-check-double me-1"></i>
+                    Siap Investigasi ({counts.ready})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'investigated' ? 'btn-primary' : 'btn-outline-primary'}`}
+                    style={{ fontSize: '11px' }}
+                    onClick={() => setActiveTab('investigated')}
+                  >
+                    Selesai ({counts.investigated})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'pending_kasie' ? 'btn-warning text-dark' : 'btn-outline-warning text-dark'}`}
+                    style={{ fontSize: '11px' }}
+                    onClick={() => setActiveTab('pending_kasie')}
+                  >
+                    Menunggu Kasie ({counts.pendingKasie})
+                  </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="position-relative">
+                  <i className="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style={{ fontSize: '12px' }}></i>
+                  <input
+                    type="text"
+                    className="form-control form-control-sm ps-5 rounded-pill"
+                    placeholder="Cari pasien, RM, no trans, kasie..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ fontSize: '12px' }}
+                  />
+                  {searchQuery && (
+                    <button
+                      className="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2 p-0 text-muted"
+                      onClick={() => setSearchQuery('')}
+                      style={{ fontSize: '11px' }}
+                    >
+                      <i className="fas fa-times"></i>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Mobile Card List (d-md-none) */}
               <div className="d-md-none p-2 bg-light bg-opacity-25">
-                {riwayatGrading.length > 0 ? (
+                {filteredGrading.length > 0 ? (
                   <div className="d-flex flex-column gap-2">
-                    {riwayatGrading.map((entry, index) => {
+                    {filteredGrading.map((entry, index) => {
                       const isSelected = selectedRow === entry;
+                      const kasieInfo = getKasieInfo(entry);
+                      const gradeInfo = getGradeInfo(entry);
+                      const isInv = hasInvestigasi(entry);
                       return (
                         <div
                           key={index}
@@ -210,22 +433,15 @@ export default function InvestigasiForm() {
                               <i className="far fa-calendar-alt me-1 text-muted"></i>
                               {entry.created_at?.split('T')[0]}
                             </span>
-                            <span
-                              className={`badge rounded-pill fw-medium px-2 py-1 ${
-                                entry.verifikasi
-                                  ? 'text-success bg-success-subtle border border-success'
-                                  : 'text-warning-emphasis bg-warning-subtle border border-warning'
-                              }`}
-                              style={{ fontSize: '10px' }}
-                            >
-                              {entry.verifikasi ? '✓ Diverifikasi' : 'Belum Verifikasi'}
+                            <span className={`badge rounded-pill fw-bold px-2 py-1 ${gradeInfo.badgeClass}`} style={{ fontSize: '10px' }}>
+                              Grade: {gradeInfo.label}
                             </span>
                           </div>
 
                           <div className="fw-bold text-dark text-truncate" style={{ maxWidth: '240px' }}>
                             {entry.NAMAPASIEN}
                           </div>
-                          <div className="text-muted small mt-1 d-flex align-items-center gap-2">
+                          <div className="text-muted small mt-1 d-flex flex-wrap align-items-center gap-1">
                             <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '10px' }}>
                               RM: {entry.no_rm}
                             </span>
@@ -234,18 +450,41 @@ export default function InvestigasiForm() {
                             </span>
                           </div>
 
+                          {/* Status Verifikasi Kasie & Investigasi */}
+                          <div className="d-flex flex-wrap gap-1 mt-2 pt-2 border-top">
+                            {kasieInfo.isVerified ? (
+                              <span className="badge bg-success-subtle text-success border border-success fw-normal" style={{ fontSize: '10px' }}>
+                                <i className="fas fa-check-circle me-1"></i> Kasie: {kasieInfo.verifiedName}
+                              </span>
+                            ) : (
+                              <span className="badge bg-warning-subtle text-warning-emphasis border border-warning fw-normal" style={{ fontSize: '10px' }}>
+                                <i className="fas fa-clock me-1"></i> Menunggu Kasie {kasieInfo.targetKasie ? `(${kasieInfo.targetKasie})` : ''}
+                              </span>
+                            )}
+
+                            {isInv ? (
+                              <span className="badge bg-primary-subtle text-primary border border-primary fw-normal" style={{ fontSize: '10px' }}>
+                                <i className="fas fa-clipboard-check me-1"></i> Selesai Diinvestigasi
+                              </span>
+                            ) : (
+                              <span className="badge bg-light text-muted border fw-normal" style={{ fontSize: '10px' }}>
+                                Belum Diinvestigasi
+                              </span>
+                            )}
+                          </div>
+
                           {!entry.verifikasi && isSelected && (
                             <div className="mt-3 pt-2 border-top">
                               <button
-                                className="btn btn-sm btn-success w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2"
+                                className="btn btn-sm btn-outline-success w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   verifikasiKronologi(entry.no_transaksi);
                                 }}
-                                style={{ minHeight: '40px' }}
+                                style={{ minHeight: '38px', fontSize: '12px' }}
                               >
                                 <i className="fas fa-check-double"></i>
-                                <span>Verifikasi Insiden Ini</span>
+                                <span>Verifikasi Kronologi Ini</span>
                               </button>
                             </div>
                           )}
@@ -256,64 +495,119 @@ export default function InvestigasiForm() {
                 ) : (
                   <div className="text-center py-5 text-muted">
                     <i className="fas fa-inbox h2 opacity-50 mb-2"></i>
-                    <p className="small mb-0">Belum ada riwayat grading</p>
+                    <p className="small mb-0">Tidak ada riwayat grading yang sesuai</p>
                   </div>
                 )}
               </div>
 
               {/* Desktop Table (d-none d-md-block) */}
               <div className="table-responsive d-none d-md-block">
-                <table className="table table-sm table-hover mb-0">
-                  <thead>
+                <table className="table table-sm table-hover mb-0 align-middle">
+                  <thead className="table-light">
                     <tr>
-                      <th className="ps-3">#</th>
-                      <th>Tanggal</th>
-                      <th>Pasien</th>
-                      <th>No Trans.</th>
+                      <th className="ps-3" style={{ width: '35px' }}>#</th>
+                      <th>Pasien & Insiden</th>
+                      <th style={{ width: '85px' }}>Grade</th>
+                      <th>Verifikasi Kasie</th>
+                      <th style={{ width: '100px' }}>Investigasi</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {riwayatGrading.map((entry, index) => (
-                      <React.Fragment key={index}>
-                        <tr
-                          onClick={() => selectRow(entry)}
-                          className={`cursor-pointer ${selectedRow === entry ? 'table-active' : ''} ${entry.verifikasi ? 'table-success' : ''}`}
-                        >
-                          <td className="ps-3">{index + 1}</td>
-                          <td>
-                            <span className="badge text-secondary">{entry.created_at?.split('T')[0]}</span>{' '}
-                            <span className="badge text-secondary">{entry.created_at?.split('T')[1]}</span>
-                          </td>
-                          <td>
-                            <small className="me-1 fw-bold">{entry.NAMAPASIEN}</small>
-                            <span className="badge text-dark bg-white border">{entry.no_rm}</span>
-                          </td>
-                          <td>
-                            <span className="badge text-dark">{entry.no_transaksi}</span>
-                            <br />
-                            {entry.verifikasi && (
-                              <span className="badge bg-success">
-                                <i className="fas fa-check-double"></i> Diverifikasi
-                              </span>
+                    {filteredGrading.length > 0 ? (
+                      filteredGrading.map((entry, index) => {
+                        const isSelected = selectedRow === entry;
+                        const kasieInfo = getKasieInfo(entry);
+                        const gradeInfo = getGradeInfo(entry);
+                        const isInv = hasInvestigasi(entry);
+                        return (
+                          <React.Fragment key={index}>
+                            <tr
+                              onClick={() => selectRow(entry)}
+                              className={`cursor-pointer ${isSelected ? 'table-active border-primary' : ''} ${kasieInfo.isVerified ? 'bg-success bg-opacity-10' : ''}`}
+                            >
+                              <td className="ps-3 fw-bold small text-muted">{index + 1}</td>
+                              <td>
+                                <div className="fw-bold small text-dark text-truncate" style={{ maxWidth: '170px' }}>
+                                  {entry.NAMAPASIEN}
+                                </div>
+                                <div className="d-flex align-items-center gap-1 mt-1">
+                                  <span className="badge bg-secondary-subtle text-secondary" style={{ fontSize: '9px' }}>
+                                    RM: {entry.no_rm}
+                                  </span>
+                                  <span className="badge bg-light text-muted border" style={{ fontSize: '9px' }}>
+                                    {entry.no_transaksi}
+                                  </span>
+                                </div>
+                              </td>
+                              <td>
+                                <span className={`badge rounded-pill fw-bold px-2 py-1 ${gradeInfo.badgeClass}`} style={{ fontSize: '10px' }}>
+                                  {gradeInfo.label}
+                                </span>
+                              </td>
+                              <td>
+                                {kasieInfo.isVerified ? (
+                                  <div>
+                                    <span className="badge bg-success-subtle text-success border border-success fw-normal py-1" style={{ fontSize: '10px' }}>
+                                      <i className="fas fa-check-circle me-1"></i> Disahkan Kasie
+                                    </span>
+                                    <div className="small text-muted text-truncate mt-1" style={{ fontSize: '10px', maxWidth: '140px' }} title={kasieInfo.verifiedName}>
+                                      {kasieInfo.verifiedName}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <span className="badge bg-warning-subtle text-warning-emphasis border border-warning fw-normal py-1" style={{ fontSize: '10px' }}>
+                                      <i className="fas fa-clock me-1"></i> Menunggu Kasie
+                                    </span>
+                                    {kasieInfo.targetKasie && (
+                                      <div className="small text-muted text-truncate mt-1" style={{ fontSize: '10px', maxWidth: '140px' }}>
+                                        Ke: {kasieInfo.targetKasie}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </td>
+                              <td>
+                                {isInv ? (
+                                  <span className="badge bg-primary-subtle text-primary border border-primary fw-normal" style={{ fontSize: '10px' }}>
+                                    <i className="fas fa-check me-1"></i> Selesai
+                                  </span>
+                                ) : (
+                                  <span className="badge bg-light text-muted border fw-normal" style={{ fontSize: '10px' }}>
+                                    Belum
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                            {!entry.verifikasi && isSelected && (
+                              <tr className="bg-light">
+                                <td colSpan="5" className="ps-3 py-2">
+                                  <div className="d-flex align-items-center justify-content-between">
+                                    <small className="text-muted">Kronologi insiden ini belum diverifikasi sistem:</small>
+                                    <button
+                                      className="btn btn-xs btn-outline-success rounded-pill px-3 py-1"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        verifikasiKronologi(entry.no_transaksi);
+                                      }}
+                                      style={{ fontSize: '11px' }}
+                                    >
+                                      <i className="fas fa-check-double me-1"></i> Verifikasi Kronologi
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
                             )}
-                          </td>
-                        </tr>
-                        {!entry.verifikasi && entry === selectedRow && (
-                          <tr>
-                            <td></td>
-                            <th className="text-end">Aksi:</th>
-                            <td colSpan="2">
-                              <button
-                                className="btn btn-sm btn-outline-success"
-                                onClick={() => verifikasiKronologi(entry.no_transaksi)}
-                              >
-                                <i className="fas fa-check-square"></i> Verifikasi
-                              </button>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
+                          </React.Fragment>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="text-center py-4 text-muted small">
+                          <i className="fas fa-inbox me-1"></i> Tidak ada data riwayat grading yang sesuai
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -323,15 +617,94 @@ export default function InvestigasiForm() {
           {detailGrading && selectedRow && (
             <div className="mb-4">
               {/* Detail Grading Accordion */}
-              <div className="border rounded mb-2">
+              <div className="border rounded mb-2 overflow-hidden shadow-sm">
                 <button
-                  className="w-100 btn btn-light fw-bold text-start p-3"
+                  className="w-100 btn btn-light fw-bold text-start p-3 d-flex align-items-center justify-content-between"
                   onClick={() => setShowDetailGrading(!showDetailGrading)}
                 >
-                  Detail Grading {showDetailGrading ? '▲' : '▼'}
+                  <span className="d-flex align-items-center gap-2">
+                    <i className="fas fa-file-alt text-primary"></i>
+                    <span>Detail Grading & Pengesahan</span>
+                  </span>
+                  <span className="small text-muted">{showDetailGrading ? '▲ Tutup' : '▼ Lihat'}</span>
                 </button>
                 {showDetailGrading && (
-                  <div className="p-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                  <div className="p-3 bg-white" style={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    {/* Kartu Bukti Pengesahan Karu & Kasie */}
+                    <div className="p-3 bg-light rounded-3 border mb-3">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="fw-bold small text-uppercase text-secondary">
+                          <i className="fas fa-signature text-primary me-1"></i> Pengesahan Berjenjang (Karu & Kasie)
+                        </span>
+                        {isKasieVerified(detailGrading) ? (
+                          <span className="badge bg-success-subtle text-success border border-success fw-bold px-2 py-1" style={{ fontSize: '10px' }}>
+                            <i className="fas fa-shield-alt me-1"></i> Terverifikasi Kasie
+                          </span>
+                        ) : (
+                          <span className="badge bg-warning-subtle text-warning-emphasis border border-warning fw-bold px-2 py-1" style={{ fontSize: '10px' }}>
+                            <i className="fas fa-clock me-1"></i> Menunggu Kasie
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="row g-2">
+                        {/* Kolom Karu */}
+                        <div className="col-12 col-sm-6">
+                          <div className="bg-white p-2 rounded border h-100">
+                            <div className="text-muted" style={{ fontSize: '10px' }}>Kepala Ruangan (Pelapor):</div>
+                            <div className="fw-bold small text-dark mt-1">{getKaruName(detailGrading)}</div>
+                            {detailGrading.tanda_tangan_pelapor ? (
+                              <div className="mt-2 text-center bg-light p-1 rounded border">
+                                <img
+                                  src={detailGrading.tanda_tangan_pelapor}
+                                  alt="TTD Karu"
+                                  style={{ maxHeight: '50px', maxWidth: '100%', objectFit: 'contain' }}
+                                />
+                                <div className="text-success mt-1 fw-medium" style={{ fontSize: '9px' }}>
+                                  ✓ Ditandatangani Karu
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-muted small mt-2 text-center py-2 bg-light rounded" style={{ fontSize: '10px' }}>
+                                Belum ada TTD Karu
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Kolom Kasie */}
+                        <div className="col-12 col-sm-6">
+                          <div className={`p-2 rounded border h-100 ${isKasieVerified(detailGrading) ? 'bg-white border-success' : 'bg-white border-warning'}`}>
+                            <div className="text-muted" style={{ fontSize: '10px' }}>Kepala Seksi (Verifikator):</div>
+                            <div className="fw-bold small text-dark mt-1">
+                              {detailGrading.penerima_laporan || getKasieInfo(detailGrading).name}
+                            </div>
+                            {detailGrading.tanda_tangan_penerima ? (
+                              <div className="mt-2 text-center bg-light p-1 rounded border border-success">
+                                <img
+                                  src={detailGrading.tanda_tangan_penerima}
+                                  alt="TTD Kasie"
+                                  style={{ maxHeight: '50px', maxWidth: '100%', objectFit: 'contain' }}
+                                />
+                                <div className="text-success mt-1 fw-medium" style={{ fontSize: '9px' }}>
+                                  ✓ Terverifikasi Kasie
+                                  {detailGrading.tgl_verifikasi_kasie && (
+                                    <span className="text-muted ms-1" style={{ fontSize: '8px' }}>
+                                      ({detailGrading.tgl_verifikasi_kasie.split('T')[0]})
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-warning-emphasis small mt-2 text-center py-2 bg-warning-subtle rounded" style={{ fontSize: '10px' }}>
+                                <i className="fas fa-clock me-1"></i> Belum ditandatangani Kasie
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <form ref={formDetailGradingRef}>
                       <div className="row mb-2">
                         <div className="col">
@@ -541,9 +914,43 @@ export default function InvestigasiForm() {
               <img className="w-100" src="/kop_surat.jpg" alt="" />
             </div>
             
-            <h2 className="text-center mb-4 h5 fw-bold text-uppercase">
+            <h2 className="text-center mb-3 h5 fw-bold text-uppercase">
               FORM LAPORAN INVESTIGASI SEDERHANA
             </h2>
+
+            {/* Banner Status Verifikasi Kasie */}
+            {selectedRow && (
+              isKasieVerified(selectedRow) ? (
+                <div className="alert alert-success d-flex align-items-center gap-2 mb-4 py-2 px-3 rounded-3 border-success no-print">
+                  <i className="fas fa-shield-alt text-success fs-5"></i>
+                  <div>
+                    <div className="fw-bold small text-success">
+                      ✓ Grading Telah Disahkan Kasie
+                    </div>
+                    <div className="small text-muted" style={{ fontSize: '11px' }}>
+                      Diverifikasi & disahkan oleh <strong>{getKasieInfo(selectedRow).verifiedName}</strong>
+                      {selectedRow.tgl_verifikasi_kasie && (
+                        <span> pada {new Date(selectedRow.tgl_verifikasi_kasie).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                      )}. Laporan siap diinvestigasi oleh Komite Mutu.
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="alert alert-warning d-flex align-items-center gap-2 mb-4 py-2 px-3 rounded-3 border-warning no-print">
+                  <i className="fas fa-exclamation-triangle text-warning-emphasis fs-5"></i>
+                  <div>
+                    <div className="fw-bold small text-warning-emphasis">
+                      ⚠️ Menunggu Verifikasi Kepala Seksi (Kasie)
+                    </div>
+                    <div className="small text-muted" style={{ fontSize: '11px' }}>
+                      Laporan grading ini belum ditandatangani oleh Kasie terkait
+                      {getKasieInfo(selectedRow).targetKasie && ` (${getKasieInfo(selectedRow).targetKasie})`}.
+                      Komite Mutu disarankan menunggu verifikasi Kasie sebelum menyelesaikan investigasi.
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
 
             <form ref={formInvestigasiRef} onSubmit={submitForm}>
               {/* Pasien Info */}
@@ -822,6 +1229,30 @@ export default function InvestigasiForm() {
                 >
                   <i className="fas fa-print"></i> <span>Cetak Laporan</span>
                 </button>
+              </div>
+
+              {/* Tanda Tangan Cetak (Hanya tampil saat Print) */}
+              <div className="d-none d-print-block mt-5 pt-4">
+                <div className="row text-center">
+                  <div className="col-4">
+                    <p className="mb-5 small">Kepala Ruangan,</p>
+                    <p className="fw-bold text-decoration-underline mb-0 small">
+                      ( {formInvestigasiRef.current?.querySelector('[name="kepalaRuangan"]')?.value || getKaruName(selectedRow) || '..............................'} )
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p className="mb-5 small">Kasie / Kasubag,</p>
+                    <p className="fw-bold text-decoration-underline mb-0 small">
+                      ( {formInvestigasiRef.current?.querySelector('[name="kasieKasubag"]')?.value || getKasieInfo(selectedRow).verifiedName || '..............................'} )
+                    </p>
+                  </div>
+                  <div className="col-4">
+                    <p className="mb-5 small">Sub Komite Keselamatan Pasien,</p>
+                    <p className="fw-bold text-decoration-underline mb-0 small">
+                      ( {user?.username || '..............................'} )
+                    </p>
+                  </div>
+                </div>
               </div>
             </form>
           </div>
