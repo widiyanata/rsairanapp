@@ -42,15 +42,40 @@ def index(request):
   }
   return JsonResponse(res)
 
-# Get kunjungan pasien
+# Get kunjungan pasien (rajal: kunjunganpasien, ranap: PASIENRAWATINAP)
 def kunjungan_pasien(request):
-  query = "SELECT TOP 10 * FROM kunjunganpasien JOIN PASIEN ON kunjunganpasien.KPKD_PASIEN = PASIEN.KD_PASIEN "
+  jenis = request.GET.get('jenis', 'rajal')
   params = []
 
-  if 'cari' in request.GET and request.GET['cari'] is not None:
-    cari_val = f"%{request.GET['cari']}%"
-    query = query + "WHERE KPKD_PASIEN LIKE %s OR KPKD_PASIENN LIKE %s OR KPNO_TRANSAKSI LIKE %s "
-    params = [cari_val, cari_val, cari_val]
+  if jenis == 'ranap':
+    query = (
+      "SELECT TOP 10 *, "
+      "KAMAR.FMKNAMA_KAMAR AS UNIT, "
+      "PASIENRAWATINAP.PRWITGL_MASUK AS KPTGL_PERIKSA, "
+      "PASIENRAWATINAP.PRWINO_TRANSAKSI AS KPNO_TRANSAKSI, "
+      "PASIENRAWATINAP.PRWIKD_PASIEN AS KPKD_PASIEN, "
+      "PASIEN.NAMAPASIEN AS KPKD_PASIENN "
+      "FROM PASIENRAWATINAP "
+      "JOIN PASIEN ON PASIENRAWATINAP.PRWIKD_PASIEN = PASIEN.KD_PASIEN "
+      "LEFT JOIN KAMAR ON PASIENRAWATINAP.PRWIKD_KAMAR = KAMAR.FMKKAMAR_ID "
+    )
+    if 'cari' in request.GET and request.GET['cari'] is not None:
+      cari_val = f"%{request.GET['cari']}%"
+      query = query + "WHERE PASIENRAWATINAP.PRWIKD_PASIEN LIKE %s OR PASIEN.NAMAPASIEN LIKE %s OR PASIENRAWATINAP.PRWINO_TRANSAKSI LIKE %s "
+      params = [cari_val, cari_val, cari_val]
+    query = query + "ORDER BY PASIENRAWATINAP.PRWITGL_MASUK DESC"
+  else:
+    query = (
+      "SELECT TOP 10 *, POLIKLINIK.FMPKLINIKN AS UNIT "
+      "FROM kunjunganpasien "
+      "JOIN PASIEN ON kunjunganpasien.KPKD_PASIEN = PASIEN.KD_PASIEN "
+      "LEFT JOIN POLIKLINIK ON kunjunganpasien.KPKD_POLY = POLIKLINIK.FMPKLINIK_ID "
+    )
+    if 'cari' in request.GET and request.GET['cari'] is not None:
+      cari_val = f"%{request.GET['cari']}%"
+      query = query + "WHERE KPKD_PASIEN LIKE %s OR KPKD_PASIENN LIKE %s OR KPNO_TRANSAKSI LIKE %s "
+      params = [cari_val, cari_val, cari_val]
+    query = query + "ORDER BY kunjunganpasien.KPTGL_PERIKSA DESC"
 
   with connection.cursor() as cursor:
     cursor.execute(query, params)
@@ -759,6 +784,52 @@ def deleteUserMutu(request):
 
     return JsonResponse({'status': True, 'message': 'User berhasil dihapus'})
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def loginKaryawan(request):
+  if request.method == 'POST':
+    data = json.loads(request.body)
+    username = data.get('username')
+    password = data.get('password')
+
+    with connection.cursor() as cursor:
+      query = "SELECT TOP 1 USER_ID, USER_NAME FROM USERSPRIV WHERE USER_ID = %s AND USER_PASSWORD = %s"
+      cursor.execute(query, [username, password])
+      rows = dictfetchall(cursor)
+
+    if rows:
+      user_data = rows[0]
+      res = {
+        "status": {
+            "success": True,
+            "code": 200,
+            "message": "Login successful",
+        },
+        "data": [{
+          "id": user_data['USER_ID'],
+          "username": user_data['USER_NAME'],
+          "role": "karyawan",
+        }]
+      }
+      return JsonResponse(res, safe=False)
+
+    return JsonResponse({
+      "status": {
+          "success": False,
+          "code": 400,
+          "message": "Login failed",
+      },
+      "data": None
+    })
+
+  return JsonResponse({
+    "status": {
+        "success": False,
+        "code": 400,
+        "message": "Request not allowed",
+    },
+    "data": None
+  })
 
 @csrf_exempt
 def loginMutu(request):

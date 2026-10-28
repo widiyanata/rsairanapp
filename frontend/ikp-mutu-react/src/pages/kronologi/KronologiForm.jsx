@@ -15,6 +15,7 @@ export default function KronologiForm() {
   const [pasiens, setPasiens] = useState(null);
   const [pasien, setPasien] = useState({ KPKD_PASIEN: '', KPKD_PASIENN: '' });
   const [cari, setCari] = useState('');
+  const [jenisPasien, setJenisPasien] = useState('rajal');
   const [kejadianEntries, setKejadianEntries] = useState([{ Tanggal: '', Uraian: '' }]);
   const [loading, setLoading] = useState(false);
   const [idKronologi, setIdKronologi] = useState('');
@@ -44,7 +45,7 @@ export default function KronologiForm() {
     if (cari.length < 3) return;
     setLoading(true);
     try {
-      const { data } = await api.get(`/kunjunganPasien?cari=${cari}`);
+      const { data } = await api.get(`/kunjunganPasien?cari=${cari}&jenis=${jenisPasien}`);
       setPasiens(data.data);
     } catch (err) {
       console.error(err);
@@ -194,6 +195,22 @@ export default function KronologiForm() {
               <h6 className="label-minimal mb-2">Pilih Pasien *</h6>
               {!pasien.KPKD_PASIEN ? (
                 <div>
+                  <div className="btn-group btn-group-sm mb-2" role="group">
+                    <button
+                      type="button"
+                      className={`btn ${jenisPasien === 'rajal' ? 'btn-dark' : 'btn-outline-dark'}`}
+                      onClick={() => { setJenisPasien('rajal'); setPasiens(null); }}
+                    >
+                      Rawat Jalan
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn ${jenisPasien === 'ranap' ? 'btn-dark' : 'btn-outline-dark'}`}
+                      onClick={() => { setJenisPasien('ranap'); setPasiens(null); }}
+                    >
+                      Rawat Inap
+                    </button>
+                  </div>
                   <div className="input-group-minimal border rounded-3 d-flex align-items-center gap-2 px-3 py-1 bg-light">
                     <i className="fas fa-search text-muted small"></i>
                     <input
@@ -226,7 +243,11 @@ export default function KronologiForm() {
                             <div className="fw-bold text-dark">{p.KPKD_PASIENN}</div>
                             <div className="text-muted small mt-1">
                               <span className="badge bg-light text-dark border me-2">RM: {p.KPKD_PASIEN}</span>
-                              <span className="badge bg-secondary-subtle text-secondary">{p.KPNO_TRANSAKSI}</span>
+                              <span className="badge bg-secondary-subtle text-secondary me-2">{p.KPNO_TRANSAKSI}</span>
+                              {p.KPTGL_PERIKSA && (
+                                <span className="me-2">{new Date(p.KPTGL_PERIKSA).toLocaleDateString('id-ID')}</span>
+                              )}
+                              {p.UNIT && <span>{p.UNIT}</span>}
                             </div>
                           </div>
                           <i className="fas fa-check-circle text-primary opacity-50"></i>

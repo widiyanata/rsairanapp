@@ -62,6 +62,20 @@ export default function Login() {
     }
   };
 
+  const loginKaryawan = async () => {
+    try {
+      const { data } = await api.post('/loginKaryawan', { username, password });
+      if (data.status.success) {
+        login(data.data[0]);
+        navigate('/');
+      } else {
+        setError('Username/Password salah');
+      }
+    } catch {
+      setError('Koneksi gagal');
+    }
+  };
+
   const cekKaryawan = async (nama) => {
     if (nama.length < 3) return;
     try {
@@ -92,6 +106,8 @@ export default function Login() {
     e.preventDefault();
     if (role === 'perawat') {
       loginPerawat();
+    } else if (role === 'karyawan') {
+      loginKaryawan();
     } else {
       loginMutu();
     }
@@ -131,7 +147,8 @@ export default function Login() {
             <option value="kasie">Kepala Seksi (Kasie)</option>
             <option value="karu">Kepala Ruangan (Karu)</option>
             <option value="perawat">Tenaga Perawat</option>
-            <option value="lainya">Karyawan Lainnya</option>
+            <option value="karyawan">Karyawan (punya user id)</option>
+            <option value="lainya">Karyawan Lainnya (belum punya user id)</option>
           </select>
         </div>
 
