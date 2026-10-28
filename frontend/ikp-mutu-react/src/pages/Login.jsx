@@ -24,7 +24,7 @@ export default function Login() {
   const cariUser = async (value) => {
     if (value.length < 3) return;
     try {
-      const { data } = await api.get(`/cariUser?cari=${value}&role=${role}`);
+      const { data } = await api.get(`/cariStaf?cari=${value}`);
       setUserPerawat(data.data || []);
     } catch (err) {
       console.error(err);
@@ -32,15 +32,15 @@ export default function Login() {
   };
 
   const pilihUser = (user) => {
-    setUsername(user.FMPPERAWATN);
+    setUsername(user.NAMA);
     sessionStorage.setItem('_temp_user', JSON.stringify(user));
     setUserPerawat([]);
   };
 
-  const loginPerawat = () => {
+  const loginStaf = () => {
     const temp = JSON.parse(sessionStorage.getItem('_temp_user'));
-    if (temp && temp.FMPPERAWATN === username && temp.FMPPW === password) {
-      const userData = { username: temp.FMPPERAWATN, id: temp.FMPPERAWAT_ID, role: 'perawat' };
+    if (temp && temp.NAMA === username && temp.PASSWORD === password) {
+      const userData = { username: temp.NAMA, id: temp.ID, role: temp.SUMBER };
       login(userData);
       navigate('/');
     } else {
@@ -51,20 +51,6 @@ export default function Login() {
   const loginMutu = async () => {
     try {
       const { data } = await api.post('/loginMutu', { username, password });
-      if (data.status.success) {
-        login(data.data[0]);
-        navigate('/');
-      } else {
-        setError('Username/Password salah');
-      }
-    } catch {
-      setError('Koneksi gagal');
-    }
-  };
-
-  const loginKaryawan = async () => {
-    try {
-      const { data } = await api.post('/loginKaryawan', { username, password });
       if (data.status.success) {
         login(data.data[0]);
         navigate('/');
@@ -104,10 +90,8 @@ export default function Login() {
 
   const handleStandardLogin = (e) => {
     e.preventDefault();
-    if (role === 'perawat') {
-      loginPerawat();
-    } else if (role === 'karyawan') {
-      loginKaryawan();
+    if (role === 'staf') {
+      loginStaf();
     } else {
       loginMutu();
     }
@@ -146,8 +130,7 @@ export default function Login() {
             <option value="mutu">Tim Mutu</option>
             <option value="kasie">Kepala Seksi (Kasie)</option>
             <option value="karu">Kepala Ruangan (Karu)</option>
-            <option value="perawat">Tenaga Perawat / Penunjang</option>
-            <option value="karyawan">Karyawan (punya user id)</option>
+            <option value="staf">Tenaga Perawat / Penunjang</option>
             <option value="lainya">Karyawan Lainnya (belum punya user id)</option>
           </select>
         </div>
@@ -232,7 +215,7 @@ export default function Login() {
                     value={username}
                     onChange={(e) => {
                       setUsername(e.target.value);
-                      if (role === 'perawat' && e.target.value.length > 2) {
+                      if (role === 'staf' && e.target.value.length > 2) {
                         cariUser(e.target.value);
                       }
                     }}
@@ -240,15 +223,18 @@ export default function Login() {
                     placeholder="Username"
                     required
                   />
-                  {role === 'perawat' && userPerawat.length > 0 && username.length > 2 && (
+                  {role === 'staf' && userPerawat.length > 0 && username.length > 2 && (
                     <div className="search-results-list border rounded-3 mt-1 bg-white shadow-sm overflow-hidden position-absolute w-100 z-3">
-                      {userPerawat.map((user) => (
+                      {userPerawat.map((user, idx) => (
                         <div
-                          key={user.FMPPERAWAT_ID}
+                          key={`${user.SUMBER}-${user.ID}-${idx}`}
                           onClick={() => pilihUser(user)}
-                          className="p-2 border-bottom hover-bg cursor-pointer small"
+                          className="p-2 border-bottom hover-bg cursor-pointer small d-flex justify-content-between align-items-center"
                         >
-                          {user.FMPPERAWATN}
+                          <span>{user.NAMA}</span>
+                          <span className="badge bg-light text-dark border ms-2" style={{ fontSize: '9px' }}>
+                            {user.SUMBER}
+                          </span>
                         </div>
                       ))}
                     </div>

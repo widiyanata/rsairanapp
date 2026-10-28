@@ -207,6 +207,35 @@ def cari_user(request):
     }
     return JsonResponse(res, safe=False)
 
+# Cari staf gabungan (perawat + karyawan) untuk login
+def cari_staf(request):
+  cari = request.GET.get('cari')
+  if cari:
+    cari_val = f"%{cari}%"
+    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, FMPPW AS PASSWORD, 'perawat' AS SUMBER FROM PERAWAT WHERE FMPPERAWATN LIKE %s"
+    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, USER_PASSWORD AS PASSWORD, 'karyawan' AS SUMBER FROM USERSPRIV WHERE USER_NAME LIKE %s"
+    params = [cari_val, cari_val]
+  else:
+    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, FMPPW AS PASSWORD, 'perawat' AS SUMBER FROM PERAWAT"
+    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, USER_PASSWORD AS PASSWORD, 'karyawan' AS SUMBER FROM USERSPRIV"
+    params = []
+
+  query = f"SELECT TOP 10 ID, NAMA, PASSWORD, SUMBER FROM ({perawat_q} UNION ALL {userspriv_q}) combined ORDER BY NAMA"
+
+  with connection.cursor() as cursor:
+    cursor.execute(query, params)
+    rows = dictfetchall(cursor)
+
+    res = {
+      "status": {
+          "success": True,
+          "code": 200,
+          "message": "Request successful",
+      },
+      "data": rows
+    }
+    return JsonResponse(res, safe=False)
+
 # Grading
 @csrf_exempt
 def grading(request):
@@ -784,52 +813,6 @@ def deleteUserMutu(request):
 
     return JsonResponse({'status': True, 'message': 'User berhasil dihapus'})
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
-
-@csrf_exempt
-def loginKaryawan(request):
-  if request.method == 'POST':
-    data = json.loads(request.body)
-    username = data.get('username')
-    password = data.get('password')
-
-    with connection.cursor() as cursor:
-      query = "SELECT TOP 1 USER_ID, USER_NAME FROM USERSPRIV WHERE USER_ID = %s AND USER_PASSWORD = %s"
-      cursor.execute(query, [username, password])
-      rows = dictfetchall(cursor)
-
-    if rows:
-      user_data = rows[0]
-      res = {
-        "status": {
-            "success": True,
-            "code": 200,
-            "message": "Login successful",
-        },
-        "data": [{
-          "id": user_data['USER_ID'],
-          "username": user_data['USER_NAME'],
-          "role": "karyawan",
-        }]
-      }
-      return JsonResponse(res, safe=False)
-
-    return JsonResponse({
-      "status": {
-          "success": False,
-          "code": 400,
-          "message": "Login failed",
-      },
-      "data": None
-    })
-
-  return JsonResponse({
-    "status": {
-        "success": False,
-        "code": 400,
-        "message": "Request not allowed",
-    },
-    "data": None
-  })
 
 @csrf_exempt
 def loginMutu(request):

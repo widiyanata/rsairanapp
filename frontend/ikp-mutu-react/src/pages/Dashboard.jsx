@@ -248,8 +248,8 @@ export default function Dashboard() {
       ];
     }
 
-    // 4. PERAWAT / LAINYA (Staf Pelapor)
-    if (role === 'perawat' || role === 'lainya') {
+    // 4. PERAWAT / KARYAWAN / LAINYA (Staf Pelapor)
+    if (role === 'perawat' || role === 'karyawan' || role === 'lainya') {
       const laporanSaya = rawData.kronologi.filter((k) => {
         try {
           const d = JSON.parse(k.dibuat_oleh);
@@ -363,6 +363,7 @@ export default function Dashboard() {
     karu: 'Ringkasan Tugas Kepala Ruangan',
     mutu: 'Monitoring Komite Mutu',
     perawat: 'Aktivitas Pelaporan Saya',
+    karyawan: 'Aktivitas Pelaporan Saya',
     lainya: 'Aktivitas Pelaporan Saya',
     admin: 'Statistik Keseluruhan Sistem',
   };
