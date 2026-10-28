@@ -130,7 +130,7 @@ export default function Login() {
             <option value="mutu">Tim Mutu</option>
             <option value="kasie">Kepala Seksi (Kasie)</option>
             <option value="karu">Kepala Ruangan (Karu)</option>
-            <option value="perawat">Tenaga Perawat</option>
+            <option value="perawat">Tenaga Perawat / Penunjang</option>
             <option value="lainya">Karyawan Lainnya</option>
           </select>
         </div>
