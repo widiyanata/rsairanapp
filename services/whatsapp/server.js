@@ -96,6 +96,7 @@ app.post('/send-message', async (req, res) => {
 // Initialize client
 client.initialize();
 
-app.listen(PORT, () => {
+// Hanya Django di mesin yang sama yang memanggil layanan ini
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`WhatsApp integration service running on port ${PORT}`);
 });

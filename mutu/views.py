@@ -1,6 +1,8 @@
 import datetime
 import json
 import requests
+from functools import wraps
+from django.core import signing
 from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -13,6 +15,33 @@ def dictfetchall(cursor):
     dict(zip(columns, row))
     for row in cursor.fetchall()
   ]
+
+TOKEN_SALT = 'ikp-mutu'
+TOKEN_MAX_AGE = 12 * 3600
+# Semua role yang login dengan password (lainya tidak termasuk)
+STAF_ROLES = ('perawat', 'karyawan', 'karu', 'kasie', 'mutu')
+# Role yang hanya boleh melihat kronologi buatannya sendiri
+OWN_ONLY_ROLES = ('lainya', 'perawat', 'karyawan')
+
+def make_token(user):
+  return signing.dumps({'id': user.get('id'), 'username': user.get('username'), 'role': user.get('role')}, salt=TOKEN_SALT)
+
+def auth_required(*roles):
+  "Wajib token valid; jika roles diisi, role harus termasuk (admin selalu lolos)"
+  def decorator(view):
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+      token = request.headers.get('Authorization', '').removeprefix('Bearer ')
+      try:
+        request.auth = signing.loads(token, salt=TOKEN_SALT, max_age=TOKEN_MAX_AGE)
+      except signing.BadSignature:
+        return JsonResponse({'status': False, 'message': 'Unauthorized'}, status=401)
+      role = request.auth.get('role')
+      if roles and role != 'admin' and role not in roles:
+        return JsonResponse({'status': False, 'message': 'Forbidden'}, status=403)
+      return view(request, *args, **kwargs)
+    return wrapper
+  return decorator
 
 def send_wa_notification(phone, message):
   if not phone:
@@ -43,6 +72,7 @@ def index(request):
   return JsonResponse(res)
 
 # Get kunjungan pasien (rajal: kunjunganpasien, ranap: PASIENRAWATINAP)
+@auth_required()
 def kunjungan_pasien(request):
   jenis = request.GET.get('jenis', 'rajal')
   params = []
@@ -92,19 +122,26 @@ def kunjungan_pasien(request):
     return JsonResponse(res, safe=False)
   
 @csrf_exempt
+@auth_required()
 def kronologi(request):
   if request.method == 'GET':
     query = "SELECT * FROM mutu_kronologi_kejadian ORDER BY id_kronologi DESC, Tanggal DESC"
     params = []
-    
-    if 'no_transaksi' in request.GET and request.GET['no_transaksi'] is not None and 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
-      no_transaksi = request.GET['no_transaksi']
+
+    # Role tertentu dipaksa hanya melihat miliknya sendiri, apa pun parameter dari klien
+    if request.auth.get('role') in OWN_ONLY_ROLES:
+      dibuat_oleh = request.auth.get('id')
+    elif request.GET.get('dibuat_oleh'):
       dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
+    else:
+      dibuat_oleh = None
+    no_transaksi = request.GET.get('no_transaksi')
+
+    if no_transaksi and dibuat_oleh is not None:
       query = "SELECT * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [no_transaksi, dibuat_oleh]
 
-    elif 'dibuat_oleh' in request.GET and request.GET['dibuat_oleh'] is not None:
-      dibuat_oleh = json.loads(request.GET['dibuat_oleh']).get('id')
+    elif dibuat_oleh is not None:
       query = "SELECT * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [dibuat_oleh]
 
@@ -145,6 +182,8 @@ def kronologi(request):
 
     if not all([no_transaksi, dibuat_oleh_id]):
         return JsonResponse({'status': False, 'message': 'Missing required fields'}, status=400)
+    if str(dibuat_oleh_id) != str(request.auth.get('id')):
+        return JsonResponse({'status': False, 'message': 'Forbidden'}, status=403)
 
     with connection.cursor() as cursor:
         # Check existing transaction (match by id pembuat, bukan string JSON utuh)
@@ -185,6 +224,7 @@ def kronologi(request):
     return JsonResponse({'status': True, 'message': 'Data berhasil disimpan'})
 
 # Cari user
+@auth_required(*STAF_ROLES)
 def cari_user(request):
   query = "SELECT TOP 10 * FROM PERAWAT "
   params = []
@@ -213,15 +253,15 @@ def cari_staf(request):
   cari = request.GET.get('cari')
   if cari:
     cari_val = f"%{cari}%"
-    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, FMPPW AS PASSWORD, 'perawat' AS SUMBER FROM PERAWAT WHERE FMPPERAWATN LIKE %s"
-    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, USER_PASSWORD AS PASSWORD, 'karyawan' AS SUMBER FROM USERSPRIV WHERE USER_NAME LIKE %s"
+    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER FROM PERAWAT WHERE FMPPERAWATN LIKE %s"
+    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, 'karyawan' AS SUMBER FROM USERSPRIV WHERE USER_NAME LIKE %s"
     params = [cari_val, cari_val]
   else:
-    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, FMPPW AS PASSWORD, 'perawat' AS SUMBER FROM PERAWAT"
-    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, USER_PASSWORD AS PASSWORD, 'karyawan' AS SUMBER FROM USERSPRIV"
+    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER FROM PERAWAT"
+    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, 'karyawan' AS SUMBER FROM USERSPRIV"
     params = []
 
-  query = f"SELECT TOP 10 ID, NAMA, PASSWORD, SUMBER FROM ({perawat_q} UNION ALL {userspriv_q}) combined ORDER BY NAMA"
+  query = f"SELECT TOP 10 ID, NAMA, SUMBER FROM ({perawat_q} UNION ALL {userspriv_q}) combined ORDER BY NAMA"
 
   with connection.cursor() as cursor:
     cursor.execute(query, params)
@@ -239,6 +279,7 @@ def cari_staf(request):
 
 # Grading
 @csrf_exempt
+@auth_required(*STAF_ROLES)
 def grading(request):
   if request.method == 'GET':
     query = """
@@ -402,6 +443,7 @@ def grading(request):
   
 # Investigasi
 @csrf_exempt
+@auth_required(*STAF_ROLES)
 def investigasi(request):
   if request.method == 'GET':
     query = "SELECT * FROM mutu_investigasi ORDER BY id_investigasi DESC"
@@ -632,6 +674,7 @@ def cek_karyawan(request):
     "data": None
   })
 
+@auth_required()
 def cariKaru(request):
   query = "SELECT id, username, role, nama, telp FROM mutu_users"
   conditions = []
@@ -665,6 +708,7 @@ def cariKaru(request):
     return JsonResponse(res, safe=False)
   
 @csrf_exempt
+@auth_required()
 def kirimKronologi(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -672,6 +716,8 @@ def kirimKronologi(request):
     no_transaksi = data.get('no_transaksi', None)
     kirim_ke = data.get('kirimke', None)
     dibuat_oleh_id = (data.get('dibuat_oleh') or {}).get('id')
+    if str(dibuat_oleh_id) != str(request.auth.get('id')):
+      return JsonResponse({'status': False, 'message': 'Forbidden'}, status=403)
 
     query = "UPDATE mutu_kronologi_kejadian SET kirimke = %s WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s"
 
@@ -723,8 +769,9 @@ def kirimKronologi(request):
       }
     return JsonResponse(res, safe=False)
   
+@auth_required('admin')
 def userMutu(request):
-  query = "SELECT * FROM mutu_users"
+  query = "SELECT id, username, role, nama, telp FROM mutu_users"
 
   with connection.cursor() as cursor:
     cursor.execute(query)
@@ -741,6 +788,7 @@ def userMutu(request):
     return JsonResponse(res, safe=False)
 
 @csrf_exempt
+@auth_required('admin')
 def createUserMutu(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -772,6 +820,7 @@ def createUserMutu(request):
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
 
 @csrf_exempt
+@auth_required('admin')
 def updateUserMutu(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -812,6 +861,7 @@ def updateUserMutu(request):
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
 
 @csrf_exempt
+@auth_required('admin')
 def deleteUserMutu(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -830,7 +880,6 @@ def deleteUserMutu(request):
 def loginMutu(request):
   if request.method == 'POST':
     data = json.loads(request.body)
-    print('data login mutu:', data)
     username = data.get('username')
     password = data.get('password')
 
@@ -863,7 +912,8 @@ def loginMutu(request):
               "code": 200,
               "message": "Login successful",
           },
-          "data": [user_data]
+          "data": [user_data],
+          "token": make_token(user_data),
         }
         return JsonResponse(res, safe=False)
 
@@ -881,6 +931,58 @@ def loginMutu(request):
       }
     })
   
+# Login perawat (PERAWAT) / karyawan (USERSPRIV); password dicek di server
+@csrf_exempt
+def loginStaf(request):
+  if request.method != 'POST':
+    return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+  data = json.loads(request.body)
+  sumber = data.get('sumber')
+  password = data.get('password')
+
+  if sumber == 'perawat':
+    query = "SELECT TOP 1 FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, FMPPW AS PASSWORD FROM PERAWAT WHERE FMPPERAWAT_ID = %s"
+  elif sumber == 'karyawan':
+    query = "SELECT TOP 1 USER_ID AS ID, USER_NAME AS NAMA, USER_PASSWORD AS PASSWORD FROM USERSPRIV WHERE USER_ID = %s"
+  else:
+    return JsonResponse({'status': {'success': False, 'code': 400, 'message': 'Sumber tidak valid'}}, status=400)
+
+  with connection.cursor() as cursor:
+    cursor.execute(query, [data.get('id')])
+    rows = dictfetchall(cursor)
+
+  # ponytail: SIMRS menyimpan password plaintext, jadi dibandingkan apa adanya
+  if rows and password and rows[0]['PASSWORD'] == password:
+    user_data = {'id': rows[0]['ID'], 'username': rows[0]['NAMA'], 'role': sumber}
+    return JsonResponse({
+      "status": {"success": True, "code": 200, "message": "Login successful"},
+      "data": user_data,
+      "token": make_token(user_data),
+    })
+  return JsonResponse({"status": {"success": False, "code": 400, "message": "Login failed"}})
+
+# Login karyawan lainya: tanpa password, NIK harus terdaftar di KARYAWAN
+@csrf_exempt
+def loginLainya(request):
+  if request.method != 'POST':
+    return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
+  data = json.loads(request.body)
+
+  with connection.cursor() as cursor:
+    cursor.execute("SELECT FMKKARYAWAN_ID as nik, FMKKARYAWANN as nama, FMKKATEGORI as unit FROM KARYAWAN WHERE FMKKARYAWAN_ID = %s", [data.get('nik')])
+    rows = dictfetchall(cursor)
+
+  if not rows or not data.get('email'):
+    return JsonResponse({"status": {"success": False, "code": 400, "message": "Data login tidak sesuai"}})
+
+  kar = rows[0]
+  user_data = {'id': kar['nik'], 'username': kar['nama'], 'unit': data.get('unit') or kar['unit'], 'email': data.get('email'), 'role': 'lainya'}
+  return JsonResponse({
+    "status": {"success": True, "code": 200, "message": "Login successful"},
+    "data": user_data,
+    "token": make_token(user_data),
+  })
+
 @csrf_exempt
 def getPermissions(request):
   with connection.cursor() as cursor:
@@ -898,6 +1000,7 @@ def getPermissions(request):
   return JsonResponse(res, safe=False)
 
 @csrf_exempt
+@auth_required('admin')
 def updatePermissions(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -916,6 +1019,7 @@ def updatePermissions(request):
     return JsonResponse({'status': True, 'message': 'Permissions updated successfully'})
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
 
+@auth_required(*STAF_ROLES)
 def getListKronologi(request):
   with connection.cursor() as cursor:
     no_transaksi = request.GET.get('no_transaksi', None)
@@ -937,6 +1041,7 @@ def getListKronologi(request):
   return JsonResponse({"status": False, "message": "Missing transaction number"})
 
 @csrf_exempt
+@auth_required(*STAF_ROLES)
 def verifikasiKronologi(request):
   if request.method == 'POST':
     data = json.loads(request.body)
@@ -1010,11 +1115,12 @@ def verifikasiKronologi(request):
       return JsonResponse(res, safe=False)
 
 @csrf_exempt
+@auth_required()
 def updateProfile(request):
   if request.method == 'POST':
     try:
       data = json.loads(request.body)
-      username = data.get('username')
+      username = request.auth.get('username')
       nama = data.get('nama')
       telp = data.get('telp', '')
       old_password = data.get('old_password')

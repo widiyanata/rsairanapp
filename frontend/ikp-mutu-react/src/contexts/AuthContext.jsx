@@ -34,13 +34,15 @@ export function AuthProvider({ children }) {
     );
   }, [user, permissions]);
 
-  const login = useCallback((userData) => {
+  const login = useCallback((userData, token) => {
+    sessionStorage.setItem('token', token);
     sessionStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
   }, []);
 
   const logout = useCallback(() => {
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('token');
     sessionStorage.removeItem('_temp_user');
     setUser(null);
   }, []);

@@ -25,12 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-vmk#1yike5*b3j%)%2c$2&z(*am+au=u(cyc7bjwcxx&_d)kt6'
+# Wajib ada di environtment.py; juga dipakai menandatangani token login
+SECRET_KEY = env.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = getattr(env, 'DEBUG', False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = getattr(env, 'ALLOWED_HOSTS', ['*'])
 
 CORS_ALLOW_ALL_ORIGINS = True
 

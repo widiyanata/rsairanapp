@@ -37,14 +37,22 @@ export default function Login() {
     setUserPerawat([]);
   };
 
-  const loginStaf = () => {
+  const loginStaf = async () => {
     const temp = JSON.parse(sessionStorage.getItem('_temp_user'));
-    if (temp && temp.NAMA === username && temp.PASSWORD === password) {
-      const userData = { username: temp.NAMA, id: temp.ID, role: temp.SUMBER };
-      login(userData);
-      navigate('/');
-    } else {
+    if (!temp || temp.NAMA !== username) {
       setError('Data login tidak sesuai');
+      return;
+    }
+    try {
+      const { data } = await api.post('/loginStaf', { id: temp.ID, sumber: temp.SUMBER, password });
+      if (data.status.success) {
+        login(data.data, data.token);
+        navigate('/');
+      } else {
+        setError('Data login tidak sesuai');
+      }
+    } catch {
+      setError('Koneksi gagal');
     }
   };
 
@@ -52,7 +60,7 @@ export default function Login() {
     try {
       const { data } = await api.post('/loginMutu', { username, password });
       if (data.status.success) {
-        login(data.data[0]);
+        login(data.data[0], data.token);
         navigate('/');
       } else {
         setError('Username/Password salah');
@@ -78,13 +86,22 @@ export default function Login() {
     setListKaryawan([]);
   };
 
-  const loginLainya = (e) => {
+  const loginLainya = async (e) => {
     e.preventDefault();
-    if (karyawan.username && karyawan.email) {
-      login({ ...karyawan, role: 'lainya' });
-      navigate('/');
-    } else {
+    if (!karyawan.id || !karyawan.email) {
       setError('Lengkapi data login');
+      return;
+    }
+    try {
+      const { data } = await api.post('/loginLainya', { nik: karyawan.id, email: karyawan.email, unit: karyawan.unit });
+      if (data.status.success) {
+        login(data.data, data.token);
+        navigate('/');
+      } else {
+        setError(data.status.message || 'Data login tidak sesuai');
+      }
+    } catch {
+      setError('Koneksi gagal');
     }
   };
 
