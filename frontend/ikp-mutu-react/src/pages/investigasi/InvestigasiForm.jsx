@@ -399,8 +399,8 @@ export default function InvestigasiForm() {
   }, []);
 
   return (
-    <div className="investigasi-page pb-4 w-100 overflow-hidden">
-      <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
+    <div className="investigasi-page pb-3 w-100 overflow-hidden">
+      <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3 no-print">
         <div>
           <h1 className="h3 fw-bold mb-1">Investigasi Insiden</h1>
           <p className="text-muted small mb-0">
@@ -412,7 +412,7 @@ export default function InvestigasiForm() {
       <div className="row g-3 g-lg-4">
         {/* Left: Riwayat Grading */}
         <div className="col-12 col-lg-5 no-print" style={{ minWidth: 0 }}>
-            <div className="card-minimal p-0 overflow-hidden shadow-sm mb-4">
+            <div className="card-minimal p-0 overflow-hidden shadow-sm mb-3">
               <div className="p-3 border-bottom bg-light bg-opacity-50">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
@@ -563,7 +563,7 @@ export default function InvestigasiForm() {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-5 text-muted">
+                  <div className="text-center py-4 text-muted">
                     <i className="fas fa-inbox h2 opacity-50 mb-2"></i>
                     <p className="small mb-0">Tidak ada riwayat grading yang sesuai</p>
                   </div>
@@ -673,7 +673,7 @@ export default function InvestigasiForm() {
                       })
                     ) : (
                       <tr>
-                        <td colSpan="5" className="text-center py-4 text-muted small">
+                        <td colSpan="5" className="text-center py-3 text-muted small">
                           <i className="fas fa-inbox me-1"></i> Tidak ada data riwayat grading yang sesuai
                         </td>
                       </tr>
@@ -685,7 +685,7 @@ export default function InvestigasiForm() {
 
           {/* Accordion: Detail Grading & Kronologi */}
           {detailGrading && selectedRow && (
-            <div className="mb-4">
+            <div className="mb-3">
               {/* Detail Grading Accordion */}
               <div className="border rounded mb-2 overflow-hidden shadow-sm">
                 <button
@@ -980,7 +980,7 @@ export default function InvestigasiForm() {
         {/* Right: Investigasi Form */}
         <div className={`col-12 col-lg-7 ${!detailGrading || !selectedRow ? 'd-none' : ''}`} style={{ minWidth: 0 }}>
           <div className="card-minimal p-3 p-sm-4 bg-white border rounded-3 shadow-sm w-100 overflow-hidden">
-            <div className="kop-surat mb-4 print">
+            <div className="kop-surat mb-3 print">
               <img className="w-100" src="/kop_surat.jpg" alt="" />
             </div>
             
@@ -991,7 +991,7 @@ export default function InvestigasiForm() {
             {/* Banner Status Verifikasi Kasie */}
             {selectedRow && (
               isKasieVerified(selectedRow) ? (
-                <div className="alert alert-success d-flex align-items-center gap-2 mb-4 py-2 px-3 rounded-3 border-success no-print">
+                <div className="alert alert-success d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3 border-success no-print">
                   <i className="fas fa-shield-alt text-success fs-5"></i>
                   <div>
                     <div className="fw-bold small text-success">
@@ -1006,7 +1006,7 @@ export default function InvestigasiForm() {
                   </div>
                 </div>
               ) : (
-                <div className="alert alert-warning d-flex align-items-center gap-2 mb-4 py-2 px-3 rounded-3 border-warning no-print">
+                <div className="alert alert-warning d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3 border-warning no-print">
                   <i className="fas fa-exclamation-triangle text-warning-emphasis fs-5"></i>
                   <div>
                     <div className="fw-bold small text-warning-emphasis">
@@ -1139,7 +1139,7 @@ export default function InvestigasiForm() {
               </div>
 
               {/* Rekomendasi Section */}
-              <div className="mb-4 pt-3 border-top">
+              <div className="mb-3 pt-3 border-top">
                 <div className="d-flex align-items-center justify-content-between mb-2">
                   <h6 className="label-minimal mb-0">Tindakan & Rekomendasi</h6>
                   {selectedRow && selectedRow.verifikasi !== 1 && (
@@ -1286,7 +1286,7 @@ export default function InvestigasiForm() {
               </div>
 
               {/* Analisa */}
-              <div className="pt-3 border-top mb-4">
+              <div className="pt-3 border-top mb-3">
                 <h6 className="label-minimal mb-3">Analisa Sub Komite Keselamatan Pasien</h6>
                 <div className="mb-3">
                   <label className="label-minimal mb-1">Tanggal Analisa</label>
@@ -1333,7 +1333,7 @@ export default function InvestigasiForm() {
                 {selectedRow && selectedRow.verifikasi !== 1 && (
                   <button
                     type="submit"
-                    className="btn btn-dark py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                    className="btn btn-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
                     style={{ minHeight: '44px' }}
                   >
                     <i className="fas fa-save"></i> <span>Simpan Investigasi</span>
@@ -1341,7 +1341,7 @@ export default function InvestigasiForm() {
                 )}
                 <button
                   type="button"
-                  className="btn btn-light border py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2"
+                  className="btn btn-light border py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2"
                   onClick={() => window.print()}
                   style={{ minHeight: '44px' }}
                 >
@@ -1350,7 +1350,7 @@ export default function InvestigasiForm() {
               </div>
 
               {/* Tanda Tangan Cetak (Hanya tampil saat Print) */}
-              <div className="d-none d-print-block mt-5 pt-4">
+              <div className="d-none d-print-block mt-4 pt-3">
                 <div className="row text-center">
                   <div className="col-4">
                     <p className="mb-2 small">Kepala Ruangan,</p>

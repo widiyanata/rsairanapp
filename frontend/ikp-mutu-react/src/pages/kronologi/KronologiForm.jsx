@@ -166,10 +166,10 @@ export default function KronologiForm() {
   }, [id]);
 
   return (
-    <div className="kronologi-detail-wrapper pb-5">
+    <div className="kronologi-detail-wrapper pb-4">
       <div className="kronologi-detail-page animate-fade-in">
         {/* Header */}
-        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4 no-print">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-3 no-print">
           <div className="d-flex align-items-center gap-3">
             <Link
               to="/kronologi"
@@ -211,11 +211,11 @@ export default function KronologiForm() {
           </div>
         </div>
 
-        <div className="row g-4 g-lg-5">
+        <div className="row g-3 g-lg-4">
           {/* Form Body */}
           <div className="col-12 col-lg-8">
             {/* Patient Selection */}
-            <div className="card-minimal mb-4 shadow-sm">
+            <div className="card-minimal mb-3 shadow-sm">
               <h6 className="label-minimal mb-2">Pilih Pasien *</h6>
               {!pasien.KPKD_PASIEN ? (
                 <div>
@@ -304,8 +304,8 @@ export default function KronologiForm() {
             </div>
 
             {/* Kejadian Entries */}
-            <div className="form-section mb-5">
-              <h6 className="label-minimal mb-4">Informasi Kejadian</h6>
+            <div className="form-section mb-4">
+              <h6 className="label-minimal mb-3">Informasi Kejadian</h6>
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <span className="small text-muted">Uraian Detil Kejadian (Siabidibame)</span>
                 {!isKirim && (
@@ -320,9 +320,9 @@ export default function KronologiForm() {
 
               <div className="timeline-minimal">
                 {kejadianEntries.map((entry, idx) => (
-                  <div key={idx} className="timeline-item mb-4 animate-fade-in">
-                    <div className="timeline-content p-4 bg-light bg-opacity-50 border rounded-3 position-relative">
-                      <div className="row g-4">
+                  <div key={idx} className="timeline-item mb-3 animate-fade-in">
+                    <div className="timeline-content p-3 bg-light bg-opacity-50 border rounded-3 position-relative">
+                      <div className="row g-3">
                         <div className="col-md-5">
                           <label className="label-minimal mb-2">Tanggal & Jam</label>
                           <input
@@ -362,9 +362,9 @@ export default function KronologiForm() {
             </div>
 
             {/* Signature */}
-            <div className="signature-minimal pt-5 border-top">
-              <h6 className="label-minimal mb-4">Konfirmasi & Tanda Tangan</h6>
-              <div className="bg-light bg-opacity-50 p-4 border rounded-3 d-inline-block shadow-sm">
+            <div className="signature-minimal pt-4 border-top">
+              <h6 className="label-minimal mb-3">Konfirmasi & Tanda Tangan</h6>
+              <div className="bg-light bg-opacity-50 p-3 border rounded-3 d-inline-block shadow-sm">
                 <SignatureCanvas
                   base64={tandaTangan}
                   onSave={simpanTandaTangan}
@@ -381,7 +381,7 @@ export default function KronologiForm() {
           <div className="col-lg-4">
             <div className="sticky-top" style={{ top: '100px' }}>
               {/* Report Info */}
-              <div className="card-minimal mb-4 shadow-sm bg-light bg-opacity-25" style={{ borderStyle: 'dashed' }}>
+              <div className="card-minimal mb-3 shadow-sm bg-light bg-opacity-25" style={{ borderStyle: 'dashed' }}>
                 <h6 className="label-minimal mb-3">Laporan Oleh</h6>
                 <div className="d-flex align-items-center gap-3">
                   <div
@@ -398,7 +398,7 @@ export default function KronologiForm() {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-top">
+                <div className="mt-3 pt-3 border-top">
                   <label className="label-minimal mb-2">Kirim ke Atasan (Karu)</label>
                   <select
                     value={kirimke}
@@ -464,7 +464,7 @@ export default function KronologiForm() {
 
       {/* Print Template */}
       <div className="print-container d-none">
-        <div className="print-header d-flex align-items-center justify-content-between pb-3 border-bottom border-3 border-dark mb-4">
+        <div className="print-header d-flex align-items-center justify-content-between pb-3 border-bottom border-3 border-dark mb-3">
           <div className="d-flex align-items-center gap-3">
             <img src="/logo-airan-transparant.png" alt="Logo" style={{ height: '60px' }} />
             <div>
@@ -483,12 +483,12 @@ export default function KronologiForm() {
           </div>
         </div>
 
-        <div className="text-center mb-4">
+        <div className="text-center mb-3">
           <h4 className="fw-bold text-decoration-underline">LAPORAN KRONOLOGI INSIDEN</h4>
           <div className="small">No. Transaksi: {pasien.KPNO_TRANSAKSI || '-'}</div>
         </div>
 
-        <div className="print-section mb-4">
+        <div className="print-section mb-3">
           <h6 className="fw-bold border-bottom pb-1 mb-3">DATA PASIEN</h6>
           <table className="table table-sm table-bordered border-dark">
             <tbody>
@@ -508,7 +508,7 @@ export default function KronologiForm() {
           </table>
         </div>
 
-        <div className="print-section mb-4">
+        <div className="print-section mb-3">
           <h6 className="fw-bold border-bottom pb-1 mb-3">URAIAN KRONOLOGI</h6>
           <table className="table table-bordered border-dark">
             <thead className="bg-light">
@@ -534,10 +534,10 @@ export default function KronologiForm() {
           </table>
         </div>
 
-        <div className="print-signatures mt-5 pt-4">
+        <div className="print-signatures mt-4 pt-3">
           <div className="row text-center">
             <div className="col-6">
-              <div className="mb-5">Mengetahui,</div>
+              <div className="mb-4">Mengetahui,</div>
               <div className="signature-space mb-2">
                 {isKirim ? (
                   <div className="text-muted small fst-italic">

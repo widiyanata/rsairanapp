@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
   return (
     <>
       <aside className={`sidebar ${isOpen ? 'active' : ''}`}>
-        <div className="sidebar-header py-4 px-4 d-flex align-items-center justify-content-between border-bottom border-light">
+        <div className="sidebar-header py-3 px-3 d-flex align-items-center justify-content-between border-bottom border-light">
           <div className="d-flex align-items-center gap-2">
             <div className="logo-circle"></div>
             <div>
@@ -38,9 +38,9 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
           )}
         </div>
 
-        <nav className="sidebar-nav px-3 py-3 flex-grow-1 overflow-y-auto">
+        <nav className="sidebar-nav px-2 py-3 flex-grow-1 overflow-y-auto">
           <div className="nav-label mb-2 px-3">Menu Utama</div>
-          <ul className="list-unstyled d-flex flex-column gap-2 mb-3">
+          <ul className="list-unstyled d-flex flex-column gap-1 mb-3">
             {visibleMenuItems.map((item) => (
               <li key={item.path}>
                 <NavLink
@@ -59,7 +59,7 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
           </ul>
 
           <div className="nav-label mb-2 px-3">Pengaturan Akun</div>
-          <ul className="list-unstyled d-flex flex-column gap-2">
+          <ul className="list-unstyled d-flex flex-column gap-1">
             <li>
               <NavLink
                 to="/profile"
@@ -72,10 +72,22 @@ export default function Sidebar({ isOpen, onClose, isMobile }) {
                 <span>Profil Saya</span>
               </NavLink>
             </li>
+            <li>
+              <a
+                href="/manual/index.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link-minimal"
+                onClick={isMobile ? onClose : undefined}
+              >
+                <i className="fas fa-book nav-icon"></i>
+                <span>User Manual</span>
+              </a>
+            </li>
           </ul>
         </nav>
 
-        <div className="sidebar-footer p-3 p-md-4 border-top">
+        <div className="sidebar-footer p-3 border-top">
           <div className="user-minimal d-flex align-items-center gap-2">
             <NavLink
               to="/profile"

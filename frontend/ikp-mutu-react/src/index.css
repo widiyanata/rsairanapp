@@ -10,6 +10,7 @@
   --border: #e5e7eb;
   --text-main: #111827;
   --text-muted: #6b7280;
+  --sidebar-w: 224px;
 
   /* Status Colors */
   --success: #10b981;
@@ -19,8 +20,8 @@
 
   /* UI Tokens */
   --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,6 +48,19 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+
+/* ponytail: denser desktop by shrinking rem base; Bootstrap + custom rem values follow */
+@media (min-width: 992px) {
+  html { font-size: 14px; }
+}
+
+/* Bootstrap shape overrides */
+.btn { font-weight: 500; border-radius: var(--radius-sm); }
+.form-control, .form-select { border-color: var(--border); border-radius: var(--radius-sm); }
+.form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1); }
+.form-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.3rem; }
+.shadow-sm { box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06) !important; }
+.badge { font-weight: 600; letter-spacing: 0.02em; }
 
 /* Layout Utilities */
 .min-h-screen { min-height: 100vh; }
@@ -76,7 +90,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar {
-  width: 260px;
+  width: var(--sidebar-w);
   height: 100vh;
   background: #fcfcfc;
   border-right: 1px solid var(--border);
@@ -90,12 +104,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-collapsed .sidebar {
-  transform: translateX(-260px);
+  transform: translateX(calc(-1 * var(--sidebar-w)));
 }
 
 .main-wrapper {
   flex: 1;
-  margin-left: 260px;
+  margin-left: var(--sidebar-w);
   min-height: 100vh;
   min-width: 0;
   max-width: 100%;
@@ -115,11 +129,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .logo-circle {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   background: var(--primary);
   border-radius: 50%;
 }
+
+.sidebar h5 { font-size: 1rem; }
 
 .nav-label {
   font-size: 0.65rem;
@@ -132,8 +148,8 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link-minimal {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.875rem;
@@ -142,7 +158,7 @@ h1, h2, h3, h4, h5, h6 {
   transition: var(--transition);
 }
 
-.nav-link-minimal i { width: 1.25rem; font-size: 1rem; }
+.nav-link-minimal i { width: 1.1rem; font-size: 0.9rem; text-align: center; }
 .nav-link-minimal:hover {
   background: var(--surface);
   color: var(--text-main);
@@ -188,12 +204,8 @@ h1, h2, h3, h4, h5, h6 {
   background: white;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 1.5rem;
-  transition: var(--transition);
-}
-
-.card-minimal:hover {
-  border-color: var(--accent);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 /* ========================= */
@@ -202,8 +214,8 @@ h1, h2, h3, h4, h5, h6 {
 .btn-minimal {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: var(--radius-sm);
@@ -238,7 +250,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Form Elements             */
 /* ========================= */
 .form-group-minimal {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
 }
 
 .label-minimal {
@@ -246,14 +258,14 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: var(--text-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .input-minimal {
   width: 100%;
-  padding: 0.625rem 0.875rem;
+  padding: 0.45rem 0.7rem;
   font-size: 0.875rem;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -303,17 +315,19 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 600;
   text-transform: uppercase;
   color: var(--text-muted);
-  padding: 1rem;
+  padding: 0.55rem 0.75rem;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .table-minimal td {
-  padding: 1rem;
+  padding: 0.55rem 0.75rem;
   border-bottom: 1px solid var(--border);
   font-size: 0.875rem;
 }
 
 .table-minimal tr:last-child td { border-bottom: none; }
+.table-minimal tbody tr:hover td { background: var(--surface); }
 
 /* ========================= */
 /* Risk Matrix               */
@@ -343,8 +357,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .icon-box-minimal {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   background: var(--surface);
   border-radius: var(--radius-sm);
   color: var(--primary);
@@ -574,4 +588,27 @@ h1, h2, h3, h4, h5, h6 {
   .table-bordered th, .table-bordered td { border: 1px solid #000 !important; }
   .bg-light { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
   .no-print { display: none !important; }
+}
+
+/* ========================= */
+/* Compact forms (desktop)   */
+/* ========================= */
+@media (min-width: 992px) {
+  .form-check { min-height: 1.6rem; margin-bottom: 0.25rem; }
+  .form-check-input { width: 1rem; height: 1rem; }
+  .form-check-label { font-size: 0.875rem; }
+  .form-control, .form-select { padding: 0.35rem 0.65rem; font-size: 0.875rem; }
+  textarea.form-control, textarea.input-minimal { line-height: 1.45; }
+}
+
+/* ========================= */
+/* Compact buttons (desktop) */
+/* ========================= */
+@media (min-width: 992px) {
+  .btn { padding: 0.4rem 0.85rem; font-size: 0.875rem; line-height: 1.35; }
+  .btn-sm, .btn-group-sm > .btn { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+  .btn.rounded-3, .btn-minimal.rounded-3 { border-radius: var(--radius-sm) !important; }
+  .btn.py-2, .btn-minimal.py-2 { padding-top: 0.4rem !important; padding-bottom: 0.4rem !important; }
+  /* ponytail: overrides inline minHeight (44/38px) meant as mobile touch targets */
+  .btn[style*="min-height"], .btn-minimal[style*="min-height"] { min-height: 0 !important; }
 }

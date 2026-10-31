@@ -36,7 +36,7 @@ export default function AppLayout() {
           isSidebarOpen={isSidebarOpen}
           onToggleSidebar={toggleSidebar}
         />
-        <div className="content-body p-3 p-sm-4 p-lg-5 animate-fade-in">
+        <div className="content-body p-3 p-lg-4 animate-fade-in">
           <Outlet />
         </div>
       </main>

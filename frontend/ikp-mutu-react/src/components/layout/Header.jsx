@@ -29,7 +29,7 @@ export default function Header({ isSidebarOpen, onToggleSidebar }) {
   });
 
   return (
-    <header className="header-minimal border-bottom px-3 px-md-4 py-2 py-md-3 d-flex align-items-center justify-content-between bg-white sticky-top">
+    <header className="header-minimal border-bottom px-3 px-md-4 py-2 d-flex align-items-center justify-content-between bg-white sticky-top">
       <div className="d-flex align-items-center gap-2 gap-md-3">
         {isSubpage ? (
           <button

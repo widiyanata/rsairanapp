@@ -397,10 +397,10 @@ export default function GradingForm() {
   ];
 
   return (
-    <div className="grading-page pb-4">
+    <div className="grading-page pb-3">
       <div className="container-fluid p-0">
         {/* Page Header */}
-        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4 no-print">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3 no-print">
           <div>
             <div className="d-flex align-items-center gap-2 mb-1">
               <span className={`badge text-uppercase border ${
@@ -425,7 +425,7 @@ export default function GradingForm() {
 
         {/* List View */}
         {!selectedRow && (
-          <div className="card-minimal p-0 overflow-hidden shadow-sm no-print mb-4">
+          <div className="card-minimal p-0 overflow-hidden shadow-sm no-print mb-3">
             <div className="p-3 border-bottom bg-light bg-opacity-50 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
               <div>
                 <h3 className="h6 mb-0 text-uppercase fw-bold ls-1">
@@ -485,7 +485,7 @@ export default function GradingForm() {
             {/* Mobile Cards (d-md-none) */}
             <div className="d-md-none p-2 bg-light bg-opacity-25">
               {loading ? (
-                <div className="text-center py-5 text-muted">
+                <div className="text-center py-4 text-muted">
                   <i className="fas fa-spinner fa-spin h3 mb-2"></i>
                   <p className="small mb-0">Memuat data...</p>
                 </div>
@@ -539,7 +539,7 @@ export default function GradingForm() {
                   })}
                 </div>
               ) : (
-                <div className="text-center py-5 text-muted">
+                <div className="text-center py-4 text-muted">
                   <i className="fas fa-clipboard-check h2 opacity-50 mb-2"></i>
                   <p className="small mb-0">Tidak ada laporan dengan filter ini</p>
                 </div>
@@ -627,7 +627,7 @@ export default function GradingForm() {
                   })}
                   {filteredList.length === 0 && !loading && (
                     <tr>
-                      <td colSpan="8" className="text-center py-5 text-muted">
+                      <td colSpan="8" className="text-center py-4 text-muted">
                         <i className="fas fa-inbox h3 opacity-50 mb-2"></i>
                         <p className="small mb-0">Tidak ada laporan ditemukan</p>
                       </td>
@@ -641,7 +641,7 @@ export default function GradingForm() {
 
         {/* Detail View */}
         {selectedRow && (
-          <div className="row g-4">
+          <div className="row g-3">
             <div className="col-12 no-print">
               <div className="p-3 bg-white border rounded-3 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3">
                 <div className="d-flex align-items-center gap-3">
@@ -736,7 +736,7 @@ export default function GradingForm() {
             <div className="col-12 col-md-8">
               {detailPasien.KPNO_TRANSAKSI && (
                 <div>
-                  <div className="kop-surat mb-4 print w-100">
+                  <div className="kop-surat mb-3 print w-100">
                     <img src="/kop_surat.jpg" alt="" className="w-100" />
                   </div>
 
@@ -773,9 +773,9 @@ export default function GradingForm() {
                     </div>
 
                     {/* Tab Content */}
-                    <div className="tab-content mb-4">
+                    <div className="tab-content mb-3">
                       {/* Tab 1: Data Pasien */}
-                      <div className={`tab-pane p-3 bg-white shadow mb-4 ${activeTab === 'data-pasien' ? 'active show' : 'd-none'}`}>
+                      <div className={`tab-pane p-3 bg-white shadow mb-3 ${activeTab === 'data-pasien' ? 'active show' : 'd-none'}`}>
                         <h5>I. DATA PASIEN</h5>
                         <div className="mb-2">
                           <label className="form-label fw-bold">Nama</label>
@@ -984,7 +984,7 @@ export default function GradingForm() {
                       {/* Tab 3: Tanda Tangan & Verifikasi Kasie */}
                       <div className={`tab-pane p-3 bg-white shadow ${activeTab === 'tanda-tangan' ? 'active show' : 'd-none'}`}>
                         {statusVerifikasi === 'TERVERIFIKASI' ? (
-                          <div className="alert alert-success d-flex align-items-center gap-3 mb-4">
+                          <div className="alert alert-success d-flex align-items-center gap-3 mb-3">
                             <i className="fas fa-check-circle fs-3 text-success"></i>
                             <div>
                               <div className="fw-bold">Laporan Grading Telah Terverifikasi</div>
@@ -995,7 +995,7 @@ export default function GradingForm() {
                             </div>
                           </div>
                         ) : (
-                          <div className="alert alert-warning d-flex align-items-center gap-3 mb-4">
+                          <div className="alert alert-warning d-flex align-items-center gap-3 mb-3">
                             <i className="fas fa-clock fs-3 text-warning"></i>
                             <div>
                               <div className="fw-bold">Menunggu Verifikasi & Pengesahan Kasie</div>
@@ -1006,7 +1006,7 @@ export default function GradingForm() {
                           </div>
                         )}
 
-                        <div className="row g-4">
+                        <div className="row g-3">
                           {/* Pembuat Laporan (Karu) */}
                           <div className="col-md-6 border-end-md">
                             <div className="p-3 bg-light rounded-3 h-100">
@@ -1044,7 +1044,7 @@ export default function GradingForm() {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="bg-white border rounded-3 p-4 text-center text-muted">
+                                    <div className="bg-white border rounded-3 p-3 text-center text-muted">
                                       <i className="fas fa-exclamation-triangle text-warning h3 mb-2 d-block"></i>
                                       <span className="small">Karu belum menandatangani laporan ini</span>
                                     </div>
@@ -1145,7 +1145,7 @@ export default function GradingForm() {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="bg-white border rounded-3 p-4 text-center text-muted">
+                                    <div className="bg-white border rounded-3 p-3 text-center text-muted">
                                       <i className="fas fa-clock text-secondary h3 mb-2 d-block"></i>
                                       <span className="small">Menunggu tanda tangan verifikasi dari Kepala Seksi (Kasie)</span>
                                     </div>
@@ -1170,7 +1170,7 @@ export default function GradingForm() {
                         </div>
 
                         {/* Printable Signatures Footer (Only visible when printing) */}
-                        <div className="d-none d-print-block mt-5 pt-3 border-top">
+                        <div className="d-none d-print-block mt-4 pt-3 border-top">
                           <div className="row text-center">
                             <div className="col-6">
                               <p className="mb-2 fw-semibold">Pembuat Laporan (Kepala Ruangan):</p>
@@ -1207,7 +1207,7 @@ export default function GradingForm() {
                     </div>
 
                     {/* Actions */}
-                    <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-5 p-3 no-print border-top bg-light rounded-3">
+                    <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-4 p-3 no-print border-top bg-light rounded-3">
                       <button
                         type="button"
                         className="btn btn-outline-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2"
@@ -1220,7 +1220,7 @@ export default function GradingForm() {
                       {user?.role === 'kasie' ? (
                         <button
                           type="submit"
-                          className="btn btn-success py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm text-white fw-bold"
+                          className="btn btn-success py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm text-white fw-bold"
                           style={{ minHeight: '44px' }}
                         >
                           <i className="fas fa-clipboard-check"></i>
@@ -1229,7 +1229,7 @@ export default function GradingForm() {
                       ) : user?.role === 'karu' ? (
                         <button
                           type="submit"
-                          className="btn btn-dark py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                          className="btn btn-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
                           style={{ minHeight: '44px' }}
                         >
                           <i className="fas fa-paper-plane"></i> <span>Simpan & Teruskan ke Kasie</span>
@@ -1237,7 +1237,7 @@ export default function GradingForm() {
                       ) : (
                         <button
                           type="submit"
-                          className="btn btn-dark py-2 px-4 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
+                          className="btn btn-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
                           style={{ minHeight: '44px' }}
                         >
                           <i className="fas fa-save"></i> <span>Simpan Data Grading</span>
