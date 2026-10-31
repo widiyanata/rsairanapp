@@ -145,6 +145,10 @@ def kronologi(request):
       query = "SELECT * FROM mutu_kronologi_kejadian WHERE JSON_VALUE(dibuat_oleh, '$.id') = %s ORDER BY id_kronologi DESC"
       params = [dibuat_oleh]
 
+    elif no_transaksi:
+      query = "SELECT * FROM mutu_kronologi_kejadian WHERE no_transaksi = %s ORDER BY id_kronologi DESC"
+      params = [no_transaksi]
+
     print('query kronologi:', query, 'params:', params)
     with connection.cursor() as cursor:
       cursor.execute(query, params)

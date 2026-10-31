@@ -62,9 +62,11 @@ export default function KronologiForm() {
   const getKronologiDetail = async (noTransaksi) => {
     setLoading(true);
     try {
-      const { data } = await api.get(
-        `/kronologi?no_transaksi=${noTransaksi}&dibuat_oleh=${JSON.stringify(user)}`
-      );
+      // mutu/admin melihat kronologi milik siapa pun, sama seperti di list
+      const filterPembuat = user?.role !== 'mutu' && user?.role !== 'admin'
+        ? `&dibuat_oleh=${JSON.stringify(user)}`
+        : '';
+      const { data } = await api.get(`/kronologi?no_transaksi=${noTransaksi}${filterPembuat}`);
       if (data.data && data.data.length > 0) {
         const item = data.data[0];
         setKejadianEntries(JSON.parse(item.Uraian));
