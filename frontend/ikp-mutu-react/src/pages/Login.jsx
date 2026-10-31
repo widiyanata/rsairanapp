@@ -193,7 +193,6 @@ export default function Login() {
                         type="text"
                         value={karyawan.unit}
                         className="input-minimal"
-                        readOnly
                       />
                     </div>
                     <button
