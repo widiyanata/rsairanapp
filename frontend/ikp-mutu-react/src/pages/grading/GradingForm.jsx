@@ -205,7 +205,10 @@ export default function GradingForm() {
   const getDetailPasien = async (noTransaksi) => {
     showLoading();
     try {
-      const { data } = await api.get(`/kunjunganPasien?cari=${noTransaksi}`);
+      let { data } = await api.get(`/kunjunganPasien?cari=${noTransaksi}`);
+      if (!data.data?.length) {
+        ({ data } = await api.get(`/kunjunganPasien?cari=${noTransaksi}&jenis=ranap`));
+      }
       setDetailPasien(data.data?.[0] || {});
       await getRiwayatGrading(noTransaksi);
     } catch (err) {
