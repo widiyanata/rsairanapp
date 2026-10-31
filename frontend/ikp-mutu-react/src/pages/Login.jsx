@@ -17,7 +17,7 @@ export default function Login() {
   const [userPerawat, setUserPerawat] = useState([]);
 
   // For karyawan lainnya
-  const [karyawan, setKaryawan] = useState({ id: '', username: '', email: '', role: '' });
+  const [karyawan, setKaryawan] = useState({ id: '', username: '', email: '', unit: '' });
   const [listKaryawan, setListKaryawan] = useState([]);
   const [isKaryawan, setIsKaryawan] = useState(false);
 
@@ -73,7 +73,7 @@ export default function Login() {
   };
 
   const pilihKaryawan = (data) => {
-    setKaryawan({ id: data.nik, username: data.nama, role: data.unit, email: '' });
+    setKaryawan({ id: data.nik, username: data.nama, unit: data.unit, email: '' });
     setIsKaryawan(true);
     setListKaryawan([]);
   };
@@ -81,7 +81,7 @@ export default function Login() {
   const loginLainya = (e) => {
     e.preventDefault();
     if (karyawan.username && karyawan.email) {
-      login({ ...karyawan });
+      login({ ...karyawan, role: 'lainya' });
       navigate('/');
     } else {
       setError('Lengkapi data login');
@@ -191,7 +191,7 @@ export default function Login() {
                       <label className="label-minimal">Unit Kerja</label>
                       <input
                         type="text"
-                        value={karyawan.role}
+                        value={karyawan.unit}
                         className="input-minimal"
                         readOnly
                       />
