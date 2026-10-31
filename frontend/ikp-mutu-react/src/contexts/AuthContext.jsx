@@ -47,6 +47,21 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  // Satu sesi per browser: tab yang login/dibuka terakhir mengklaim sesi,
+  // tab lain menerima event 'storage' lalu logout.
+  const loggedIn = !!user;
+  useEffect(() => {
+    if (!loggedIn) return;
+    localStorage.setItem('session_claim', `${Date.now()}-${Math.random()}`);
+    const onStorage = (e) => {
+      if (e.key !== 'session_claim') return;
+      logout();
+      alert('Sesi ini ditutup karena aplikasi dibuka di tab/jendela lain.');
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, [loggedIn, logout]);
+
   const updateUser = useCallback((newUserData) => {
     setUser((prev) => {
       const updated = { ...prev, ...newUserData };
