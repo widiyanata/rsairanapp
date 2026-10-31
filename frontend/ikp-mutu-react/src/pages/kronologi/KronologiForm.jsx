@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../config/api';
 import SignatureCanvas from '../../components/ui/SignatureCanvas';
@@ -165,127 +165,107 @@ export default function KronologiForm() {
     if (isEdit) getKronologiDetail(id);
   }, [id]);
 
+  const terisi = kejadianEntries.filter((e) => e.Uraian?.trim()).length;
+  const checklist = [
+    { label: 'Pasien', ok: !!pasien.KPKD_PASIEN },
+    { label: `Kronologi (${terisi} baris)`, ok: terisi > 0 },
+    { label: 'Tanda tangan', ok: !!tandaTangan },
+    { label: 'Karu tujuan', ok: !!kirimke },
+  ];
+  const bisaKirim = checklist.every((c) => c.ok) && !loading;
+
   return (
     <div className="kronologi-detail-wrapper pb-4">
-      <div className="kronologi-detail-page animate-fade-in">
+      <div className="kronologi-detail-page animate-fade-in no-print">
         {/* Header */}
-        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-3 no-print">
-          <div className="d-flex align-items-center gap-3">
-            <Link
-              to="/kronologi"
-              className="btn-minimal btn-minimal-outline p-2 border rounded-circle flex-center"
-              style={{ width: '38px', height: '38px' }}
-              title="Kembali ke Daftar"
-            >
-              <i className="fas fa-chevron-left"></i>
-            </Link>
-            <div>
-              <h1 className="h4 fw-bold mb-0">
-                {isEdit ? 'Edit Laporan' : 'Pelaporan Baru'}
-              </h1>
-              {pasien.KPKD_PASIEN && (
-                <div className="text-muted small mt-1">
-                  Pasien: <strong className="text-dark">{pasien.KPKD_PASIENN}</strong>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="d-flex align-items-center justify-content-between gap-2 mb-3">
           <div className="d-flex align-items-center gap-2">
-            <button
-              onClick={() => window.print()}
-              className="btn-minimal btn-minimal-outline py-2 px-3 flex-fill justify-content-center"
-            >
-              <i className="fas fa-print"></i>
-              <span>Cetak</span>
-            </button>
-            {pasien.KPKD_PASIEN && !isKirim && (
-              <button
-                className="btn-minimal btn-minimal-primary py-2 px-3 flex-fill justify-content-center"
-                onClick={simpanKronologi}
-                disabled={loading}
-              >
-                <i className="fas fa-save"></i>
-                <span>{isEdit ? 'Perbarui' : 'Simpan Draf'}</span>
-              </button>
-            )}
+            <h1 className="h5 fw-bold mb-0">{isEdit ? 'Edit Laporan' : 'Pelaporan Baru'}</h1>
+            <span className={`badge ${isKirim ? 'bg-success' : 'bg-secondary-subtle text-secondary'}`}>
+              {isKirim ? 'Terkirim' : 'Draf'}
+            </span>
           </div>
+          <button onClick={() => window.print()} className="btn btn-sm btn-outline-dark">
+            <i className="fas fa-print me-1"></i>Cetak
+          </button>
         </div>
 
-        <div className="row g-3 g-lg-4">
+        <div className="row g-3">
           {/* Form Body */}
-          <div className="col-12 col-lg-8">
-            {/* Patient Selection */}
-            <div className="card-minimal mb-3 shadow-sm">
-              <h6 className="label-minimal mb-2">Pilih Pasien *</h6>
-              {!pasien.KPKD_PASIEN ? (
-                <div>
-                  <div className="btn-group btn-group-sm mb-2" role="group">
-                    <button
-                      type="button"
-                      className={`btn ${jenisPasien === 'rajal' ? 'btn-dark' : 'btn-outline-dark'}`}
-                      onClick={() => { setJenisPasien('rajal'); setPasiens(null); }}
-                    >
-                      Rawat Jalan
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn ${jenisPasien === 'ranap' ? 'btn-dark' : 'btn-outline-dark'}`}
-                      onClick={() => { setJenisPasien('ranap'); setPasiens(null); }}
-                    >
-                      Rawat Inap
-                    </button>
+          <div className="col-12 col-lg-8 d-flex flex-column gap-3">
+            {/* 1. Pasien */}
+            <div className="card-minimal">
+              <div className="d-flex align-items-center justify-content-between gap-2 mb-2">
+                <h6 className="label-minimal mb-0">① Pasien *</h6>
+                {!pasien.KPKD_PASIEN && (
+                  <div className="btn-group btn-group-sm" role="group">
+                    {[['rajal', 'Rawat Jalan'], ['ranap', 'Rawat Inap']].map(([val, label]) => (
+                      <button
+                        key={val}
+                        type="button"
+                        className={`btn ${jenisPasien === val ? 'btn-dark' : 'btn-outline-dark'}`}
+                        onClick={() => { setJenisPasien(val); setPasiens(null); }}
+                      >
+                        {label}
+                      </button>
+                    ))}
                   </div>
-                  <div className="input-group-minimal border rounded-3 d-flex align-items-center gap-2 px-3 py-1 bg-light">
-                    <i className="fas fa-search text-muted small"></i>
+                )}
+              </div>
+
+              {!pasien.KPKD_PASIEN ? (
+                <>
+                  <div className="input-group input-group-sm">
+                    <span className="input-group-text bg-white"><i className="fas fa-search text-muted"></i></span>
                     <input
                       type="text"
                       value={cari}
                       onChange={(e) => setCari(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && cariPasien()}
-                      className="bg-transparent border-0 small w-100 py-2"
-                      placeholder="Ketik Min. 3 Huruf RM / Nama lalu Enter..."
-                      style={{ outline: 'none', fontSize: '15px' }}
+                      className="form-control"
+                      placeholder="Min. 3 huruf No. RM / nama, lalu Enter"
                     />
                     <button
                       type="button"
                       onClick={cariPasien}
-                      className="btn btn-dark btn-sm px-3 rounded-2"
+                      className="btn btn-dark"
                       disabled={loading || cari.length < 3}
                     >
                       Cari
                     </button>
                   </div>
                   {pasiens && (
-                    <div className="search-results border rounded-3 mt-2 overflow-hidden animate-fade-in shadow-lg bg-white" style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                    <div className="border rounded-2 mt-2 bg-white" style={{ maxHeight: '250px', overflowY: 'auto' }}>
+                      {pasiens.length === 0 && (
+                        <div className="small text-muted text-center py-3">Tidak ada hasil</div>
+                      )}
                       {pasiens.map((p, idx) => (
                         <div
                           key={idx}
                           onClick={() => pilihPasien(p)}
-                          className="p-3 border-bottom hover-bg cursor-pointer bg-white d-flex align-items-center justify-content-between"
+                          className="px-3 py-2 border-bottom hover-bg cursor-pointer d-flex align-items-center justify-content-between gap-2"
                         >
-                          <div>
-                            <div className="fw-bold text-dark">{p.KPKD_PASIENN}</div>
-                            <div className="text-muted small mt-1">
-                              <span className="badge bg-light text-dark border me-2">RM: {p.KPKD_PASIEN}</span>
-                              <span className="badge bg-secondary-subtle text-secondary me-2">{p.KPNO_TRANSAKSI}</span>
-                              {p.KPTGL_PERIKSA && (
-                                <span className="me-2">{new Date(p.KPTGL_PERIKSA).toLocaleDateString('id-ID')}</span>
-                              )}
-                              {p.UNIT && <span>{p.UNIT}</span>}
+                          <div className="overflow-hidden">
+                            <div className="fw-semibold small text-truncate">{p.KPKD_PASIENN}</div>
+                            <div className="text-muted" style={{ fontSize: '11px' }}>
+                              RM {p.KPKD_PASIEN} · {p.KPNO_TRANSAKSI}
+                              {p.KPTGL_PERIKSA && ` · ${new Date(p.KPTGL_PERIKSA).toLocaleDateString('id-ID')}`}
+                              {p.UNIT && ` · ${p.UNIT}`}
                             </div>
                           </div>
-                          <i className="fas fa-check-circle text-primary opacity-50"></i>
+                          <i className="fas fa-chevron-right text-muted small"></i>
                         </div>
                       ))}
                     </div>
                   )}
-                </div>
+                </>
               ) : (
-                <div className="p-3 bg-light border-start border-3 border-primary rounded-1 d-flex align-items-center justify-content-between">
-                  <div>
-                    <div className="fw-bold small">{pasien.KPKD_PASIENN}</div>
-                    <div className="text-muted" style={{ fontSize: '10px' }}>
-                      RM: {pasien.KPKD_PASIEN}
+                <div className="d-flex align-items-center justify-content-between gap-2 px-3 py-2 bg-light border rounded-2">
+                  <div className="overflow-hidden">
+                    <div className="fw-semibold small text-truncate">{pasien.KPKD_PASIENN}</div>
+                    <div className="text-muted" style={{ fontSize: '11px' }}>
+                      RM {pasien.KPKD_PASIEN}
+                      {pasien.KPNO_TRANSAKSI && ` · ${pasien.KPNO_TRANSAKSI}`}
                     </div>
                   </div>
                   {!isKirim && (
@@ -294,137 +274,132 @@ export default function KronologiForm() {
                         setPasien({ KPKD_PASIEN: '', KPKD_PASIENN: '' });
                         setPasiens(null);
                       }}
-                      className="btn btn-sm text-muted p-0"
+                      className="btn btn-sm btn-outline-secondary"
                     >
-                      <i className="fas fa-times"></i>
+                      Ganti
                     </button>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Kejadian Entries */}
-            <div className="form-section mb-4">
-              <h6 className="label-minimal mb-3">Informasi Kejadian</h6>
-              <div className="d-flex align-items-center justify-content-between mb-3">
-                <span className="small text-muted">Uraian Detil Kejadian (Siabidibame)</span>
-                {!isKirim && (
-                  <button
-                    className="btn btn-sm btn-link text-primary p-0 text-decoration-none fw-bold small"
-                    onClick={tambahRow}
-                  >
-                    + Tambah Baris
-                  </button>
-                )}
-              </div>
+            {/* 2. Kronologi */}
+            <div className="card-minimal">
+              <h6 className="label-minimal mb-1">② Kronologi Kejadian *</h6>
+              <div className="small text-muted mb-2">Uraian detail kejadian (Siabidibame), urut berdasarkan waktu</div>
 
-              <div className="timeline-minimal">
-                {kejadianEntries.map((entry, idx) => (
-                  <div key={idx} className="timeline-item mb-3 animate-fade-in">
-                    <div className="timeline-content p-3 bg-light bg-opacity-50 border rounded-3 position-relative">
-                      <div className="row g-3">
-                        <div className="col-md-5">
-                          <label className="label-minimal mb-2">Tanggal & Jam</label>
-                          <input
-                            type="datetime-local"
-                            value={entry.Tanggal || ''}
-                            onChange={(e) => updateEntry(idx, 'Tanggal', e.target.value)}
-                            className="input-minimal border-0 shadow-sm"
-                            disabled={isKirim}
-                          />
-                        </div>
-                        <div className="col-md-7">
-                          <div className="d-flex justify-content-between">
-                            <label className="label-minimal mb-2">Uraian Singkat</label>
-                            {!isKirim && kejadianEntries.length > 1 && (
-                              <button
-                                onClick={() => hapusRow(idx)}
-                                className="btn btn-sm text-danger p-0 opacity-50"
-                              >
-                                <i className="fas fa-trash-alt"></i>
-                              </button>
-                            )}
-                          </div>
-                          <textarea
-                            value={entry.Uraian || ''}
-                            onChange={(e) => updateEntry(idx, 'Uraian', e.target.value)}
-                            rows="2"
-                            className="input-minimal border-0 shadow-sm"
-                            placeholder="Jelaskan kronologi secara singkat..."
-                            disabled={isKirim}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="row g-2 d-none d-md-flex border-bottom pb-1 label-minimal mb-0">
+                <div className="col-auto" style={{ width: '32px' }}>#</div>
+                <div className="col-md-4">Tanggal & Jam</div>
+                <div className="col">Uraian Singkat</div>
+                <div className="col-auto" style={{ width: '40px' }}></div>
               </div>
+              {kejadianEntries.map((entry, idx) => (
+                <div key={idx} className="row g-2 align-items-start py-2 border-bottom">
+                  <div className="col-auto small fw-semibold text-muted pt-1" style={{ width: '32px' }}>{idx + 1}</div>
+                  <div className="col col-md-4">
+                    <input
+                      type="datetime-local"
+                      value={entry.Tanggal || ''}
+                      onChange={(e) => updateEntry(idx, 'Tanggal', e.target.value)}
+                      className="form-control form-control-sm"
+                      disabled={isKirim}
+                    />
+                  </div>
+                  <div className="col-auto order-md-last" style={{ width: '40px' }}>
+                    {!isKirim && kejadianEntries.length > 1 && (
+                      <button
+                        onClick={() => hapusRow(idx)}
+                        className="btn btn-sm text-danger p-1"
+                        title="Hapus baris"
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </button>
+                    )}
+                  </div>
+                  <div className="col-12 col-md">
+                    <textarea
+                      value={entry.Uraian || ''}
+                      onChange={(e) => updateEntry(idx, 'Uraian', e.target.value)}
+                      rows="2"
+                      className="form-control form-control-sm"
+                      placeholder="Jelaskan kejadian secara singkat..."
+                      disabled={isKirim}
+                    />
+                  </div>
+                </div>
+              ))}
+              {!isKirim && (
+                <button className="btn btn-sm btn-outline-dark mt-2" onClick={tambahRow}>
+                  <i className="fas fa-plus me-1"></i>Tambah Baris
+                </button>
+              )}
             </div>
 
-            {/* Signature */}
-            <div className="signature-minimal pt-4 border-top">
-              <h6 className="label-minimal mb-3">Konfirmasi & Tanda Tangan</h6>
-              <div className="bg-light bg-opacity-50 p-3 border rounded-3 d-inline-block shadow-sm">
-                <SignatureCanvas
-                  base64={tandaTangan}
-                  onSave={simpanTandaTangan}
-                  disabled={isKirim}
-                />
-                <p className="text-muted mt-3 mb-0 small text-center">
-                  Bubuhkan tanda tangan pembuat laporan
-                </p>
+            {/* 3. Tanda Tangan */}
+            <div className="card-minimal">
+              <h6 className="label-minimal mb-2">③ Tanda Tangan Pelapor *</h6>
+              <div className="d-inline-block border rounded-2 p-2 bg-light">
+                <SignatureCanvas base64={tandaTangan} onSave={simpanTandaTangan} disabled={isKirim} />
               </div>
+              <div className="small text-muted mt-1">Bubuhkan tanda tangan pembuat laporan</div>
             </div>
           </div>
 
           {/* Right Panel */}
-          <div className="col-lg-4">
-            <div className="sticky-top" style={{ top: '100px' }}>
-              {/* Report Info */}
-              <div className="card-minimal mb-3 shadow-sm bg-light bg-opacity-25" style={{ borderStyle: 'dashed' }}>
-                <h6 className="label-minimal mb-3">Laporan Oleh</h6>
-                <div className="d-flex align-items-center gap-3">
-                  <div
-                    className="avatar-sm bg-dark text-white rounded-circle flex-center"
-                    style={{ width: '32px', height: '32px', fontSize: '12px' }}
-                  >
-                    {namaPembuat.username?.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="fw-bold small">{namaPembuat.username}</div>
-                    <div className="text-muted" style={{ fontSize: '9px' }}>
-                      {namaPembuat.role}
-                    </div>
-                  </div>
+          <div className="col-12 col-lg-4">
+            <div className="card-minimal sticky-lg-top" style={{ top: '72px' }}>
+              <h6 className="label-minimal mb-2">Ringkasan</h6>
+              <div className="d-flex align-items-center gap-2 mb-3">
+                <div
+                  className="bg-dark text-white rounded-circle flex-center fw-bold flex-shrink-0"
+                  style={{ width: '30px', height: '30px', fontSize: '12px' }}
+                >
+                  {namaPembuat.username?.charAt(0).toUpperCase()}
                 </div>
-
-                <div className="mt-3 pt-3 border-top">
-                  <label className="label-minimal mb-2">Kirim ke Atasan (Karu)</label>
-                  <select
-                    value={kirimke}
-                    onChange={(e) => setKirimke(e.target.value)}
-                    className="input-minimal"
-                    disabled={isKirim}
-                  >
-                    <option value="">-- Pilih Karu --</option>
-                    {listKaru.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.nama}
-                      </option>
-                    ))}
-                  </select>
+                <div className="overflow-hidden">
+                  <div className="fw-semibold small text-truncate">{namaPembuat.nama || namaPembuat.username}</div>
+                  <div className="text-muted text-uppercase" style={{ fontSize: '10px' }}>{namaPembuat.role}</div>
                 </div>
               </div>
 
-              {pasien.KPKD_PASIEN && (
-                <button
-                  className="btn-minimal btn-minimal-primary py-3 w-100 justify-content-center border-0 shadow-md"
-                  disabled={isKirim || !kirimke}
-                  onClick={kirimKronologi}
-                >
-                  <i className="fas fa-paper-plane me-2"></i>
-                  <span>{isKirim ? 'Selesai / Terkirim' : 'Kirim Laporan ke Karu'}</span>
-                </button>
+              <ul className="list-unstyled small mb-3 d-flex flex-column gap-1">
+                {checklist.map((c) => (
+                  <li key={c.label} className={`d-flex align-items-center gap-2 ${c.ok ? 'text-dark' : 'text-muted'}`}>
+                    <i className={c.ok ? 'fas fa-check-circle text-success' : 'far fa-circle'}></i>
+                    {c.label}
+                  </li>
+                ))}
+              </ul>
+
+              <label className="label-minimal">Kirim ke Atasan (Karu)</label>
+              <select
+                value={kirimke}
+                onChange={(e) => setKirimke(e.target.value)}
+                className="form-select form-select-sm mb-3"
+                disabled={isKirim}
+              >
+                <option value="">-- Pilih Karu --</option>
+                {listKaru.map((u) => (
+                  <option key={u.id} value={u.id}>{u.nama}</option>
+                ))}
+              </select>
+
+              {isKirim ? (
+                <div className="alert alert-success small py-2 mb-0">
+                  <i className="fas fa-check me-1"></i>Laporan sudah terkirim
+                </div>
+              ) : (
+                pasien.KPKD_PASIEN && (
+                  <div className="d-none d-lg-grid gap-2">
+                    <button className="btn btn-outline-dark" onClick={simpanKronologi} disabled={loading}>
+                      <i className="fas fa-save me-1"></i>{isEdit ? 'Perbarui' : 'Simpan Draf'}
+                    </button>
+                    <button className="btn btn-dark" onClick={kirimKronologi} disabled={!bisaKirim}>
+                      <i className="fas fa-paper-plane me-1"></i>Kirim ke Karu
+                    </button>
+                  </div>
+                )
               )}
             </div>
           </div>
@@ -446,18 +421,16 @@ export default function KronologiForm() {
               <i className="fas fa-save"></i>
               <span>{isEdit ? 'Perbarui' : 'Simpan Draf'}</span>
             </button>
-            {kirimke && (
-              <button
-                type="button"
-                className="btn btn-primary flex-fill py-2 d-flex align-items-center justify-content-center gap-2 rounded-3"
-                onClick={kirimKronologi}
-                disabled={loading}
-                style={{ minHeight: '44px' }}
-              >
-                <i className="fas fa-paper-plane"></i>
-                <span>Kirim</span>
-              </button>
-            )}
+            <button
+              type="button"
+              className="btn btn-dark flex-fill py-2 d-flex align-items-center justify-content-center gap-2 rounded-3"
+              onClick={kirimKronologi}
+              disabled={!bisaKirim}
+              style={{ minHeight: '44px' }}
+            >
+              <i className="fas fa-paper-plane"></i>
+              <span>Kirim</span>
+            </button>
           </div>
         )}
       </div>
