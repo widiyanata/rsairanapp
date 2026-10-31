@@ -130,6 +130,7 @@ def kronologi(request):
     pasien = data.get('pasien', {})
     kejadian = data.get('kejadian', {})
     dibuat_oleh = json.dumps(data.get('dibuat_oleh', {}))
+    dibuat_oleh_id = (data.get('dibuat_oleh') or {}).get('id')
     tanda_tangan = data.get('tanda_tangan', {})
     kirimke = data.get('kirimke', '')
 
@@ -142,16 +143,16 @@ def kronologi(request):
     # Get transaction number
     no_transaksi = pasien.get('KPNO_TRANSAKSI')
 
-    if not all([no_transaksi, dibuat_oleh]):
+    if not all([no_transaksi, dibuat_oleh_id]):
         return JsonResponse({'status': False, 'message': 'Missing required fields'}, status=400)
-    
+
     with connection.cursor() as cursor:
-        # Check existing transaction
+        # Check existing transaction (match by id pembuat, bukan string JSON utuh)
         query = """
-            SELECT TOP 1 * FROM mutu_kronologi_kejadian 
-            WHERE no_transaksi = %s AND dibuat_oleh = %s
+            SELECT TOP 1 * FROM mutu_kronologi_kejadian
+            WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s
         """
-        cursor.execute(query, [no_transaksi, dibuat_oleh])
+        cursor.execute(query, [no_transaksi, dibuat_oleh_id])
         rows = cursor.fetchone()
 
         if rows:
@@ -160,9 +161,9 @@ def kronologi(request):
                 UPDATE mutu_kronologi_kejadian 
                 SET Uraian = %s, dibuat_oleh = %s,
                     tanda_tangan = %s, updated_at = %s
-                WHERE no_transaksi = %s AND dibuat_oleh = %s
+                WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s
             """
-            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, tgl_sekarang, no_transaksi, dibuat_oleh])
+            cursor.execute(query, [json.dumps(kejadian), dibuat_oleh, tanda_tangan, tgl_sekarang, no_transaksi, dibuat_oleh_id])
         else:
             # Insert new data
             query = """
@@ -670,7 +671,7 @@ def kirimKronologi(request):
 
     no_transaksi = data.get('no_transaksi', None)
     kirim_ke = data.get('kirimke', None)
-    dibuat_oleh_id = data.get('dibuat_oleh', {}).get('id')
+    dibuat_oleh_id = (data.get('dibuat_oleh') or {}).get('id')
 
     query = "UPDATE mutu_kronologi_kejadian SET kirimke = %s WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s"
 
@@ -690,9 +691,9 @@ def kirimKronologi(request):
 
       # Trigger WA notification to Karu
       try:
-        cursor.execute("SELECT no_transaksi, nama_pasien, dibuat_oleh FROM mutu_kronologi_kejadian WHERE no_transaksi = %s", [no_transaksi])
+        cursor.execute("SELECT no_transaksi, nama_pasien, dibuat_oleh FROM mutu_kronologi_kejadian WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s", [no_transaksi, dibuat_oleh_id])
         kron_rows = dictfetchall(cursor)
-        
+
         cursor.execute("SELECT nama, telp FROM mutu_users WHERE id = %s", [kirim_ke])
         karu_rows = dictfetchall(cursor)
 
