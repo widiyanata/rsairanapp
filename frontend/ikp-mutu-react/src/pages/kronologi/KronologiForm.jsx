@@ -18,7 +18,6 @@ export default function KronologiForm() {
   const [jenisPasien, setJenisPasien] = useState('rajal');
   const [kejadianEntries, setKejadianEntries] = useState([{ Tanggal: '', Uraian: '' }]);
   const [loading, setLoading] = useState(false);
-  const [idKronologi, setIdKronologi] = useState('');
   const [kirimke, setKirimke] = useState('');
   const [isKirim, setIsKirim] = useState(false);
   const [listKaru, setListKaru] = useState([]);
@@ -77,7 +76,6 @@ export default function KronologiForm() {
         setTandaTangan(item.tanda_tangan);
         setKirimke(item.kirimke || '');
         setIsKirim(!!(item.kirimke && item.kirimke !== '0'));
-        setIdKronologi(item.id_kronologi);
       }
     } catch (err) {
       console.error(err);
@@ -90,12 +88,7 @@ export default function KronologiForm() {
     setTandaTangan(ttd);
   };
 
-  const simpanKronologi = async () => {
-    if (!tandaTangan) {
-      alert('Tanda tangan wajib diisi');
-      return;
-    }
-    setLoading(true);
+  const saveKronologi = async () => {
     try {
       await api.post('/kronologi', {
         pasien,
@@ -103,25 +96,56 @@ export default function KronologiForm() {
         dibuat_oleh: namaPembuat,
         tanda_tangan: tandaTangan,
       });
-      navigate('/kronologi');
+      return true;
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
+      return false;
+    }
+  };
+
+  const simpanKronologi = async () => {
+    if (!tandaTangan) {
+      alert('Tanda tangan wajib diisi');
+      return;
+    }
+    setLoading(true);
+    const ok = await saveKronologi();
+    setLoading(false);
+    if (ok) {
+      navigate('/kronologi');
+    } else {
+      alert('Gagal menyimpan laporan, coba lagi');
     }
   };
 
   const kirimKronologi = async () => {
     if (!kirimke) return;
+    if (!tandaTangan) {
+      alert('Tanda tangan wajib diisi');
+      return;
+    }
     setLoading(true);
     try {
-      await api.post('/kirimKronologi', {
-        id_kronologi: idKronologi,
+      const savedOk = await saveKronologi();
+      if (!savedOk) {
+        alert('Gagal menyimpan laporan, coba lagi');
+        return;
+      }
+
+      const { data } = await api.post('/kirimKronologi', {
+        no_transaksi: pasien.KPNO_TRANSAKSI,
+        dibuat_oleh: namaPembuat,
         kirimke,
       });
-      navigate('/kronologi');
+
+      if (data.status.success) {
+        navigate('/kronologi');
+      } else {
+        alert(data.status.message || 'Gagal mengirim laporan');
+      }
     } catch (err) {
       console.error(err);
+      alert('Koneksi gagal, laporan belum terkirim');
     } finally {
       setLoading(false);
     }

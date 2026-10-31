@@ -667,19 +667,30 @@ def cariKaru(request):
 def kirimKronologi(request):
   if request.method == 'POST':
     data = json.loads(request.body)
-    
-    id_kronologi = data.get('id_kronologi', None)
-    kirim_ke = data.get('kirimke', None)
 
-    query = "UPDATE mutu_kronologi_kejadian SET kirimke = %s WHERE id_kronologi = %s"
+    no_transaksi = data.get('no_transaksi', None)
+    kirim_ke = data.get('kirimke', None)
+    dibuat_oleh_id = data.get('dibuat_oleh', {}).get('id')
+
+    query = "UPDATE mutu_kronologi_kejadian SET kirimke = %s WHERE no_transaksi = %s AND JSON_VALUE(dibuat_oleh, '$.id') = %s"
 
     with connection.cursor() as cursor:
-      cursor.execute(query, [kirim_ke, id_kronologi])
+      cursor.execute(query, [kirim_ke, no_transaksi, dibuat_oleh_id])
       affected_rows = cursor.rowcount
+
+      if affected_rows == 0:
+        return JsonResponse({
+          "status": {
+              "success": False,
+              "code": 404,
+              "message": "Laporan tidak ditemukan, gagal dikirim",
+          },
+          "data": 0
+        })
 
       # Trigger WA notification to Karu
       try:
-        cursor.execute("SELECT no_transaksi, nama_pasien, dibuat_oleh FROM mutu_kronologi_kejadian WHERE id_kronologi = %s", [id_kronologi])
+        cursor.execute("SELECT no_transaksi, nama_pasien, dibuat_oleh FROM mutu_kronologi_kejadian WHERE no_transaksi = %s", [no_transaksi])
         kron_rows = dictfetchall(cursor)
         
         cursor.execute("SELECT nama, telp FROM mutu_users WHERE id = %s", [kirim_ke])
