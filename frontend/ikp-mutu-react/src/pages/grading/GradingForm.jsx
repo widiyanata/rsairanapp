@@ -5,6 +5,16 @@ import SignatureCanvas from '../../components/ui/SignatureCanvas';
 import { showLoading, hideLoading } from '../../components/ui/LoadingOverlay';
 import Swal from 'sweetalert2';
 
+// Radio wajib di tab II (urut sesuai tampilan)
+const WAJIB_RINCIAN = [
+  { name: 'jenisInsiden', label: 'Jenis Insiden' },
+  { name: 'pelaporPertama', label: 'Orang Pertama Yang Melaporkan' },
+  { name: 'insindentuj', label: 'Insiden terjadi pada' },
+  { name: 'dilakukanOleh', label: 'Tindakan dilakukan oleh' },
+  { name: 'kejadiansama', label: 'Kejadian sama di Unit Kerja lain' },
+  { name: 'gradingrisiko', label: 'Grading Risiko Kejadian' },
+];
+
 export default function GradingForm() {
   const { user } = useAuth();
   const formRef = useRef(null);
@@ -265,6 +275,20 @@ export default function GradingForm() {
 
     const isKasie = user?.role === 'kasie';
     const isKaru = user?.role === 'karu';
+    const formData = new FormData(e.target);
+
+    // Validasi manual: field wajib ada di tab yang tersembunyi, validasi native browser gagal tanpa pesan
+    const missing = WAJIB_RINCIAN.filter((f) => !formData.get(f.name)).map((f) => f.label);
+    if (missing.length) {
+      setActiveTab('rincian-kejadian');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Rincian Kejadian Belum Lengkap',
+        html: `Lengkapi isian berikut di tab <b>II. RINCIAN</b>:<br/><br/>• ${missing.join('<br/>• ')}`,
+        confirmButtonColor: '#1a1a1a',
+      });
+      return;
+    }
 
     // Validation for Karu
     if (isKaru && !kirimKeKasie) {
@@ -303,7 +327,6 @@ export default function GradingForm() {
 
     showLoading();
     try {
-      const formData = new FormData(e.target);
       const rincian = Object.fromEntries(formData);
 
       const finalStatus = isKasie && tandaTanganPenerima ? 'TERVERIFIKASI' : statusVerifikasi;
@@ -388,6 +411,9 @@ export default function GradingForm() {
       });
     }
   }, [rincianKejadian, selectedRow]);
+
+  // Karu tidak boleh mengubah grading yang sudah disahkan Kasie
+  const isLockedKaru = user?.role === 'karu' && statusVerifikasi === 'TERVERIFIKASI';
 
   // Tab config
   const tabs = [
@@ -750,7 +776,14 @@ export default function GradingForm() {
                     </div>
                   )}
 
-                  <form ref={formRef} id="formInsiden" onSubmit={submitForm}>
+                  {isLockedKaru && (
+                    <div className="alert alert-success d-flex align-items-center gap-2 py-2 mb-3 no-print small">
+                      <i className="fas fa-lock"></i>
+                      <span>Laporan sudah diverifikasi Kasie. Data hanya bisa dilihat dan dicetak.</span>
+                    </div>
+                  )}
+
+                  <form ref={formRef} id="formInsiden" onSubmit={submitForm} noValidate>
                     {/* Mobile Pill-Style Tabs */}
                     <div className="mobile-tabs-container mb-3 no-print">
                       <div className="d-flex gap-2 p-1 bg-light rounded-pill border overflow-x-auto text-nowrap no-scrollbar">
@@ -773,7 +806,7 @@ export default function GradingForm() {
                     </div>
 
                     {/* Tab Content */}
-                    <div className="tab-content mb-3">
+                    <fieldset disabled={isLockedKaru} className="tab-content mb-3">
                       {/* Tab 1: Data Pasien */}
                       <div className={`tab-pane p-3 bg-white shadow mb-3 ${activeTab === 'data-pasien' ? 'active show' : 'd-none'}`}>
                         <h5>I. DATA PASIEN</h5>
@@ -1054,7 +1087,7 @@ export default function GradingForm() {
                                 /* Karu or Admin signs here */
                                 <div>
                                   <span className="small text-muted d-block mb-1">Goreskan Tanda Tangan:</span>
-                                  <SignatureCanvas base64={tandaTanganPelapor} onSave={setTandaTanganPelapor} />
+                                  <SignatureCanvas base64={tandaTanganPelapor} onSave={setTandaTanganPelapor} disabled={isLockedKaru} />
                                 </div>
                               )}
                             </div>
@@ -1204,7 +1237,7 @@ export default function GradingForm() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </fieldset>
 
                     {/* Actions */}
                     <div className="d-flex flex-column flex-sm-row justify-content-center gap-2 mb-4 p-3 no-print border-top bg-light rounded-3">
@@ -1226,7 +1259,7 @@ export default function GradingForm() {
                           <i className="fas fa-clipboard-check"></i>
                           <span>Verifikasi & Sahkan Grading (Kasie)</span>
                         </button>
-                      ) : user?.role === 'karu' ? (
+                      ) : isLockedKaru ? null : user?.role === 'karu' ? (
                         <button
                           type="submit"
                           className="btn btn-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"

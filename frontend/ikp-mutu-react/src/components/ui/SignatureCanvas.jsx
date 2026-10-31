@@ -1,6 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
 import SignaturePad from 'react-signature-canvas';
-import Swal from 'sweetalert2';
 
 export default function SignatureCanvas({ base64, onSave, disabled = false }) {
   const sigRef = useRef(null);
@@ -23,8 +22,11 @@ export default function SignatureCanvas({ base64, onSave, disabled = false }) {
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
+  const lastEmitted = useRef(null);
+
   useEffect(() => {
-    if (base64 && sigRef.current) {
+    // Jangan gambar ulang TTD yang baru saja dihasilkan kanvas ini sendiri
+    if (base64 && sigRef.current && base64 !== lastEmitted.current) {
       setTimeout(() => {
         sigRef.current.fromDataURL(base64, {
           width: canvasWidth,
@@ -38,27 +40,15 @@ export default function SignatureCanvas({ base64, onSave, disabled = false }) {
     if (sigRef.current) {
       sigRef.current.clear();
     }
+    onSave?.('');
   };
 
-  const handleSave = () => {
-    if (!sigRef.current || sigRef.current.isEmpty()) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Tanda Tangan Kosong',
-        text: 'Silakan goreskan tanda tangan terlebih dahulu pada kanvas.',
-        confirmButtonColor: '#1a1a1a',
-      });
-      return;
+  // Simpan otomatis setiap selesai satu goresan
+  const handleEnd = () => {
+    if (sigRef.current && !sigRef.current.isEmpty()) {
+      lastEmitted.current = sigRef.current.toDataURL('image/png');
+      onSave?.(lastEmitted.current);
     }
-    const dataURL = sigRef.current.toDataURL('image/png');
-    onSave?.(dataURL);
-    Swal.fire({
-      icon: 'success',
-      title: 'Tersimpan!',
-      text: 'Tanda tangan berhasil disimpan.',
-      timer: 1200,
-      showConfirmButton: false,
-    });
   };
 
   return (
@@ -75,6 +65,7 @@ export default function SignatureCanvas({ base64, onSave, disabled = false }) {
       >
         <SignaturePad
           ref={sigRef}
+          onEnd={handleEnd}
           canvasProps={{
             width: canvasWidth,
             height: 180,
@@ -83,7 +74,8 @@ export default function SignatureCanvas({ base64, onSave, disabled = false }) {
               height: '180px',
               backgroundColor: '#ffffff',
               touchAction: 'none',
-              cursor: 'crosshair',
+              cursor: disabled ? 'not-allowed' : 'crosshair',
+              pointerEvents: disabled ? 'none' : 'auto',
               display: 'block',
             },
           }}
@@ -99,24 +91,17 @@ export default function SignatureCanvas({ base64, onSave, disabled = false }) {
       </div>
 
       {!disabled && (
-        <div className="d-flex align-items-center gap-2 mt-3" style={{ maxWidth: '400px' }}>
+        <div className="d-flex align-items-center justify-content-between gap-2 mt-2" style={{ maxWidth: '400px' }}>
+          <span className="small text-muted" style={{ fontSize: '11px' }}>
+            {base64 ? <><i className="fas fa-check text-success me-1"></i>Tersimpan otomatis</> : 'Belum ada tanda tangan'}
+          </span>
           <button
             type="button"
             onClick={handleClear}
-            className="btn btn-outline-secondary btn-sm flex-fill d-flex align-items-center justify-content-center gap-2 py-2"
-            style={{ minHeight: '40px' }}
+            className="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2"
           >
             <i className="fas fa-undo"></i>
             <span>Hapus</span>
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="btn btn-dark btn-sm flex-fill d-flex align-items-center justify-content-center gap-2 py-2"
-            style={{ minHeight: '40px' }}
-          >
-            <i className="fas fa-check"></i>
-            <span>Simpan TTD</span>
           </button>
         </div>
       )}
