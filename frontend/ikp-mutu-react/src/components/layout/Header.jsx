@@ -47,7 +47,7 @@ export default function Header({ isSidebarOpen, onToggleSidebar }) {
             title="Toggle Sidebar"
             aria-label="Toggle Sidebar"
           >
-            <i className={isSidebarOpen ? 'fas fa-arrow-left' : 'fas fa-bars'}></i>
+            <i className='fas fa-bars'></i>
           </button>
         )}
 
