@@ -255,31 +255,55 @@ def cari_user(request):
 # Cari staf gabungan (perawat + karyawan) untuk login
 def cari_staf(request):
   cari = request.GET.get('cari')
-  if cari:
-    cari_val = f"%{cari}%"
-    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER FROM PERAWAT WHERE FMPPERAWATN LIKE %s"
-    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, 'karyawan' AS SUMBER FROM USERSPRIV WHERE USER_NAME LIKE %s"
-    params = [cari_val, cari_val]
-  else:
-    perawat_q = "SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER FROM PERAWAT"
-    userspriv_q = "SELECT USER_ID AS ID, USER_NAME AS NAMA, 'karyawan' AS SUMBER FROM USERSPRIV"
-    params = []
 
-  query = f"SELECT TOP 10 ID, NAMA, SUMBER FROM ({perawat_q} UNION ALL {userspriv_q}) combined ORDER BY NAMA"
+  # Kondisi dasar: tidak ikut jika sudah ada di PERAWAT
+  # (ganti kolom pencocokan sesuai relasi sebenarnya, lihat catatan di bawah)
+  not_in_perawat = """
+      NOT EXISTS (
+          SELECT 1 FROM PERAWAT P
+          WHERE P.FMPPERAWATN = U.USER_NAME
+      )
+  """
+
+  if cari:
+      cari_val = f"%{cari}%"
+      perawat_q = """
+          SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER
+          FROM PERAWAT
+          WHERE FMPPERAWATN LIKE %s
+      """
+      userspriv_q = f"""
+          SELECT U.USER_ID AS ID, U.USER_NAME AS NAMA, 'karyawan' AS SUMBER
+          FROM USERSPRIV U
+          WHERE U.USER_NAME LIKE %s AND {not_in_perawat}
+      """
+      params = [cari_val, cari_val]
+  else:
+      perawat_q = """
+          SELECT FMPPERAWAT_ID AS ID, FMPPERAWATN AS NAMA, 'perawat' AS SUMBER
+          FROM PERAWAT
+      """
+      userspriv_q = f"""
+          SELECT U.USER_ID AS ID, U.USER_NAME AS NAMA, 'karyawan' AS SUMBER
+          FROM USERSPRIV U
+          WHERE {not_in_perawat}
+      """
+      params = []
+
+  query = f"""
+      SELECT TOP 10 ID, NAMA, SUMBER
+      FROM ({perawat_q} UNION ALL {userspriv_q}) combined
+      ORDER BY NAMA
+  """
 
   with connection.cursor() as cursor:
-    cursor.execute(query, params)
-    rows = dictfetchall(cursor)
+      cursor.execute(query, params)
+      rows = dictfetchall(cursor)
 
-    res = {
-      "status": {
-          "success": True,
-          "code": 200,
-          "message": "Request successful",
-      },
+  return JsonResponse({
+      "status": {"success": True, "code": 200, "message": "Request successful"},
       "data": rows
-    }
-    return JsonResponse(res, safe=False)
+  }, safe=False)
 
 # Grading
 @csrf_exempt
