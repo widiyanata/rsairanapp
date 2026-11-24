@@ -796,7 +796,7 @@ export default function InvestigasiForm() {
                       </div>
                       <label className="form-label fw-bold">Jenis Insiden</label>
                       <div className="mb-2">
-                        {['KNC', 'KTD', 'SENTINEL'].map((val) => (
+                        {['KNC', 'KTC', 'KPCS', 'KTD', 'SENTINEL'].map((val) => (
                           <div key={val} className="form-check">
                             <input className="form-check-input" type="radio" name="jenisInsiden" id={`inv-ji-${val}`} value={val} />
                             <label className="form-check-label" htmlFor={`inv-ji-${val}`}>{val}</label>
@@ -873,6 +873,8 @@ export default function InvestigasiForm() {
                           { id: 'kematian', value: 'kematian', label: 'Kematian' },
                           { id: 'cederairreversibel', value: 'cedera irreversibel', label: 'Cedera Irreversibel / Cedera Berat' },
                           { id: 'cederareversibel', value: 'cedera reversibel', label: 'Cedera Reversibel / Cedera Sedang' },
+                          { id: 'cederaringan', value: 'cedera ringan', label: 'Cedera Ringan' },
+                          { id: 'tidakcedera', value: 'tidak ada cedera', label: 'Tidak ada cedera' },
                         ].map((item) => (
                           <div key={item.id} className="form-check">
                             <input className="form-check-input" type="radio" name="akibatinsiden" id={`inv-ak-${item.id}`} value={item.value} />

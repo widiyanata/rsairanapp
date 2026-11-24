@@ -11,9 +11,34 @@ const WAJIB_RINCIAN = [
   { name: 'pelaporPertama', label: 'Orang Pertama Yang Melaporkan' },
   { name: 'insindentuj', label: 'Insiden terjadi pada' },
   { name: 'dilakukanOleh', label: 'Tindakan dilakukan oleh' },
+  { name: 'akibatinsiden', label: 'Akibat Insiden Terhadap Pasien' },
   { name: 'kejadiansama', label: 'Kejadian sama di Unit Kerja lain' },
-  { name: 'gradingrisiko', label: 'Grading Risiko Kejadian' },
+  { name: 'gradingrisiko', label: 'Grading Risiko Kejadian (pilih sel matriks)' },
 ];
+
+// Matriks grading risiko (Pedoman Pelaporan IKP KKPRS): baris = probabilitas 5..1, kolom = dampak 1..5
+const DAMPAK = ['Tidak Signifikan', 'Minor', 'Moderat', 'Mayor', 'Katastropik'];
+const PROBABILITAS = [
+  { skor: 5, label: 'Sangat sering', ket: 'tiap minggu / bulan' },
+  { skor: 4, label: 'Sering', ket: 'beberapa kali / tahun' },
+  { skor: 3, label: 'Mungkin', ket: '1 – <2 tahun sekali' },
+  { skor: 2, label: 'Jarang', ket: '>2 – <5 tahun sekali' },
+  { skor: 1, label: 'Sangat jarang', ket: '>5 tahun sekali' },
+];
+const MATRIKS = {
+  5: ['hijau', 'hijau', 'kuning', 'merah', 'merah'],
+  4: ['hijau', 'hijau', 'kuning', 'merah', 'merah'],
+  3: ['biru', 'hijau', 'kuning', 'merah', 'merah'],
+  2: ['biru', 'biru', 'hijau', 'kuning', 'merah'],
+  1: ['biru', 'biru', 'hijau', 'kuning', 'merah'],
+};
+const WARNA = {
+  biru: { bg: 'bg-primary text-white', level: 'Rendah', tindakan: 'Investigasi sederhana oleh atasan langsung, maks. 1 minggu' },
+  hijau: { bg: 'bg-success text-white', level: 'Moderat', tindakan: 'Investigasi sederhana oleh manajer / pimpinan klinis, maks. 2 minggu' },
+  kuning: { bg: 'bg-warning text-dark', level: 'Tinggi', tindakan: 'Investigasi komprehensif / RCA oleh Kepala Bagian / Direktur, maks. 45 hari' },
+  merah: { bg: 'bg-danger text-white', level: 'Ekstrim', tindakan: 'Investigasi komprehensif / RCA oleh Direktur / Kepala RS, maks. 45 hari' },
+};
+const PRINT_WARNA = { WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' };
 
 export default function GradingForm() {
   const { user } = useAuth();
@@ -34,6 +59,7 @@ export default function GradingForm() {
   const [tglVerifikasi, setTglVerifikasi] = useState(null);
   const [verifiedByKasie, setVerifiedByKasie] = useState(null);
   const [gradingCreator, setGradingCreator] = useState(null);
+  const [gradingWarna, setGradingWarna] = useState('');
 
   // Disposisi Kasie
   const [listKasie, setListKasie] = useState([]);
@@ -412,6 +438,7 @@ export default function GradingForm() {
           }
         }
       });
+      setGradingWarna(data.gradingrisiko || '');
     }
   }, [rincianKejadian, selectedRow]);
 
@@ -877,6 +904,8 @@ export default function GradingForm() {
                         <div className="mb-2">
                           {[
                             { id: 'knc', value: 'KNC', label: 'Kejadian Nyaris Cedera / KNC (Near miss)' },
+                            { id: 'ktc', value: 'KTC', label: 'Kejadian Tidak Cedera / KTC (No harm)' },
+                            { id: 'kpcs', value: 'KPCS', label: 'Kondisi Potensial Cedera Signifikan / KPCS' },
                             { id: 'ktd', value: 'KTD', label: 'Kejadian Tidak diharapkan / KTD (Adverse Event)' },
                             { id: 'sentinel', value: 'SENTINEL', label: 'Kejadian Sentinel (Sentinel Event)' },
                           ].map((item) => (
@@ -933,6 +962,7 @@ export default function GradingForm() {
                               <label className="form-check-label" htmlFor={`grading-im-${item.id}`}>{item.label}</label>
                             </div>
                           ))}
+                          <input type="text" className="form-control form-control-sm mt-2" name="insidenmenyangkutText" placeholder="Jika lain-lain, sebutkan" />
                         </div>
 
                         <div className="mb-2">
@@ -955,9 +985,11 @@ export default function GradingForm() {
                             { id: 'kematian', value: 'kematian', label: 'Kematian' },
                             { id: 'cederairreversibel', value: 'cedera irreversibel', label: 'Cedera Irreversibel / Cedera Berat' },
                             { id: 'cederareversibel', value: 'cedera reversibel', label: 'Cedera Reversibel / Cedera Sedang' },
+                            { id: 'cederaringan', value: 'cedera ringan', label: 'Cedera Ringan' },
+                            { id: 'tidakcedera', value: 'tidak ada cedera', label: 'Tidak ada cedera' },
                           ].map((item) => (
                             <div key={item.id} className="form-check">
-                              <input className="form-check-input" type="radio" name="akibatinsiden" id={`grading-${item.id}`} value={item.value} />
+                              <input className="form-check-input" type="radio" name="akibatinsiden" id={`grading-${item.id}`} value={item.value} required />
                               <label className="form-check-label" htmlFor={`grading-${item.id}`}>{item.label}</label>
                             </div>
                           ))}
@@ -1002,18 +1034,55 @@ export default function GradingForm() {
                         </div>
 
                         <label className="form-label fw-bold">Grading Risiko Kejadian * (Diisi oleh atasan pelapor / Karu)</label>
-                        <div className="mb-2">
-                          {[
-                            { id: 'biru', value: 'biru', label: 'BIRU', colorClass: 'text-primary' },
-                            { id: 'hijau', value: 'hijau', label: 'HIJAU', colorClass: 'text-success' },
-                            { id: 'kuning', value: 'kuning', label: 'KUNING', colorClass: 'text-warning' },
-                            { id: 'merah', value: 'merah', label: 'MERAH', colorClass: 'text-danger' },
-                          ].map((item) => (
-                            <div key={item.id} className="form-check">
-                              <input className="form-check-input" type="radio" name="gradingrisiko" id={`grading-${item.id}`} value={item.value} required />
-                              <label className={`form-check-label fw-bold ${item.colorClass}`} htmlFor={`grading-${item.id}`}>{item.label}</label>
+                        <div className="table-responsive mb-2">
+                          <table className="table table-bordered table-sm text-center align-middle mb-1" style={{ fontSize: '11px', minWidth: '520px' }}>
+                            <thead>
+                              <tr className="table-light">
+                                <th rowSpan="2" className="text-start">Probabilitas \ Dampak</th>
+                                {DAMPAK.map((d, i) => <th key={d}>{i + 1}</th>)}
+                              </tr>
+                              <tr className="table-light">
+                                {DAMPAK.map((d) => <th key={d} className="fw-normal">{d}</th>)}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {PROBABILITAS.map((p) => (
+                                <tr key={p.skor}>
+                                  <th className="text-start table-light">
+                                    {p.skor}. {p.label}
+                                    <div className="fw-normal text-muted">{p.ket}</div>
+                                  </th>
+                                  {MATRIKS[p.skor].map((warna, i) => {
+                                    const id = `grading-mx-${p.skor}-${i + 1}`;
+                                    return (
+                                      <td key={id} className={`p-0 ${WARNA[warna].bg}`} style={PRINT_WARNA}>
+                                        <label htmlFor={id} className="d-flex flex-column align-items-center justify-content-center gap-1 py-2 m-0 cursor-pointer">
+                                          <input
+                                            className="form-check-input m-0"
+                                            type="radio"
+                                            name="matriksRisiko"
+                                            id={id}
+                                            value={`${p.skor}-${i + 1}`}
+                                            onChange={() => setGradingWarna(warna)}
+                                          />
+                                          <span>{WARNA[warna].level}</span>
+                                        </label>
+                                      </td>
+                                    );
+                                  })}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          {/* ponytail: warna tetap disimpan di 'gradingrisiko' agar Dashboard, Investigasi & notifikasi WA tidak berubah */}
+                          <input type="hidden" name="gradingrisiko" value={gradingWarna} />
+                          {gradingWarna ? (
+                            <div className={`p-2 rounded small ${WARNA[gradingWarna].bg}`} style={PRINT_WARNA}>
+                              <strong>{gradingWarna.toUpperCase()} – Risiko {WARNA[gradingWarna].level}:</strong> {WARNA[gradingWarna].tindakan}
                             </div>
-                          ))}
+                          ) : (
+                            <div className="text-muted small fst-italic">Pilih satu sel sesuai dampak dan probabilitas kejadian.</div>
+                          )}
                         </div>
                       </div>
 
