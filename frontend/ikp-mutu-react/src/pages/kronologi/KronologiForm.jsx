@@ -4,6 +4,21 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../config/api';
 import SignatureCanvas from '../../components/ui/SignatureCanvas';
 
+// label tempat pasien dari awalan no transaksi
+const TEMPAT = {
+  RBI: ['Rawat Inap', 'bg-primary'],
+  RGD: ['IGD', 'bg-danger'],
+  KRJ: ['Rawat Jalan', 'bg-success'],
+  RJR: ['Rawat Jalan', 'bg-success'],
+  HDI: ['Hemodialisa', 'bg-warning text-dark'],
+  HDJ: ['Hemodialisa', 'bg-warning text-dark'],
+};
+
+const LabelTempat = ({ noTransaksi }) => {
+  const t = TEMPAT[noTransaksi?.slice(0, 3)];
+  return t ? <span className={`badge ${t[1]} flex-shrink-0`}>{t[0]}</span> : null;
+};
+
 export default function KronologiForm() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -257,6 +272,7 @@ export default function KronologiForm() {
                               {p.UNIT && ` · ${p.UNIT}`}
                             </div>
                           </div>
+                          <LabelTempat noTransaksi={p.KPNO_TRANSAKSI} />
                           <i className="fas fa-chevron-right text-muted small"></i>
                         </div>
                       ))}
@@ -272,6 +288,7 @@ export default function KronologiForm() {
                       {pasien.KPNO_TRANSAKSI && ` · ${pasien.KPNO_TRANSAKSI}`}
                     </div>
                   </div>
+                  <LabelTempat noTransaksi={pasien.KPNO_TRANSAKSI} />
                   {!isKirim && (
                     <button
                       onClick={() => {
