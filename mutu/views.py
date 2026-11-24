@@ -107,7 +107,7 @@ def kunjungan_pasien(request):
       params = [cari_val, cari_val, cari_val]
     # kronologi hanya untuk transaksi RGD/KRJ/RJR (ranap sudah pasti RBI)
     if request.GET.get('kronologi'):
-      query = query + ("AND " if params else "WHERE ") + "LEFT(KPNO_TRANSAKSI, 3) IN ('RGD', 'KRJ', 'RJR') "
+      query = query + ("AND " if params else "WHERE ") + "LEFT(KPNO_TRANSAKSI, 3) IN ('RGD', 'KRJ', 'RJR', 'HDI', 'HDJ') "
     query = query + "ORDER BY kunjunganpasien.KPTGL_PERIKSA DESC"
 
   with connection.cursor() as cursor:
