@@ -1,11 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../config/api';
 import SignatureCanvas from '../../components/ui/SignatureCanvas';
 
 export default function KronologiForm() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const kid = searchParams.get('kid');
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -68,7 +70,7 @@ export default function KronologiForm() {
         : '';
       const { data } = await api.get(`/kronologi?no_transaksi=${noTransaksi}${filterPembuat}`);
       if (data.data && data.data.length > 0) {
-        const item = data.data[0];
+        const item = data.data.find((r) => String(r.id_kronologi) === kid) || data.data[0];
         setKejadianEntries(JSON.parse(item.Uraian));
         setPasien({
           KPKD_PASIEN: item.no_rm,
@@ -165,7 +167,7 @@ export default function KronologiForm() {
   useEffect(() => {
     getUserKaru();
     if (isEdit) getKronologiDetail(id);
-  }, [id]);
+  }, [id, kid]);
 
   const terisi = kejadianEntries.filter((e) => e.Uraian?.trim()).length;
   const checklist = [

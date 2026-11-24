@@ -30,7 +30,8 @@ export default function KronologiList() {
   }, [user]);
 
   const goToDetail = (entry) => {
-    navigate(`/kronologi/form/${entry.no_transaksi}`);
+    // satu no_transaksi bisa punya beberapa kronologi (beda pembuat), bawa id-nya
+    navigate(`/kronologi/form/${entry.no_transaksi}?kid=${entry.id_kronologi}`);
   };
 
   const filteredRiwayat = riwayat.filter((entry) => {
