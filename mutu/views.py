@@ -103,8 +103,11 @@ def kunjungan_pasien(request):
     )
     if 'cari' in request.GET and request.GET['cari'] is not None:
       cari_val = f"%{request.GET['cari']}%"
-      query = query + "WHERE KPKD_PASIEN LIKE %s OR KPKD_PASIENN LIKE %s OR KPNO_TRANSAKSI LIKE %s "
+      query = query + "WHERE (KPKD_PASIEN LIKE %s OR KPKD_PASIENN LIKE %s OR KPNO_TRANSAKSI LIKE %s) "
       params = [cari_val, cari_val, cari_val]
+    # kronologi hanya untuk transaksi RGD/KRJ/RJR (ranap sudah pasti RBI)
+    if request.GET.get('kronologi'):
+      query = query + ("AND " if params else "WHERE ") + "LEFT(KPNO_TRANSAKSI, 3) IN ('RGD', 'KRJ', 'RJR') "
     query = query + "ORDER BY kunjunganpasien.KPTGL_PERIKSA DESC"
 
   with connection.cursor() as cursor:

@@ -46,7 +46,7 @@ export default function KronologiForm() {
     if (cari.length < 3) return;
     setLoading(true);
     try {
-      const { data } = await api.get(`/kunjunganPasien?cari=${cari}&jenis=${jenisPasien}`);
+      const { data } = await api.get(`/kunjunganPasien?cari=${cari}&jenis=${jenisPasien}&kronologi=1`);
       setPasiens(data.data);
     } catch (err) {
       console.error(err);
