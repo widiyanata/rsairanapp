@@ -80,7 +80,7 @@ export default function KronologiForm() {
     setLoading(true);
     try {
       // mutu/admin melihat kronologi milik siapa pun, sama seperti di list
-      const filterPembuat = user?.role !== 'mutu' && user?.role !== 'admin'
+      const filterPembuat = !['mutu', 'admin', 'kabid'].includes(user?.role)
         ? `&dibuat_oleh=${JSON.stringify(user)}`
         : '';
       const { data } = await api.get(`/kronologi?no_transaksi=${noTransaksi}${filterPembuat}`);

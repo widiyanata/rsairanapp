@@ -15,11 +15,16 @@ export default function KronologiList() {
       setLoading(true);
       try {
         let params = '';
-        if (user?.role !== 'mutu' && user?.role !== 'admin') {
+        if (!['mutu', 'admin', 'kabid'].includes(user?.role)) {
           params = `&dibuat_oleh=${JSON.stringify(user)}`;
         }
         const { data } = await api.get(`/kronologi?${params}`);
-        setRiwayat(data.data || []);
+        let rows = data.data || [];
+        // kabid hanya melihat kronologi yang sudah dikirim ke Karu
+        if (user?.role === 'kabid') {
+          rows = rows.filter((r) => r.kirimke && r.kirimke !== '0');
+        }
+        setRiwayat(rows);
       } catch (err) {
         console.error('Error fetching list:', err);
       } finally {
@@ -62,14 +67,14 @@ export default function KronologiList() {
             Riwayat pelaporan insiden keselamatan pasien unit pelayanan.
           </p>
         </div>
-        <Link
+        {user?.role !== 'kabid' && <Link
           to="/kronologi/form"
           className="btn-minimal btn-minimal-primary shadow-sm justify-content-center py-2 px-3"
           style={{ minHeight: '42px' }}
         >
           <i className="fas fa-plus"></i>
           <span>+ Buat Laporan</span>
-        </Link>
+        </Link>}
       </div>
 
       {/* Main Container */}
