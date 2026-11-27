@@ -146,6 +146,7 @@ export default function Login() {
             <option value="admin">Administrator</option>
             <option value="mutu">Tim Mutu</option>
             <option value="kasie">Kepala Seksi (Kasie)</option>
+            <option value="kabid">Kepala Bidang (Kabid)</option>
             <option value="karu">Kepala Ruangan (Karu)</option>
             <option value="staf">Tenaga Perawat / Penunjang</option>
             <option value="lainya">Karyawan Lainnya (belum punya user id)</option>

@@ -7,6 +7,7 @@ export const ROLES = {
   PERAWAT: 'perawat',
   KARU: 'karu',
   KASIE: 'kasie',
+  KABID: 'kabid',
   MUTU: 'mutu',
   LAINYA: 'lainya',
   ADMIN: 'admin',
@@ -29,7 +30,7 @@ export const MENU_ITEMS = [
     name: 'Grading',
     path: '/grading',
     icon: 'fas fa-chart-line',
-    roles: [ROLES.KARU, ROLES.KASIE, ROLES.ADMIN],
+    roles: [ROLES.KARU, ROLES.KASIE, ROLES.KABID, ROLES.ADMIN],
   },
   {
     name: 'Investigasi',
@@ -58,7 +59,7 @@ export const DASHBOARD_CARDS = [
     description: 'Penilaian matriks risiko unit (Karu) dan verifikasi oleh Kasie.',
     icon: 'fas fa-chart-line',
     path: '/grading',
-    roles: [ROLES.KARU, ROLES.KASIE, ROLES.ADMIN],
+    roles: [ROLES.KARU, ROLES.KASIE, ROLES.KABID, ROLES.ADMIN],
   },
   {
     title: 'Laporan Investigasi',

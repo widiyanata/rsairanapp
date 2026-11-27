@@ -25,5 +25,13 @@ class AuthRequiredTest(SimpleTestCase):
     self.assertEqual(self.call(views.userMutu, karu), 403)
     self.assertEqual(self.call(views.updatePermissions, karu), 403)
     self.assertEqual(self.call(views.grading, lainya), 403)
+
+    # kabid: hanya lihat, tidak boleh simpan grading/kronologi, tidak boleh investigasi
+    kabid = views.make_token({'id': '4', 'username': 'k', 'role': 'kabid'})
+    post = lambda view: view(RequestFactory().post('/', '{}', content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {kabid}')).status_code
+    self.assertEqual(post(views.grading), 403)
+    self.assertEqual(post(views.kronologi), 403)
+    self.assertEqual(self.call(views.investigasi, kabid), 403)
+    self.assertEqual(self.call(views.verifikasiKronologi, kabid), 403)
     with mock.patch('time.time', return_value=time.time() + views.TOKEN_MAX_AGE + 10):
       self.assertEqual(self.call(views.userMutu, admin), 401)

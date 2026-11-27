@@ -22,6 +22,8 @@ TOKEN_MAX_AGE = 12 * 3600
 STAF_ROLES = ('perawat', 'karyawan', 'karu', 'kasie', 'mutu')
 # Role yang hanya boleh melihat kronologi buatannya sendiri
 OWN_ONLY_ROLES = ('lainya', 'perawat', 'karyawan')
+# Kabid: hanya lihat kronologi & grading, tidak boleh menyimpan apa pun
+KABID = 'kabid'
 
 def make_token(user):
   return signing.dumps({'id': user.get('id'), 'username': user.get('username'), 'role': user.get('role')}, salt=TOKEN_SALT)
@@ -168,6 +170,8 @@ def kronologi(request):
     return JsonResponse(res, safe=False)
 
   elif request.method == 'POST':
+    if request.auth.get('role') == KABID:
+      return JsonResponse({'status': False, 'message': 'Forbidden'}, status=403)
     data = json.loads(request.body)
 
     # Get data components
@@ -310,7 +314,7 @@ def cari_staf(request):
 
 # Grading
 @csrf_exempt
-@auth_required(*STAF_ROLES)
+@auth_required(*STAF_ROLES, KABID)
 def grading(request):
   if request.method == 'GET':
     query = """
@@ -349,6 +353,8 @@ def grading(request):
     return JsonResponse(res, safe=False)
 
   elif request.method == 'POST':
+    if request.auth.get('role') == KABID:
+      return JsonResponse({'status': False, 'message': 'Forbidden'}, status=403)
     data = json.loads(request.body)
     pasien = data.get('pasien', {})
     kejadian = data.get('kejadian', {})
@@ -1050,7 +1056,7 @@ def updatePermissions(request):
     return JsonResponse({'status': True, 'message': 'Permissions updated successfully'})
   return JsonResponse({'status': False, 'message': 'Method not allowed'}, status=405)
 
-@auth_required(*STAF_ROLES)
+@auth_required(*STAF_ROLES, KABID)
 def getListKronologi(request):
   with connection.cursor() as cursor:
     no_transaksi = request.GET.get('no_transaksi', None)

@@ -285,6 +285,7 @@ export default function UserManagement() {
                   <option value="admin">Administrator</option>
                   <option value="mutu">Tim Mutu</option>
                   <option value="kasie">Kepala Seksi (Kasie)</option>
+                  <option value="kabid">Kepala Bidang (Kabid)</option>
                   <option value="karu">Kepala Ruangan (Karu)</option>
                   <option value="perawat">Tenaga Perawat</option>
                   <option value="lainya">Karyawan Lainnya</option>
@@ -531,6 +532,7 @@ export default function UserManagement() {
                 <option value="admin">Administrator</option>
                 <option value="mutu">Tim Mutu</option>
                 <option value="kasie">Kepala Seksi (Kasie)</option>
+                <option value="kabid">Kepala Bidang (Kabid)</option>
                 <option value="karu">Kepala Ruangan (Karu)</option>
                 <option value="perawat">Tenaga Perawat</option>
                 <option value="lainya">Karyawan Lainnya</option>

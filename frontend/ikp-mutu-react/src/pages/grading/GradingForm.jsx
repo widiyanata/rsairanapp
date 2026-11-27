@@ -154,6 +154,11 @@ export default function GradingForm() {
         return true;
       });
     }
+    if (user?.role === 'kabid') {
+      return riwayatKronologiGrouped.filter((item) =>
+        riwayatGrading.some((g) => g.no_transaksi === item.no_transaksi)
+      );
+    }
     return riwayatKronologiGrouped;
   }, [riwayatKronologiGrouped, riwayatGrading, user]);
 
@@ -444,6 +449,9 @@ export default function GradingForm() {
 
   // Karu tidak boleh mengubah grading yang sudah disahkan Kasie
   const isLockedKaru = user?.role === 'karu' && statusVerifikasi === 'TERVERIFIKASI';
+  // Kabid hanya bisa melihat
+  const isKabid = user?.role === 'kabid';
+  const isReadOnly = isLockedKaru || isKabid;
 
   // Tab config
   const tabs = [
@@ -514,7 +522,7 @@ export default function GradingForm() {
                   { key: 'semua', label: 'Semua', count: counts.semua },
                   { key: 'menunggu_verifikasi', label: 'Menunggu Verifikasi Kasie', count: counts.menungguVerifikasi, highlight: user?.role === 'kasie' },
                   { key: 'terverifikasi', label: 'Terverifikasi', count: counts.terverifikasi },
-                  ...(user?.role !== 'kasie' ? [{ key: 'menunggu_grading', label: 'Menunggu Grading Karu', count: counts.menungguGrading, highlight: user?.role === 'karu' }] : []),
+                  ...(user?.role !== 'kasie' && !isKabid ? [{ key: 'menunggu_grading', label: 'Menunggu Grading Karu', count: counts.menungguGrading, highlight: user?.role === 'karu' }] : []),
                 ].map((f) => (
                   <button
                     key={f.key}
@@ -675,7 +683,7 @@ export default function GradingForm() {
                           >
                             {user?.role === 'kasie'
                               ? info.status === 'terverifikasi' ? 'Lihat TTD' : 'Verifikasi TTD'
-                              : 'Grade'} <i className="fas fa-arrow-right ms-1"></i>
+                              : isKabid ? 'Lihat' : 'Grade'} <i className="fas fa-arrow-right ms-1"></i>
                           </button>
                         </td>
                       </tr>
@@ -813,6 +821,13 @@ export default function GradingForm() {
                     </div>
                   )}
 
+                  {isKabid && (
+                    <div className="alert alert-secondary d-flex align-items-center gap-2 py-2 mb-3 no-print small">
+                      <i className="fas fa-eye"></i>
+                      <span>Mode Kabid: data kronologi & grading dari Karu hanya bisa dilihat dan dicetak.</span>
+                    </div>
+                  )}
+
                   <form ref={formRef} id="formInsiden" onSubmit={submitForm} noValidate>
                     {/* Mobile Pill-Style Tabs */}
                     <div className="mobile-tabs-container mb-3 no-print">
@@ -836,7 +851,7 @@ export default function GradingForm() {
                     </div>
 
                     {/* Tab Content */}
-                    <fieldset disabled={isLockedKaru} className="tab-content mb-3">
+                    <fieldset disabled={isReadOnly} className="tab-content mb-3">
                       {/* Tab 1: Data Pasien */}
                       <div className={`tab-pane p-3 bg-white shadow mb-3 ${activeTab === 'data-pasien' ? 'active show' : 'd-none'}`}>
                         <h5>I. DATA PASIEN</h5>
@@ -1134,7 +1149,7 @@ export default function GradingForm() {
                               </div>
 
                               {/* If Kasie viewing: show Karu signature as image preview */}
-                              {user?.role === 'kasie' ? (
+                              {user?.role === 'kasie' || isKabid ? (
                                 <div>
                                   <span className="small text-muted d-block mb-2">Tanda Tangan Karu:</span>
                                   {tandaTanganPelapor ? (
@@ -1232,7 +1247,7 @@ export default function GradingForm() {
                               )}
 
                               {/* If Karu viewing: show Kasie signature as image preview */}
-                              {user?.role === 'karu' ? (
+                              {user?.role === 'karu' || isKabid ? (
                                 <div>
                                   <span className="small text-muted d-block mb-2">Tanda Tangan Verifikasi Kasie:</span>
                                   {tandaTanganPenerima ? (
@@ -1331,7 +1346,7 @@ export default function GradingForm() {
                           <i className="fas fa-clipboard-check"></i>
                           <span>Verifikasi & Sahkan Grading (Kasie)</span>
                         </button>
-                      ) : isLockedKaru ? null : user?.role === 'karu' ? (
+                      ) : isReadOnly ? null : user?.role === 'karu' ? (
                         <button
                           type="submit"
                           className="btn btn-dark py-2 px-3 rounded-3 d-flex align-items-center justify-content-center gap-2 shadow-sm"
